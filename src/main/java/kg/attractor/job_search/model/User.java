@@ -12,5 +12,17 @@ public class User {
     private String password;
     private String phoneNumber;
     private String avatar;
-    private String accountType;
+    private AccountType accountType;
+
+    public User(int id, String name, String surname, int age, String email, String password, String phoneNumber, String avatar, AccountType accountType) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.age = age;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.avatar = avatar;
+        this.accountType = accountType;
+    }
 }
