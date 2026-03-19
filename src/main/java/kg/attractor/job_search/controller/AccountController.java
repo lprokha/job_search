@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -20,6 +21,30 @@ public class AccountController {
 
     private final UserService userService;
     private final FileService fileService;
+
+    @GetMapping("/search/by-name")
+    public ResponseEntity<List<User>> findUsersByName(@RequestParam String name) {
+        return ResponseEntity.ok(userService.findByName(name));
+    }
+
+    @GetMapping("/search/by-phone")
+    public ResponseEntity<User> findUserByPhone(@RequestParam String phoneNumber) {
+        return userService.findByPhoneNumber(phoneNumber)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search/by-email")
+    public ResponseEntity<User> findUserByEmail(@RequestParam String email) {
+        return userService.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> existsByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(userService.existsByEmail(email));
+    }
 
     @PostMapping
     public ResponseEntity<User> createAccount(@RequestBody CreateUserDto dto) {
