@@ -57,12 +57,6 @@ public class ResponseController {
             return ResponseEntity.notFound().build();
         }
 
-        List<Resume> resumes = respondedApplicantService.getByVacancyId(vacancyId)
-                .stream()
-                .map(response -> resumeService.getById(response.getResumeId()).orElse(null))
-                .filter(Objects::nonNull)
-                .toList();
-
-        return ResponseEntity.ok(resumes);
+        return ResponseEntity.ok(resumeService.getApplicantsByVacancyId(vacancyId));
     }
 }
