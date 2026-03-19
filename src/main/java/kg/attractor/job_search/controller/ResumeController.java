@@ -22,6 +22,10 @@ public class ResumeController {
 
     @PostMapping
     public ResponseEntity<Resume> createResume(@RequestBody CreateResumeDto dto) {
+        if (dto.getApplicantId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         if (userService.findApplicant(dto.getApplicantId()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -33,6 +37,10 @@ public class ResumeController {
     @PutMapping("/{id}")
     public ResponseEntity<Resume> updateResume(@PathVariable Integer id,
                                                @RequestBody UpdateResumeDto dto) {
+        if (dto.getApplicantId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         if (userService.findApplicant(dto.getApplicantId()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -61,5 +69,10 @@ public class ResumeController {
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<Resume>> getResumesByCategory(@PathVariable Integer categoryId) {
         return ResponseEntity.ok(resumeService.getByCategory(categoryId));
+    }
+
+    @GetMapping("/applicant/{applicantId}")
+    public ResponseEntity<List<Resume>> getResumesByApplicant(@PathVariable Integer applicantId) {
+        return ResponseEntity.ok(resumeService.getByApplicantId(applicantId));
     }
 }

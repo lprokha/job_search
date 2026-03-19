@@ -2,46 +2,20 @@ package kg.attractor.job_search.service;
 
 import kg.attractor.job_search.dto.RespondToVacancyDto;
 import kg.attractor.job_search.model.RespondedApplicant;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-@Service
-public class RespondedApplicantService {
-    private final Map<Integer, RespondedApplicant> responses = new ConcurrentHashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
+public interface RespondedApplicantService {
+    boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId);
 
-    public boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId) {
-        return responses.values().stream()
-                .anyMatch(response ->
-                        response.getResumeId().equals(resumeId)
-                                && response.getVacancyId().equals(vacancyId)
-                );
-    }
+    RespondedApplicant create(RespondToVacancyDto dto);
 
-    public RespondedApplicant create(RespondToVacancyDto dto) {
-        RespondedApplicant response = new RespondedApplicant(
-                idGenerator.incrementAndGet(),
-                dto.getResumeId(),
-                dto.getVacancyId(),
-                false
-        );
+    List<RespondedApplicant> getByVacancyId(Integer vacancyId);
 
-        responses.put(response.getId(), response);
-        return response;
-    }
+    List<RespondedApplicant> getByResumeId(Integer resumeId);
 
-    public List<RespondedApplicant> getByVacancyId(Integer vacancyId) {
-        return responses.values().stream()
-                .filter(response -> response.getVacancyId().equals(vacancyId))
-                .toList();
-    }
+    List<RespondedApplicant> getAll();
 
-    public Optional<RespondedApplicant> getById(Integer id) {
-        return Optional.ofNullable(responses.get(id));
-    }
+    Optional<RespondedApplicant> getById(Integer id);
 }

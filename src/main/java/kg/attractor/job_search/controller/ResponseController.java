@@ -26,6 +26,10 @@ public class ResponseController {
 
     @PostMapping
     public ResponseEntity<RespondedApplicant> respondToVacancy(@RequestBody RespondToVacancyDto dto) {
+        if (dto.getResumeId() == null || dto.getVacancyId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         if (resumeService.getById(dto.getResumeId()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -49,12 +53,10 @@ public class ResponseController {
 
     @GetMapping("/vacancy/{vacancyId}/applicants")
     public ResponseEntity<List<Resume>> getApplicantsByVacancy(@PathVariable Integer vacancyId) {
-        List<Resume> resumes = respondedApplicantService.getByVacancyId(vacancyId)
-                .stream()
-                .map(response -> resumeService.getById(response.getResumeId()).orElse(null))
-                .filter(Objects::nonNull)
-                .toList();
+        if (vacancyService.getById(vacancyId).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.ok(resumes);
+        return ResponseEntity.ok(resumeService.getApplicantsByVacancyId(vacancyId));
     }
 }

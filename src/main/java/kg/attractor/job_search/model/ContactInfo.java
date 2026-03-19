@@ -1,11 +1,15 @@
 package kg.attractor.job_search.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContactInfo {
-    private int id;
-    private int typeId;
-    private int resumeId;
-    private String value;
+    private Integer id;
+    private Integer typeId;
+    private Integer resumeId;
+    private String contactValue;
 }
