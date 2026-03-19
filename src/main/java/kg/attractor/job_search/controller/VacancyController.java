@@ -61,6 +61,11 @@ public class VacancyController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/responded/applicant/{applicantId}")
+    public ResponseEntity<List<Vacancy>> getRespondedVacanciesByApplicant(@PathVariable Integer applicantId) {
+        return ResponseEntity.ok(vacancyService.getRespondedVacanciesByApplicantId(applicantId));
+    }
+
     @GetMapping
     public ResponseEntity<List<Vacancy>> getAllVacancies() {
         return ResponseEntity.ok(vacancyService.getAll());
