@@ -90,7 +90,7 @@ CREATE TABLE contacts_info
     id        INT AUTO_INCREMENT PRIMARY KEY,
     type_id   INT NOT NULL,
     resume_id INT NOT NULL,
-    value     VARCHAR(255) NOT NULL,
+    contact_value VARCHAR(255) NOT NULL,
     CONSTRAINT fk_contacts_type
         FOREIGN KEY (type_id) REFERENCES contact_types(id),
     CONSTRAINT fk_contacts_resume

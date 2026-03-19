@@ -24,7 +24,7 @@ VALUES ('EMAIL'),
        ('PHONE'),
        ('TELEGRAM');
 
-INSERT INTO contacts_info (type_id, resume_id, value)
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
 VALUES (1, 1, 'alice@example.com'),
        (2, 1, '+996700111111'),
        (3, 2, '@alice_qa');
