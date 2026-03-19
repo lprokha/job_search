@@ -27,6 +27,10 @@ public class AccountController {
             return ResponseEntity.badRequest().build();
         }
 
+        if (userService.existsByEmail(dto.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
         User createdUser = userService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
@@ -57,9 +61,12 @@ public class AccountController {
         }
 
         try {
-            String fileName = fileService.saveUploadedFile(file, "/avatars");
-            User updatedUser = userService.updateAvatar(userId, fileName);
-            return ResponseEntity.ok(updatedUser);
+            String fileName = fileService.saveUploadedFile(file, "avatars");
+
+            return userService.updateAvatar(userId, fileName)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
