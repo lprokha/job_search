@@ -18,6 +18,8 @@ public interface ResumeService {
 
     List<Resume> getByApplicantId(Integer applicantId);
 
+    List<Resume> getApplicantsByVacancyId(Integer vacancyId);
+
     Optional<Resume> update(Integer id, UpdateResumeDto dto);
 
     boolean delete(Integer id);

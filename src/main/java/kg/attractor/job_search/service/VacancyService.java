@@ -20,6 +20,8 @@ public interface VacancyService {
 
     List<Vacancy> getByAuthorId(Integer authorId);
 
+    List<Vacancy> getRespondedVacanciesByApplicantId(Integer applicantId);
+
     Optional<Vacancy> update(Integer id, UpdateVacancyDto dto);
 
     boolean delete(Integer id);

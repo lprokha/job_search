@@ -1,66 +1,53 @@
 package kg.attractor.job_search.service.impl;
 
+import kg.attractor.job_search.dao.RespondedApplicantDao;
 import kg.attractor.job_search.dto.RespondToVacancyDto;
 import kg.attractor.job_search.model.RespondedApplicant;
 import kg.attractor.job_search.service.RespondedApplicantService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
+@RequiredArgsConstructor
 public class RespondedApplicantServiceImpl implements RespondedApplicantService {
-    private final Map<Integer, RespondedApplicant> responses = new ConcurrentHashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
+    private final RespondedApplicantDao respondedApplicantDao;
 
     @Override
     public boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId) {
-        return responses.values().stream()
-                .anyMatch(response ->
-                        response.getResumeId() != null
-                                && response.getVacancyId() != null
-                                && response.getResumeId().equals(resumeId)
-                                && response.getVacancyId().equals(vacancyId)
-                );
+        return respondedApplicantDao.existsByResumeIdAndVacancyId(resumeId, vacancyId);
     }
 
     @Override
     public RespondedApplicant create(RespondToVacancyDto dto) {
         RespondedApplicant response = new RespondedApplicant(
-                idGenerator.incrementAndGet(),
+                null,
                 dto.getResumeId(),
                 dto.getVacancyId(),
                 false
         );
-
-        responses.put(response.getId(), response);
-        return response;
+        return respondedApplicantDao.save(response);
     }
 
     @Override
     public List<RespondedApplicant> getByVacancyId(Integer vacancyId) {
-        return responses.values().stream()
-                .filter(response -> response.getVacancyId() != null && response.getVacancyId().equals(vacancyId))
-                .toList();
+        return respondedApplicantDao.findByVacancyId(vacancyId);
     }
 
     @Override
     public List<RespondedApplicant> getByResumeId(Integer resumeId) {
-        return responses.values().stream()
-                .filter(response -> response.getResumeId() != null && response.getResumeId().equals(resumeId))
-                .toList();
+        return respondedApplicantDao.findByResumeId(resumeId);
     }
 
     @Override
     public List<RespondedApplicant> getAll() {
-        return responses.values().stream().toList();
+        return respondedApplicantDao.findAll();
     }
 
     @Override
     public Optional<RespondedApplicant> getById(Integer id) {
-        return Optional.ofNullable(responses.get(id));
+        return respondedApplicantDao.findById(id);
     }
 }

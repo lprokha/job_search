@@ -1,27 +1,25 @@
 package kg.attractor.job_search.service.impl;
 
+import kg.attractor.job_search.dao.UserDao;
 import kg.attractor.job_search.dto.CreateUserDto;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final Map<Integer, User> users = new ConcurrentHashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
+    private final UserDao userDao;
 
     @Override
     public User create(CreateUserDto dto) {
         User user = new User(
-                idGenerator.incrementAndGet(),
+                null,
                 dto.getName(),
                 dto.getSurname(),
                 dto.getAge(),
@@ -31,68 +29,53 @@ public class UserServiceImpl implements UserService {
                 "default-avatar.png",
                 dto.getAccountType()
         );
-
-        users.put(user.getId(), user);
-        return user;
+        return userDao.save(user);
     }
 
     @Override
     public Optional<User> getById(Integer id) {
-        return Optional.ofNullable(users.get(id));
+        return userDao.findById(id);
     }
 
     @Override
     public Optional<User> findApplicant(Integer id) {
-        return getById(id).filter(user -> user.getAccountType() == AccountType.APPLICANT);
+        return userDao.findById(id)
+                .filter(user -> user.getAccountType() == AccountType.APPLICANT);
     }
 
     @Override
     public Optional<User> findEmployer(Integer id) {
-        return getById(id).filter(user -> user.getAccountType() == AccountType.EMPLOYER);
+        return userDao.findById(id)
+                .filter(user -> user.getAccountType() == AccountType.EMPLOYER);
     }
 
     @Override
     public List<User> getAll() {
-        return new ArrayList<>(users.values());
+        return userDao.findAll();
     }
 
     @Override
     public List<User> findByName(String name) {
-        String searchValue = name == null ? "" : name.toLowerCase();
-
-        return users.values().stream()
-                .filter(user -> user.getName() != null && user.getName().toLowerCase().contains(searchValue))
-                .toList();
+        return userDao.findByName(name);
     }
 
     @Override
     public Optional<User> findByPhoneNumber(String phoneNumber) {
-        return users.values().stream()
-                .filter(user -> user.getPhoneNumber() != null && user.getPhoneNumber().equals(phoneNumber))
-                .findFirst();
+        return userDao.findByPhoneNumber(phoneNumber);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return users.values().stream()
-                .filter(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email))
-                .findFirst();
+        return userDao.findByEmail(email);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return users.values().stream()
-                .anyMatch(user -> user.getEmail() != null && user.getEmail().equalsIgnoreCase(email));
+        return userDao.existsByEmail(email);
     }
 
     @Override
     public Optional<User> updateAvatar(Integer userId, String avatarFileName) {
-        User user = users.get(userId);
-        if (user == null) {
-            return Optional.empty();
-        }
-
-        user.setAvatar(avatarFileName);
-        return Optional.of(user);
+        return userDao.updateAvatar(userId, avatarFileName);
     }
 }

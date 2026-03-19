@@ -1,30 +1,28 @@
 package kg.attractor.job_search.service.impl;
 
+import kg.attractor.job_search.dao.ResumeDao;
 import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.service.ResumeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
+@RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
-    private final Map<Integer, Resume> resumes = new ConcurrentHashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
+    private final ResumeDao resumeDao;
 
     @Override
     public Resume create(CreateResumeDto dto) {
         LocalDateTime now = LocalDateTime.now();
 
         Resume resume = new Resume(
-                idGenerator.incrementAndGet(),
+                null,
                 dto.getApplicantId(),
                 dto.getName(),
                 dto.getCategoryId(),
@@ -34,45 +32,41 @@ public class ResumeServiceImpl implements ResumeService {
                 now
         );
 
-        resumes.put(resume.getId(), resume);
-        return resume;
+        return resumeDao.save(resume);
     }
 
     @Override
     public Optional<Resume> getById(Integer id) {
-        return Optional.ofNullable(resumes.get(id));
+        return resumeDao.findById(id);
     }
 
     @Override
     public List<Resume> getAll() {
-        return resumes.values().stream()
-                .sorted(Comparator.comparing(Resume::getUpdateTime).reversed())
-                .toList();
+        return resumeDao.findAll();
     }
 
     @Override
     public List<Resume> getByCategory(Integer categoryId) {
-        return resumes.values().stream()
-                .filter(resume -> resume.getCategoryId() != null && resume.getCategoryId().equals(categoryId))
-                .sorted(Comparator.comparing(Resume::getUpdateTime).reversed())
-                .toList();
+        return resumeDao.findByCategory(categoryId);
     }
 
     @Override
     public List<Resume> getByApplicantId(Integer applicantId) {
-        return resumes.values().stream()
-                .filter(resume -> resume.getApplicantId() != null && resume.getApplicantId().equals(applicantId))
-                .sorted(Comparator.comparing(Resume::getUpdateTime).reversed())
-                .toList();
+        return resumeDao.findByApplicantId(applicantId);
+    }
+
+    public List<Resume> getApplicantsByVacancyId(Integer vacancyId) {
+        return resumeDao.findApplicantsByVacancyId(vacancyId);
     }
 
     @Override
     public Optional<Resume> update(Integer id, UpdateResumeDto dto) {
-        Resume resume = resumes.get(id);
-        if (resume == null) {
+        Optional<Resume> existingResume = resumeDao.findById(id);
+        if (existingResume.isEmpty()) {
             return Optional.empty();
         }
 
+        Resume resume = existingResume.get();
         resume.setApplicantId(dto.getApplicantId());
         resume.setName(dto.getName());
         resume.setCategoryId(dto.getCategoryId());
@@ -80,11 +74,11 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setIsActive(dto.getIsActive());
         resume.setUpdateTime(LocalDateTime.now());
 
-        return Optional.of(resume);
+        return resumeDao.update(resume);
     }
 
     @Override
     public boolean delete(Integer id) {
-        return resumes.remove(id) != null;
+        return resumeDao.delete(id);
     }
 }
