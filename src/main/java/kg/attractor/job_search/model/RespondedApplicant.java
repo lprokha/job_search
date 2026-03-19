@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RespondedApplicant {
-    private int id;
+    private Integer id;
     private Integer resumeId;
     private Integer vacancyId;
-    private boolean confirmation;
+    private Boolean confirmation;
 }
-

@@ -1,6 +1,5 @@
 package kg.attractor.job_search.model;
 
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +21,4 @@ public class Vacancy {
     private Integer authorId;
     private LocalDateTime createdDate;
     private LocalDateTime updateTime;
-
 }
