@@ -22,6 +22,10 @@ public class VacancyController {
 
     @PostMapping
     public ResponseEntity<Vacancy> createVacancy(@RequestBody CreateVacancyDto dto) {
+        if (dto.getAuthorId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         if (userService.findEmployer(dto.getAuthorId()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -33,6 +37,10 @@ public class VacancyController {
     @PutMapping("/{id}")
     public ResponseEntity<Vacancy> updateVacancy(@PathVariable Integer id,
                                                  @RequestBody UpdateVacancyDto dto) {
+        if (dto.getAuthorId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         if (userService.findEmployer(dto.getAuthorId()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -53,6 +61,11 @@ public class VacancyController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping
+    public ResponseEntity<List<Vacancy>> getAllVacancies() {
+        return ResponseEntity.ok(vacancyService.getAll());
+    }
+
     @GetMapping("/active")
     public ResponseEntity<List<Vacancy>> getAllActiveVacancies() {
         return ResponseEntity.ok(vacancyService.getAllActive());
@@ -61,5 +74,10 @@ public class VacancyController {
     @GetMapping("/active/category/{categoryId}")
     public ResponseEntity<List<Vacancy>> getActiveVacanciesByCategory(@PathVariable Integer categoryId) {
         return ResponseEntity.ok(vacancyService.getActiveByCategory(categoryId));
+    }
+
+    @GetMapping("/author/{authorId}")
+    public ResponseEntity<List<Vacancy>> getVacanciesByAuthor(@PathVariable Integer authorId) {
+        return ResponseEntity.ok(vacancyService.getByAuthorId(authorId));
     }
 }
