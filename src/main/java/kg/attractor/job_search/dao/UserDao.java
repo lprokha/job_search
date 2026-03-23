@@ -44,6 +44,35 @@ public class UserDao {
         return user;
     }
 
+    public Optional<User> updateProfile(Integer id, User user) {
+        String sql = """
+            UPDATE users
+            SET name = ?,
+                surname = ?,
+                age = ?,
+                email = ?,
+                password = ?,
+                phone_number = ?
+            WHERE id = ?
+            """;
+
+        int updated = jdbcTemplate.update(sql,
+                user.getName(),
+                user.getSurname(),
+                user.getAge(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getPhoneNumber(),
+                id
+        );
+
+        if (updated == 0) {
+            return Optional.empty();
+        }
+
+        return findById(id);
+    }
+
     public Optional<User> findById(Integer id) {
         String sql = """
                 SELECT id, name, surname, age, email, password,
