@@ -1,6 +1,7 @@
 package kg.attractor.job_search.controller;
 
 import kg.attractor.job_search.dto.CreateUserDto;
+import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.FileService;
 import kg.attractor.job_search.service.UserService;
@@ -21,6 +22,13 @@ public class AccountController {
 
     private final UserService userService;
     private final FileService fileService;
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateProfile(@PathVariable Integer id, @RequestBody UpdateUserDto dto) {
+        return userService.updateProfile(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @GetMapping("/search/by-name")
     public ResponseEntity<List<User>> findUsersByName(@RequestParam String name) {
