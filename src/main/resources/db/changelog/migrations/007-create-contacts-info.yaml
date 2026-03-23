@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: resume_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contact_value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: contacts_info
+            baseColumnNames: type_id
+            constraintName: fk_contacts_type
+            referencedTableName: contact_types
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            baseTableName: contacts_info
+            baseColumnNames: resume_id
+            constraintName: fk_contacts_resume
+            referencedTableName: resumes
+            referencedColumnNames: id

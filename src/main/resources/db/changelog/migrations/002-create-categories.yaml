@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: int
+
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: parent_id
+            constraintName: fk_categories_parent
+            referencedTableName: categories
+            referencedColumnNames: id

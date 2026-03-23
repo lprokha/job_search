@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011
+      author: Leyla P.
+      changes:
+        - sqlFile:
+            path: data.sql
+            relativeToChangelogFile: false

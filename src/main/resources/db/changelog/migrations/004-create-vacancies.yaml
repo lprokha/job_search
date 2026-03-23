@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: vacancies
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: category_id
+                  type: int
+              - column:
+                  name: salary
+                  type: double
+              - column:
+                  name: exp_from
+                  type: int
+              - column:
+                  name: exp_to
+                  type: int
+              - column:
+                  name: is_active
+                  type: boolean
+              - column:
+                  name: author_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: timestamp
+              - column:
+                  name: update_time
+                  type: timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: vacancies
+            baseColumnNames: author_id
+            constraintName: fk_vacancies_user
+            referencedTableName: users
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            baseTableName: vacancies
+            baseColumnNames: category_id
+            constraintName: fk_vacancies_category
+            referencedTableName: categories
+            referencedColumnNames: id

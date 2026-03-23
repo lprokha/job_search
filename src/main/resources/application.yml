@@ -10,16 +10,24 @@ spring:
     password: qwerty
     driver-class-name: org.h2.Driver
 
-  sql:
-    init:
-      mode: always
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
+  liquibase:
+    change-log: classpath:/db/changelog/master.yaml
+
+logging:
+  file: 
+    path: logs
+  level:
+    root: info
+    kg.attractor.job_search: debug
+
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+
+

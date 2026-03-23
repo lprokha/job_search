@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: resumes
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: applicant_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: int
+              - column:
+                  name: salary
+                  type: double
+              - column:
+                  name: is_active
+                  type: boolean
+              - column:
+                  name: created_date
+                  type: timestamp
+              - column:
+                  name: update_time
+                  type: timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: resumes
+            baseColumnNames: applicant_id
+            constraintName: fk_resumes_user
+            referencedTableName: users
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            baseTableName: resumes
+            baseColumnNames: category_id
+            constraintName: fk_resumes_category
+            referencedTableName: categories
+            referencedColumnNames: id

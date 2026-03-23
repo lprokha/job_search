@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(255)
+              - column:
+                  name: age
+                  type: int
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(55)
+              - column:
+                  name: avatar
+                  type: varchar(255)
+              - column:
+                  name: account_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false

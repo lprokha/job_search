@@ -17,6 +17,7 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class UserDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public User save(User user) {
@@ -46,62 +47,92 @@ public class UserDao {
 
     public Optional<User> findById(Integer id) {
         String sql = """
-                SELECT id, name, surname, age, email, password,
+                SELECT id,
+                       name,
+                       surname,
+                       age,
+                       email,
+                       password,
                        phone_number AS phoneNumber,
                        avatar,
                        account_type AS accountType
                 FROM users
                 WHERE id = ?
                 """;
+
         List<User> users = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), id);
         return Optional.ofNullable(DataAccessUtils.singleResult(users));
     }
 
     public List<User> findAll() {
         String sql = """
-                SELECT id, name, surname, age, email, password,
+                SELECT id,
+                       name,
+                       surname,
+                       age,
+                       email,
+                       password,
                        phone_number AS phoneNumber,
                        avatar,
                        account_type AS accountType
                 FROM users
                 """;
+
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class));
     }
 
     public List<User> findByName(String name) {
         String sql = """
-                SELECT id, name, surname, age, email, password,
+                SELECT id,
+                       name,
+                       surname,
+                       age,
+                       email,
+                       password,
                        phone_number AS phoneNumber,
                        avatar,
                        account_type AS accountType
                 FROM users
                 WHERE LOWER(name) LIKE LOWER(?)
                 """;
+
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), "%" + name + "%");
     }
 
     public Optional<User> findByPhoneNumber(String phoneNumber) {
         String sql = """
-                SELECT id, name, surname, age, email, password,
+                SELECT id,
+                       name,
+                       surname,
+                       age,
+                       email,
+                       password,
                        phone_number AS phoneNumber,
                        avatar,
                        account_type AS accountType
                 FROM users
                 WHERE phone_number = ?
                 """;
+
         List<User> users = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), phoneNumber);
         return Optional.ofNullable(DataAccessUtils.singleResult(users));
     }
 
     public Optional<User> findByEmail(String email) {
         String sql = """
-                SELECT id, name, surname, age, email, password,
+                SELECT id,
+                       name,
+                       surname,
+                       age,
+                       email,
+                       password,
                        phone_number AS phoneNumber,
                        avatar,
                        account_type AS accountType
                 FROM users
                 WHERE LOWER(email) = LOWER(?)
                 """;
+
         List<User> users = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), email);
         return Optional.ofNullable(DataAccessUtils.singleResult(users));
     }
@@ -112,12 +143,43 @@ public class UserDao {
         return count != null && count > 0;
     }
 
+    public Optional<User> updateProfile(Integer id, User user) {
+        String sql = """
+                UPDATE users
+                SET name = ?,
+                    surname = ?,
+                    age = ?,
+                    email = ?,
+                    password = ?,
+                    phone_number = ?
+                WHERE id = ?
+                """;
+
+        int updated = jdbcTemplate.update(sql,
+                user.getName(),
+                user.getSurname(),
+                user.getAge(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getPhoneNumber(),
+                id
+        );
+
+        if (updated == 0) {
+            return Optional.empty();
+        }
+
+        return findById(id);
+    }
+
     public Optional<User> updateAvatar(Integer userId, String avatarFileName) {
         String sql = "UPDATE users SET avatar = ? WHERE id = ?";
+
         int updated = jdbcTemplate.update(sql, avatarFileName, userId);
         if (updated == 0) {
             return Optional.empty();
         }
+
         return findById(userId);
     }
 }

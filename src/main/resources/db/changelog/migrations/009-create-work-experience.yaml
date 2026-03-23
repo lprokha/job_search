@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: work_experience_info
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: resume_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: years
+                  type: int
+              - column:
+                  name: company_name
+                  type: varchar(255)
+              - column:
+                  name: position
+                  type: varchar(255)
+              - column:
+                  name: responsibilities
+                  type: varchar(1000)
+
+        - addForeignKeyConstraint:
+            baseTableName: work_experience_info
+            baseColumnNames: resume_id
+            constraintName: fk_work_resume
+            referencedTableName: resumes
+            referencedColumnNames: id
