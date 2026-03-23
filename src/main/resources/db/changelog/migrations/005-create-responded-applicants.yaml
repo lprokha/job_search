@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: responded_applicants
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: resume_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: vacancy_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: confirmation
+                  type: boolean
+
+        - addForeignKeyConstraint:
+            baseTableName: responded_applicants
+            baseColumnNames: resume_id
+            constraintName: fk_responded_resume
+            referencedTableName: resumes
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            baseTableName: responded_applicants
+            baseColumnNames: vacancy_id
+            constraintName: fk_responded_vacancy
+            referencedTableName: vacancies
+            referencedColumnNames: id
+
+        - addUniqueConstraint:
+            tableName: responded_applicants
+            columnNames: resume_id, vacancy_id
+            constraintName: uq_resume_vacancy

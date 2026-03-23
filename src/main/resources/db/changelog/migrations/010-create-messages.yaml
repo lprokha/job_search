@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: messages
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: responded_applicant_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: varchar(1000)
+              - column:
+                  name: timestamp
+                  type: timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: responded_applicant_id
+            constraintName: fk_messages_response
+            referencedTableName: responded_applicants
+            referencedColumnNames: id

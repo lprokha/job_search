@@ -21,7 +21,7 @@ spring:
     change-log: classpath:/db/changelog/master.yaml
 
 logging:
-  file:
+  file: 
     path: logs
   level:
     root: info
