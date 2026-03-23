@@ -17,10 +17,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
+
     private final UserDao userDao;
 
     @Override
     public User create(CreateUserDto dto) {
+        log.info("Creating user with email={}", dto.getEmail());
+
         User user = new User(
                 null,
                 dto.getName(),
@@ -32,7 +35,11 @@ public class UserServiceImpl implements UserService {
                 "default-avatar.png",
                 dto.getAccountType()
         );
-        return userDao.save(user);
+
+        User savedUser = userDao.save(user);
+        log.debug("User created successfully with id={}", savedUser.getId());
+
+        return savedUser;
     }
 
     @Override
