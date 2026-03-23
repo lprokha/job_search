@@ -1,6 +1,7 @@
 package kg.attractor.job_search.service;
 
 import kg.attractor.job_search.dto.CreateUserDto;
+import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.model.User;
 
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Optional;
 
 public interface UserService {
     User create(CreateUserDto dto);
+
+    Optional<User> updateProfile(Integer id, UpdateUserDto dto);
 
     Optional<User> getById(Integer id);
 
