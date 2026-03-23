@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.RespondToVacancyDto;
 import kg.attractor.job_search.model.RespondedApplicant;
 import kg.attractor.job_search.service.RespondedApplicantService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RespondedApplicantServiceImpl implements RespondedApplicantService {
     private final RespondedApplicantDao respondedApplicantDao;
 
@@ -22,13 +24,19 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
 
     @Override
     public RespondedApplicant create(RespondToVacancyDto dto) {
+        log.info("Creating response for resumeId={} and vacancyId={}", dto.getResumeId(), dto.getVacancyId());
+
         RespondedApplicant response = new RespondedApplicant(
                 null,
                 dto.getResumeId(),
                 dto.getVacancyId(),
                 false
         );
-        return respondedApplicantDao.save(response);
+
+        RespondedApplicant savedResponse = respondedApplicantDao.save(response);
+        log.debug("Response created successfully with id={}", savedResponse.getId());
+
+        return savedResponse;
     }
 
     @Override

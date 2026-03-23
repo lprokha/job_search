@@ -6,6 +6,7 @@ import kg.attractor.job_search.dto.UpdateVacancyDto;
 import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,11 +15,14 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class VacancyServiceImpl implements VacancyService {
     private final VacancyDao vacancyDao;
 
     @Override
     public Vacancy create(CreateVacancyDto dto) {
+        log.info("Creating vacancy for authorId={}", dto.getAuthorId());
+
         LocalDateTime now = LocalDateTime.now();
 
         Vacancy vacancy = new Vacancy(
@@ -35,7 +39,10 @@ public class VacancyServiceImpl implements VacancyService {
                 now
         );
 
-        return vacancyDao.save(vacancy);
+        Vacancy savedVacancy = vacancyDao.save(vacancy);
+        log.debug("Vacancy created successfully with id={}", savedVacancy.getId());
+
+        return savedVacancy;
     }
 
     @Override
@@ -70,8 +77,11 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Optional<Vacancy> update(Integer id, UpdateVacancyDto dto) {
+        log.info("Updating vacancy id={}", id);
+
         Optional<Vacancy> existingVacancy = vacancyDao.findById(id);
         if (existingVacancy.isEmpty()) {
+            log.warn("Vacancy not found for update, id={}", id);
             return Optional.empty();
         }
 
@@ -86,11 +96,15 @@ public class VacancyServiceImpl implements VacancyService {
         vacancy.setIsActive(dto.getIsActive());
         vacancy.setUpdateTime(LocalDateTime.now());
 
-        return vacancyDao.update(vacancy);
+        Optional<Vacancy> updatedVacancy = vacancyDao.update(vacancy);
+        log.debug("Vacancy updated successfully, id={}", id);
+
+        return updatedVacancy;
     }
 
     @Override
     public boolean delete(Integer id) {
+        log.warn("Deleting vacancy id={}", id);
         return vacancyDao.delete(id);
     }
 }
