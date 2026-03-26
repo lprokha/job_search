@@ -1,5 +1,6 @@
-package kg.attractor.job_search.exception;
+package kg.attractor.job_search.exception.handler;
 
+import kg.attractor.job_search.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
