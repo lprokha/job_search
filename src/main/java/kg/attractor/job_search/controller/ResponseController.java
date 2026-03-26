@@ -1,6 +1,10 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.RespondToVacancyDto;
+import kg.attractor.job_search.exception.BadRequestException;
+import kg.attractor.job_search.exception.ConflictException;
+import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.RespondedApplicant;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.Vacancy;
@@ -13,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/responses")
@@ -25,26 +28,19 @@ public class ResponseController {
     private final VacancyService vacancyService;
 
     @PostMapping
-    public ResponseEntity<RespondedApplicant> respondToVacancy(@RequestBody RespondToVacancyDto dto) {
-        if (dto.getResumeId() == null || dto.getVacancyId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<RespondedApplicant> respondToVacancy(@RequestBody @Valid RespondToVacancyDto dto) {
+        resumeService.getById(dto.getResumeId())
+                .orElseThrow(() -> new NotFoundException("Resume not found with id = " + dto.getResumeId()));
 
-        if (resumeService.getById(dto.getResumeId()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        Vacancy vacancy = vacancyService.getById(dto.getVacancyId()).orElse(null);
-        if (vacancy == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Vacancy vacancy = vacancyService.getById(dto.getVacancyId())
+                .orElseThrow(() -> new NotFoundException("Vacancy not found with id = " + dto.getVacancyId()));
 
         if (!Boolean.TRUE.equals(vacancy.getIsActive())) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("Cannot respond to inactive vacancy");
         }
 
         if (respondedApplicantService.existsByResumeIdAndVacancyId(dto.getResumeId(), dto.getVacancyId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            throw new ConflictException("Response already exists for this resume and vacancy");
         }
 
         RespondedApplicant createdResponse = respondedApplicantService.create(dto);
@@ -53,9 +49,8 @@ public class ResponseController {
 
     @GetMapping("/vacancy/{vacancyId}/applicants")
     public ResponseEntity<List<Resume>> getApplicantsByVacancy(@PathVariable Integer vacancyId) {
-        if (vacancyService.getById(vacancyId).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        vacancyService.getById(vacancyId)
+                .orElseThrow(() -> new NotFoundException("Vacancy not found with id = " + vacancyId));
 
         return ResponseEntity.ok(resumeService.getApplicantsByVacancyId(vacancyId));
     }
