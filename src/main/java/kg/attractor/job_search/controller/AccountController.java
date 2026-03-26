@@ -1,7 +1,11 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateUserDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
+import kg.attractor.job_search.exception.ConflictException;
+import kg.attractor.job_search.exception.FileUploadException;
+import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.FileService;
 import kg.attractor.job_search.service.UserService;
@@ -24,10 +28,11 @@ public class AccountController {
     private final FileService fileService;
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateProfile(@PathVariable Integer id, @RequestBody UpdateUserDto dto) {
-        return userService.updateProfile(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<User> updateProfile(@PathVariable Integer id, @RequestBody @Valid UpdateUserDto dto) {
+        User updatedUser = userService.updateProfile(id, dto)
+                .orElseThrow(() -> new NotFoundException("User not found with id = " + id));
+
+        return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/search/by-name")
@@ -37,16 +42,18 @@ public class AccountController {
 
     @GetMapping("/search/by-phone")
     public ResponseEntity<User> findUserByPhone(@RequestParam String phoneNumber) {
-        return userService.findByPhoneNumber(phoneNumber)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User user = userService.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("User not found with phone number = " + phoneNumber));
+
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/search/by-email")
     public ResponseEntity<User> findUserByEmail(@RequestParam String email) {
-        return userService.findByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found with email = " + email));
+
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/exists")
@@ -55,13 +62,9 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createAccount(@RequestBody CreateUserDto dto) {
-        if (dto.getAccountType() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    public ResponseEntity<User> createAccount(@RequestBody @Valid CreateUserDto dto) {
         if (userService.existsByEmail(dto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            throw new ConflictException("User with this email already exists");
         }
 
         User createdUser = userService.create(dto);
@@ -70,38 +73,40 @@ public class AccountController {
 
     @GetMapping("/employers/{id}")
     public ResponseEntity<User> findEmployer(@PathVariable Integer id) {
-        return userService.findEmployer(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User employer = userService.findEmployer(id)
+                .orElseThrow(() -> new NotFoundException("Employer not found with id = " + id));
+
+        return ResponseEntity.ok(employer);
     }
 
     @GetMapping("/applicants/{id}")
     public ResponseEntity<User> findApplicant(@PathVariable Integer id) {
-        return userService.findApplicant(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        User applicant = userService.findApplicant(id)
+                .orElseThrow(() -> new NotFoundException("Applicant not found with id = " + id));
+
+        return ResponseEntity.ok(applicant);
     }
 
     @PostMapping(value = "/{userId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> uploadAvatar(@PathVariable Integer userId,
                                              @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            throw new kg.attractor.job_search.exception.BadRequestException("File cannot be empty");
         }
 
-        if (userService.getById(userId).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        userService.getById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
 
         try {
             String fileName = fileService.saveUploadedFile(file, "avatars");
 
-            return userService.updateAvatar(userId, fileName)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+            User updatedUser = userService.updateAvatar(userId, fileName)
+                    .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
+
+            return ResponseEntity.ok(updatedUser);
 
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new FileUploadException("Failed to upload avatar");
         }
     }
 }
