@@ -1,7 +1,10 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
+import kg.attractor.job_search.exception.ForbiddenException;
+import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
@@ -21,13 +24,9 @@ public class ResumeController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Resume> createResume(@RequestBody CreateResumeDto dto) {
-        if (dto.getApplicantId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    public ResponseEntity<Resume> createResume(@RequestBody @Valid CreateResumeDto dto) {
         if (userService.findApplicant(dto.getApplicantId()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new ForbiddenException("User with id = " + dto.getApplicantId() + " is not an applicant");
         }
 
         Resume createdResume = resumeService.create(dto);
@@ -36,29 +35,26 @@ public class ResumeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Resume> updateResume(@PathVariable Integer id,
-                                               @RequestBody UpdateResumeDto dto) {
-        if (dto.getApplicantId() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+                                               @RequestBody @Valid UpdateResumeDto dto) {
         if (userService.findApplicant(dto.getApplicantId()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new ForbiddenException("User with id = " + dto.getApplicantId() + " is not an applicant");
         }
 
-        return resumeService.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Resume updatedResume = resumeService.update(id, dto)
+                .orElseThrow(() -> new NotFoundException("Resume not found with id = " + id));
+
+        return ResponseEntity.ok(updatedResume);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResume(@PathVariable Integer id) {
         boolean deleted = resumeService.delete(id);
 
-        if (deleted) {
-            return ResponseEntity.noContent().build();
+        if (!deleted) {
+            throw new NotFoundException("Resume not found with id = " + id);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
