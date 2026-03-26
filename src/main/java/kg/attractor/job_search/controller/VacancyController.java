@@ -1,7 +1,11 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateVacancyDto;
 import kg.attractor.job_search.dto.UpdateVacancyDto;
+import kg.attractor.job_search.exception.BadRequestException;
+import kg.attractor.job_search.exception.ForbiddenException;
+import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -21,13 +25,13 @@ public class VacancyController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Vacancy> createVacancy(@RequestBody CreateVacancyDto dto) {
-        if (dto.getAuthorId() == null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<Vacancy> createVacancy(@RequestBody @Valid CreateVacancyDto dto) {
+        if (dto.getExpTo() < dto.getExpFrom()) {
+            throw new BadRequestException("Experience to cannot be less than experience from");
         }
 
         if (userService.findEmployer(dto.getAuthorId()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new ForbiddenException("User with id = " + dto.getAuthorId() + " is not an employer");
         }
 
         Vacancy createdVacancy = vacancyService.create(dto);
@@ -36,29 +40,30 @@ public class VacancyController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Vacancy> updateVacancy(@PathVariable Integer id,
-                                                 @RequestBody UpdateVacancyDto dto) {
-        if (dto.getAuthorId() == null) {
-            return ResponseEntity.badRequest().build();
+                                                 @RequestBody @Valid UpdateVacancyDto dto) {
+        if (dto.getExpTo() < dto.getExpFrom()) {
+            throw new BadRequestException("Experience to cannot be less than experience from");
         }
 
         if (userService.findEmployer(dto.getAuthorId()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new ForbiddenException("User with id = " + dto.getAuthorId() + " is not an employer");
         }
 
-        return vacancyService.update(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Vacancy updatedVacancy = vacancyService.update(id, dto)
+                .orElseThrow(() -> new NotFoundException("Vacancy not found with id = " + id));
+
+        return ResponseEntity.ok(updatedVacancy);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVacancy(@PathVariable Integer id) {
         boolean deleted = vacancyService.delete(id);
 
-        if (deleted) {
-            return ResponseEntity.noContent().build();
+        if (!deleted) {
+            throw new NotFoundException("Vacancy not found with id = " + id);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/responded/applicant/{applicantId}")
