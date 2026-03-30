@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: role_authority
+            columns:
+              - column:
+                  name: role_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_authority_role
+                    references: roles(id)
+              - column:
+                  name: authority_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_authority_authority
+                    references: authorities(id)
+        - addPrimaryKey:
+            tableName: role_authority
+            columnNames: role_id, authority_id
+            constraintName: pk_role_authority

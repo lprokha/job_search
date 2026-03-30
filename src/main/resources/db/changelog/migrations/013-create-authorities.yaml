@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013
+      author: Leyla P.
+      changes:
+        - createTable:
+            tableName: authorities
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: authority
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true

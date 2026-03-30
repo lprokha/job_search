@@ -1,18 +1,19 @@
 package kg.attractor.job_search.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateResumeDto {
-
-    @NotNull(message = "Applicant id cannot be null")
-    @Positive(message = "Applicant id must be positive")
-    private Integer applicantId;
 
     @NotBlank(message = "Resume name cannot be empty")
     private String name;

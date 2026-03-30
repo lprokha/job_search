@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.CreateUserDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.exception.ConflictException;
 import kg.attractor.job_search.exception.FileUploadException;
+import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.FileService;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +30,20 @@ public class AccountController {
     private final FileService fileService;
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateProfile(@PathVariable Integer id, @RequestBody @Valid UpdateUserDto dto) {
+    public ResponseEntity<User> updateProfile(@PathVariable Integer id,
+                                              @RequestBody @Valid UpdateUserDto dto,
+                                              Authentication authentication) {
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new NotFoundException("Authenticated user not found"));
+
+        if (!currentUser.getId().equals(id)) {
+            throw new ForbiddenException("You can update only your own profile");
+        }
+
+        if (!currentUser.getEmail().equalsIgnoreCase(dto.getEmail()) && userService.existsByEmail(dto.getEmail())) {
+            throw new ConflictException("User with this email already exists");
+        }
+
         User updatedUser = userService.updateProfile(id, dto)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + id));
 
@@ -89,13 +104,18 @@ public class AccountController {
 
     @PostMapping(value = "/{userId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> uploadAvatar(@PathVariable Integer userId,
-                                             @RequestParam("file") MultipartFile file) {
+                                             @RequestParam("file") MultipartFile file,
+                                             Authentication authentication) {
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new NotFoundException("Authenticated user not found"));
+
+        if (!currentUser.getId().equals(userId)) {
+            throw new ForbiddenException("You can upload avatar only for your own account");
+        }
+
         if (file.isEmpty()) {
             throw new kg.attractor.job_search.exception.BadRequestException("File cannot be empty");
         }
-
-        userService.getById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id = " + userId));
 
         try {
             String fileName = fileService.saveUploadedFile(file, "avatars");

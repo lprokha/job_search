@@ -2,17 +2,15 @@ package kg.attractor.job_search.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateVacancyDto {
-
-    @NotNull(message = "Author id cannot be null")
-    @Positive(message = "Author id must be positive")
-    private Integer authorId;
 
     @NotBlank(message = "Vacancy name cannot be empty")
     private String name;

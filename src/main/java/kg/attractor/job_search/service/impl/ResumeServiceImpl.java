@@ -20,21 +20,20 @@ public class ResumeServiceImpl implements ResumeService {
     private final ResumeDao resumeDao;
 
     @Override
-    public Resume create(CreateResumeDto dto) {
-        log.info("Creating resume for applicantId={}", dto.getApplicantId());
+    public Resume create(CreateResumeDto dto, Integer applicantId) {
+        log.info("Creating resume for applicantId={}", applicantId);
 
         LocalDateTime now = LocalDateTime.now();
 
-        Resume resume = new Resume(
-                null,
-                dto.getApplicantId(),
-                dto.getName(),
-                dto.getCategoryId(),
-                dto.getSalary(),
-                dto.getIsActive(),
-                now,
-                now
-        );
+        Resume resume = Resume.builder()
+                .applicantId(applicantId)
+                .name(dto.getName())
+                .categoryId(dto.getCategoryId())
+                .salary(dto.getSalary())
+                .isActive(dto.getIsActive())
+                .createdDate(now)
+                .updateTime(now)
+                .build();
 
         Resume savedResume = resumeDao.save(resume);
         log.debug("Resume created successfully with id={}", savedResume.getId());
@@ -78,7 +77,6 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         Resume resume = existingResume.get();
-        resume.setApplicantId(dto.getApplicantId());
         resume.setName(dto.getName());
         resume.setCategoryId(dto.getCategoryId());
         resume.setSalary(dto.getSalary());
