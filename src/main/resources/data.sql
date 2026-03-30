@@ -1,6 +1,6 @@
 INSERT INTO users (name, surname, age, email, password, phone_number, avatar, account_type)
-VALUES ('Alice', 'Johnson', 24, 'alice@example.com', '123456', '+996700111111', 'default-avatar.png', 'APPLICANT'),
-       ('Bob', 'Smith', 35, 'bob@example.com', '123456', '+996700222222', 'default-avatar.png', 'EMPLOYER');
+VALUES ('Alice', 'Johnson', 24, 'alice@example.com', '$2y$10$CGbGx0ZI2CMjDyiXvc.Xw.xAHCx77ivPgCYhjE5MCIREiu6PtFX8O', '+996700111111', 'default-avatar.png', 'APPLICANT'),
+       ('Bob', 'Smith', 35, 'bob@example.com', '$2y$10$CGbGx0ZI2CMjDyiXvc.Xw.xAHCx77ivPgCYhjE5MCIREiu6PtFX8O', '+996700222222', 'default-avatar.png', 'EMPLOYER');
 
 INSERT INTO categories (name, parent_id)
 VALUES ('IT', NULL),
