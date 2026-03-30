@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ResumeService {
-    Resume create(CreateResumeDto dto);
+    Resume create(CreateResumeDto dto, Integer applicantId);
 
     Optional<Resume> getById(Integer id);
 
