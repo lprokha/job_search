@@ -4,7 +4,6 @@ databaseChangeLog:
       author: Leyla P.
       changes:
         - sql:
-            dbms: any
             sql: |
               insert into authorities(authority)
               values ('RESUME_CREATE'),
