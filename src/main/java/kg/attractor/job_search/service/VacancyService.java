@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VacancyService {
-    Vacancy create(CreateVacancyDto dto);
+    Vacancy create(CreateVacancyDto dto, Integer authorId);
 
     Optional<Vacancy> getById(Integer id);
 

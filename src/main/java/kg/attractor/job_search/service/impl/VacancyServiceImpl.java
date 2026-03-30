@@ -20,24 +20,23 @@ public class VacancyServiceImpl implements VacancyService {
     private final VacancyDao vacancyDao;
 
     @Override
-    public Vacancy create(CreateVacancyDto dto) {
-        log.info("Creating vacancy for authorId={}", dto.getAuthorId());
+    public Vacancy create(CreateVacancyDto dto, Integer authorId) {
+        log.info("Creating vacancy for authorId={}", authorId);
 
         LocalDateTime now = LocalDateTime.now();
 
-        Vacancy vacancy = new Vacancy(
-                null,
-                dto.getName(),
-                dto.getDescription(),
-                dto.getCategoryId(),
-                dto.getSalary(),
-                dto.getExpFrom(),
-                dto.getExpTo(),
-                dto.getIsActive(),
-                dto.getAuthorId(),
-                now,
-                now
-        );
+        Vacancy vacancy = Vacancy.builder()
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .categoryId(dto.getCategoryId())
+                .salary(dto.getSalary())
+                .expFrom(dto.getExpFrom())
+                .expTo(dto.getExpTo())
+                .isActive(dto.getIsActive())
+                .authorId(authorId)
+                .createdDate(now)
+                .updateTime(now)
+                .build();
 
         Vacancy savedVacancy = vacancyDao.save(vacancy);
         log.debug("Vacancy created successfully with id={}", savedVacancy.getId());
@@ -86,7 +85,6 @@ public class VacancyServiceImpl implements VacancyService {
         }
 
         Vacancy vacancy = existingVacancy.get();
-        vacancy.setAuthorId(dto.getAuthorId());
         vacancy.setName(dto.getName());
         vacancy.setDescription(dto.getDescription());
         vacancy.setCategoryId(dto.getCategoryId());
