@@ -1,6 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.UserDao;
+import kg.attractor.job_search.dao.UserRoleDao;
 import kg.attractor.job_search.dto.CreateUserDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.model.AccountType;
@@ -8,6 +9,7 @@ import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,25 +21,30 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+    private final UserRoleDao userRoleDao;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User create(CreateUserDto dto) {
         log.info("Creating user with email={}", dto.getEmail());
 
-        User user = new User(
-                null,
-                dto.getName(),
-                dto.getSurname(),
-                dto.getAge(),
-                dto.getEmail(),
-                dto.getPassword(),
-                dto.getPhoneNumber(),
-                "default-avatar.png",
-                dto.getAccountType()
-        );
+        User user = User.builder()
+                .name(dto.getName())
+                .surname(dto.getSurname())
+                .age(dto.getAge())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .phoneNumber(dto.getPhoneNumber())
+                .avatar("default-avatar.png")
+                .accountType(dto.getAccountType())
+                .enabled(true)
+                .build();
 
         User savedUser = userDao.save(user);
         log.debug("User created successfully with id={}", savedUser.getId());
+
+        userRoleDao.assignRole(savedUser.getId(), dto.getAccountType().name());
+        log.debug("Role {} assigned to user id={}", dto.getAccountType().name(), savedUser.getId());
 
         return savedUser;
     }
@@ -57,7 +64,7 @@ public class UserServiceImpl implements UserService {
         user.setSurname(dto.getSurname());
         user.setAge(dto.getAge());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setPhoneNumber(dto.getPhoneNumber());
 
         Optional<User> updatedUser = userDao.updateProfile(id, user);
