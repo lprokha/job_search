@@ -22,8 +22,8 @@ public class UserDao {
 
     public User save(User user) {
         String sql = """
-                INSERT INTO users (name, surname, age, email, password, phone_number, avatar, account_type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO users (name, surname, age, email, password, phone_number, avatar, account_type, enabled)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -38,6 +38,7 @@ public class UserDao {
             ps.setString(6, user.getPhoneNumber());
             ps.setString(7, user.getAvatar());
             ps.setString(8, user.getAccountType().name());
+            ps.setObject(9, user.getEnabled());
             return ps;
         }, keyHolder);
 
@@ -55,7 +56,8 @@ public class UserDao {
                        password,
                        phone_number AS phoneNumber,
                        avatar,
-                       account_type AS accountType
+                       account_type AS accountType,
+                       enabled
                 FROM users
                 WHERE id = ?
                 """;
@@ -74,7 +76,8 @@ public class UserDao {
                        password,
                        phone_number AS phoneNumber,
                        avatar,
-                       account_type AS accountType
+                       account_type AS accountType,
+                       enabled
                 FROM users
                 """;
 
@@ -91,7 +94,8 @@ public class UserDao {
                        password,
                        phone_number AS phoneNumber,
                        avatar,
-                       account_type AS accountType
+                       account_type AS accountType,
+                       enabled
                 FROM users
                 WHERE LOWER(name) LIKE LOWER(?)
                 """;
@@ -109,7 +113,8 @@ public class UserDao {
                        password,
                        phone_number AS phoneNumber,
                        avatar,
-                       account_type AS accountType
+                       account_type AS accountType,
+                       enabled
                 FROM users
                 WHERE phone_number = ?
                 """;
@@ -128,7 +133,8 @@ public class UserDao {
                        password,
                        phone_number AS phoneNumber,
                        avatar,
-                       account_type AS accountType
+                       account_type AS accountType,
+                       enabled
                 FROM users
                 WHERE LOWER(email) = LOWER(?)
                 """;
