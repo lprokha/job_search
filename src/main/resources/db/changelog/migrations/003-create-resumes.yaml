@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 003
+      id: 3
       author: Leyla P.
       changes:
         - createTable:
