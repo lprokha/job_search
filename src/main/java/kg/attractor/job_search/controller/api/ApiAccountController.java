@@ -1,4 +1,4 @@
-package kg.attractor.job_search.controller;
+package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateUserDto;
@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/accounts")
 @RequiredArgsConstructor
-public class AccountController {
+public class ApiAccountController {
 
     private final UserService userService;
     private final FileService fileService;
