@@ -51,15 +51,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .httpBasic(Customizer.withDefaults())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/vacancies", "/api/vacancies/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/resumes").hasAuthority("APPLICANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/resumes/**").hasAuthority("APPLICANT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/resumes/**").hasAuthority("APPLICANT")
+                        .requestMatchers(HttpMethod.POST, "/api/responses").hasAuthority("APPLICANT")
+
+                        .requestMatchers(HttpMethod.POST, "/api/vacancies").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.PUT, "/api/vacancies/**").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/vacancies/**").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.GET, "/api/responses/vacancy/**").hasAuthority("EMPLOYER")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/accounts/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/accounts/*/avatar").authenticated()
+
                         .anyRequest().authenticated()
                 );
 
