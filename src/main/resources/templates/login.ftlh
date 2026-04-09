@@ -7,7 +7,7 @@
                 <div class="card-body p-4">
                     <h2 class="text-center mb-4">Вход в аккаунт</h2>
 
-                    <#if error??>
+                    <#if loginError??>
                         <div class="alert alert-danger">Неверный email или пароль</div>
                     </#if>
 
@@ -26,7 +26,7 @@
                     </form>
 
                     <div class="text-center mt-3">
-                        <a href="/register" class="text-decoration-none">Создать аккаунт</a>
+                        <a href="/register" class="text-decoration-none text-dark">Создать аккаунт</a>
                     </div>
                 </div>
             </div>
