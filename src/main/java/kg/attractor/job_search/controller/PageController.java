@@ -63,8 +63,16 @@ public class PageController {
     }
 
     @GetMapping("/vacancies")
-    public String vacanciesPage(Model model) {
+    public String vacanciesPage(Authentication authentication, Model model) {
         model.addAttribute("vacancies", vacancyService.getAllActive());
+
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User user = userService.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+            model.addAttribute("user", user);
+        }
+
         return "vacancy-list";
     }
 }
