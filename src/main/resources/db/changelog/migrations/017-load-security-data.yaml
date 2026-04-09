@@ -1,41 +1,23 @@
 databaseChangeLog:
   - changeSet:
-      id: 017
+      id: 17
       author: Leyla P.
       changes:
         - sql:
-            dbms: any
             sql: |
               insert into authorities(authority)
-              values ('RESUME_CREATE'),
-                     ('RESUME_UPDATE'),
-                     ('RESUME_DELETE'),
-                     ('VACANCY_CREATE'),
-                     ('VACANCY_UPDATE'),
-                     ('VACANCY_DELETE');
-
+              values ('APPLICANT'),
+              ('EMPLOYER');
+              
               insert into roles(role)
               values ('APPLICANT'),
-                     ('EMPLOYER'),
-                     ('ADMIN');
-
+              ('EMPLOYER');
+              
               insert into role_authority(role_id, authority_id)
               select r.id, a.id
-              from roles r, authorities a
-              where r.role = 'APPLICANT'
-                and a.authority in ('RESUME_CREATE', 'RESUME_UPDATE', 'RESUME_DELETE');
-
-              insert into role_authority(role_id, authority_id)
-              select r.id, a.id
-              from roles r, authorities a
-              where r.role = 'EMPLOYER'
-                and a.authority in ('VACANCY_CREATE', 'VACANCY_UPDATE', 'VACANCY_DELETE');
-
-              insert into role_authority(role_id, authority_id)
-              select r.id, a.id
-              from roles r, authorities a
-              where r.role = 'ADMIN';
-
+              from roles r
+              join authorities a on r.role = a.authority;
+              
               insert into user_role(user_id, role_id)
               select u.id, r.id
               from users u

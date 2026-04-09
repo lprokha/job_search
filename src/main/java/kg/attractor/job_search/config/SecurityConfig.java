@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,15 +49,52 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                .httpBasic(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/profile", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll()
+                )
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/vacancies",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/vacancies", "/api/vacancies/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        .requestMatchers("/profile/**").authenticated()
+                        .requestMatchers("/resumes/**").hasAuthority("APPLICANT")
+                        .requestMatchers("/my-vacancies/**").hasAuthority("EMPLOYER")
+
+                        .requestMatchers(HttpMethod.POST, "/api/resumes").hasAuthority("APPLICANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/resumes/**").hasAuthority("APPLICANT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/resumes/**").hasAuthority("APPLICANT")
+                        .requestMatchers(HttpMethod.POST, "/api/responses").hasAuthority("APPLICANT")
+
+                        .requestMatchers(HttpMethod.POST, "/api/vacancies").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.PUT, "/api/vacancies/**").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/vacancies/**").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.GET, "/api/responses/vacancy/**").hasAuthority("EMPLOYER")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/accounts/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/accounts/*/avatar").authenticated()
+
                         .anyRequest().authenticated()
                 );
 

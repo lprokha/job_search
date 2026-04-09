@@ -1,4 +1,4 @@
-package kg.attractor.job_search.controller;
+package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateVacancyDto;
@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vacancies")
 @RequiredArgsConstructor
-public class VacancyController {
+public class ApiVacancyController {
 
     private final VacancyService vacancyService;
     private final UserService userService;
