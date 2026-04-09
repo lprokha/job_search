@@ -1,5 +1,8 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.UpdateProfileDto;
+import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.ResumeService;
@@ -9,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequiredArgsConstructor
@@ -41,8 +47,20 @@ public class PageController {
 
     @GetMapping("/profile/edit")
     public String editProfilePage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
-        model.addAttribute("user", user);
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        UpdateProfileDto dto = UpdateProfileDto.builder()
+                .name(currentUser.getName())
+                .surname(currentUser.getSurname())
+                .age(currentUser.getAge())
+                .email(currentUser.getEmail())
+                .phoneNumber(currentUser.getPhoneNumber())
+                .build();
+
+        model.addAttribute("user", dto);
+        model.addAttribute("currentUser", currentUser);
+
         return "edit-user";
     }
 
@@ -74,5 +92,34 @@ public class PageController {
         }
 
         return "vacancy-list";
+    }
+
+    @PostMapping("/profile/edit")
+    public String updateProfile(
+            @Valid @ModelAttribute("user") UpdateProfileDto dto,
+            BindingResult bindingResult,
+            Authentication authentication,
+            Model model
+    ) {
+        User currentUser = userService.findByEmail(authentication.getName())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("currentUser", currentUser);
+            return "edit-user";
+        }
+
+        UpdateUserDto updateUserDto = UpdateUserDto.builder()
+                .name(dto.getName())
+                .surname(dto.getSurname())
+                .age(dto.getAge())
+                .email(dto.getEmail())
+                .phoneNumber(dto.getPhoneNumber())
+                .password(null)
+                .build();
+
+        userService.updateProfile(currentUser.getId(), updateUserDto);
+
+        return "redirect:/profile";
     }
 }

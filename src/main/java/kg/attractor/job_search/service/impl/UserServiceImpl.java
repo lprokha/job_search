@@ -64,8 +64,11 @@ public class UserServiceImpl implements UserService {
         user.setSurname(dto.getSurname());
         user.setAge(dto.getAge());
         user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setPhoneNumber(dto.getPhoneNumber());
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
 
         Optional<User> updatedUser = userDao.updateProfile(id, user);
         log.debug("Profile updated successfully for user id={}", id);

@@ -23,18 +23,18 @@
                         <a class="nav-link" href="/vacancies">Вакансии</a>
                     </li>
 
-                    <#if user??>
+                    <#if currentUser??>
                         <li class="nav-item">
                             <a class="nav-link" href="/profile">Личный кабинет</a>
                         </li>
 
-                        <#if user.accountType?string == "APPLICANT">
+                        <#if currentUser.accountType?string == "APPLICANT">
                             <li class="nav-item">
                                 <a class="nav-link" href="/resumes">Мои резюме</a>
                             </li>
                         </#if>
 
-                        <#if user.accountType?string == "EMPLOYER">
+                        <#if currentUser.accountType?string == "EMPLOYER">
                             <li class="nav-item">
                                 <a class="nav-link" href="/my-vacancies">Мои вакансии</a>
                             </li>
