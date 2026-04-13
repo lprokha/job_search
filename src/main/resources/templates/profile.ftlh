@@ -3,44 +3,37 @@
 <@main.layout>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-3 text-center mb-3 mb-md-0">
+            <h2>${user.name} ${user.surname}</h2>
+            <p class="text-muted mb-1">${user.email}</p>
+            <p class="mb-1">${user.phoneNumber!""}</p>
+            <span class="badge text-bg-secondary">
+                <#if user.accountType?string == "APPLICANT">
+                    Соискатель
+                <#else>
+                    Работодатель
+                </#if>
+            </span>
+
+            <div class="mt-3">
+                <p class="mb-2">
+                    <strong>Текущее фото:</strong>
                     <#if user.avatar?? && user.avatar?has_content>
-                        <img src="/uploads/avatars/${user.avatar}"
-                             alt="Avatar"
-                             class="img-fluid rounded-circle border"
-                             style="width: 180px; height: 180px; object-fit: cover;">
+                        ${user.avatar}
                     <#else>
-                        <div class="border rounded-circle d-inline-flex align-items-center justify-content-center bg-light"
-                             style="width: 180px; height: 180px;">
-                            <span class="text-muted">No photo</span>
-                        </div>
+                        не установлено
                     </#if>
-                </div>
+                </p>
 
-                <div class="col-md-9">
-                    <h2>${user.name} ${user.surname}</h2>
-                    <p class="text-muted mb-1">${user.email}</p>
-                    <p class="mb-1">${user.phoneNumber!""}</p>
-                    <span class="badge text-bg-secondary">
-                        <#if user.accountType?string == "APPLICANT">
-                            Соискатель
-                        <#else>
-                            Работодатель
-                        </#if>
-                    </span>
-
-                    <form action="/profile/avatar" method="post" enctype="multipart/form-data" class="mt-3">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-md-8">
-                                <input type="file" name="file" class="form-control" accept="image/*">
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-outline-dark w-100">Загрузить фото</button>
-                            </div>
+                <form action="/profile/avatar" method="post" enctype="multipart/form-data">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-8">
+                            <input type="file" name="file" class="form-control" accept="image/*">
                         </div>
-                    </form>
-                </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-outline-dark w-100">Загрузить фото</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
