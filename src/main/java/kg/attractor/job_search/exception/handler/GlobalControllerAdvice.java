@@ -3,14 +3,15 @@ package kg.attractor.job_search.exception.handler;
 import kg.attractor.job_search.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,9 +45,9 @@ public class GlobalControllerAdvice {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+    public String handleNotFound(Model model, NotFoundException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage(), List.of());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        return "errors/error";
     }
 
     @ExceptionHandler(ForbiddenException.class)
