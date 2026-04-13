@@ -3,8 +3,11 @@ package kg.attractor.job_search.controller;
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.UpdateProfileDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
+import kg.attractor.job_search.exception.BadRequestException;
+import kg.attractor.job_search.exception.FileUploadException;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.service.FileService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -16,6 +19,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class PageController {
     private final UserService userService;
     private final ResumeService resumeService;
     private final VacancyService vacancyService;
+    private final FileService fileService;
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
@@ -122,5 +129,25 @@ public class PageController {
         userService.updateProfile(currentUser.getId(), updateUserDto);
 
         return "redirect:/profile";
+    }
+
+    @PostMapping("/profile/avatar")
+    public String uploadAvatar(MultipartFile file, Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File cannot be empty");
+        }
+
+        try {
+            String fileName = fileService.saveUploadedFile(file, "avatars");
+
+            userService.updateAvatar(currentUser.getId(), fileName)
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+
+            return "redirect:/profile";
+        } catch (IOException e) {
+            throw new FileUploadException("Failed to upload avatar");
+        }
     }
 }
