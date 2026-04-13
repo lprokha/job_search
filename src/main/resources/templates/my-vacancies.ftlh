@@ -3,7 +3,10 @@
 <@main.layout>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Мои вакансии</h2>
-        <a href="/profile" class="btn btn-outline-dark">Назад в личный кабинет</a>
+        <div class="d-flex gap-2">
+            <a href="/my-vacancies/create" class="btn btn-dark">Добавить вакансию</a>
+            <a href="/profile" class="btn btn-outline-dark">Назад в личный кабинет</a>
+        </div>
     </div>
 
     <#if vacancies?? && (vacancies?size > 0)>
@@ -17,8 +20,7 @@
                             <p class="mb-2">Опыт: ${vacancy.expFrom!0} - ${vacancy.expTo!0} лет</p>
                             <p class="text-muted mb-2">Обновлено: ${vacancy.updateTime!""}</p>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-outline-dark btn-sm" type="button">Редактировать</button>
-                                <button class="btn btn-dark btn-sm" type="button">Обновить</button>
+                                <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                             </div>
                         </div>
                     </div>

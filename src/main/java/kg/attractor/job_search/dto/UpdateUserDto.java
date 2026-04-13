@@ -27,10 +27,6 @@ public class UpdateUserDto {
     @Email(message = "Email is invalid")
     private String email;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 4, max = 24, message = "Password must be from 4 to 24 characters long")
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$",
-            message = "Password must contain at least one lowercase letter, one uppercase letter and one digit")
     private String password;
 
     @NotBlank(message = "Phone number cannot be empty")

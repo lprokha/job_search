@@ -3,8 +3,11 @@ package kg.attractor.job_search.controller;
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.UpdateProfileDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
+import kg.attractor.job_search.exception.BadRequestException;
+import kg.attractor.job_search.exception.FileUploadException;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.service.FileService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -16,6 +19,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class PageController {
     private final UserService userService;
     private final ResumeService resumeService;
     private final VacancyService vacancyService;
+    private final FileService fileService;
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
@@ -32,14 +39,15 @@ public class PageController {
 
     @GetMapping("/profile")
     public String profilePage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
+        User currentUser = getCurrentUser(authentication);
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("currentUser", currentUser);
 
-        if ("APPLICANT".equals(user.getAccountType().name())) {
-            model.addAttribute("resumes", resumeService.getByApplicantId(user.getId()));
+        if ("APPLICANT".equals(currentUser.getAccountType().name())) {
+            model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
         } else {
-            model.addAttribute("vacancies", vacancyService.getByAuthorId(user.getId()));
+            model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
         }
 
         return "profile";
@@ -66,17 +74,17 @@ public class PageController {
 
     @GetMapping("/resumes")
     public String resumesPage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
-        model.addAttribute("user", user);
-        model.addAttribute("resumes", resumeService.getByApplicantId(user.getId()));
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
         return "resume-list";
     }
 
     @GetMapping("/my-vacancies")
     public String myVacanciesPage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
-        model.addAttribute("user", user);
-        model.addAttribute("vacancies", vacancyService.getByAuthorId(user.getId()));
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
         return "my-vacancies";
     }
 
@@ -86,9 +94,9 @@ public class PageController {
 
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getName())) {
-            User user = userService.findByEmail(authentication.getName())
+            User currentUser = userService.findByEmail(authentication.getName())
                     .orElseThrow(() -> new NotFoundException("User not found"));
-            model.addAttribute("user", user);
+            model.addAttribute("currentUser", currentUser);
         }
 
         return "vacancy-list";
@@ -121,5 +129,25 @@ public class PageController {
         userService.updateProfile(currentUser.getId(), updateUserDto);
 
         return "redirect:/profile";
+    }
+
+    @PostMapping("/profile/avatar")
+    public String uploadAvatar(MultipartFile file, Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("File cannot be empty");
+        }
+
+        try {
+            String fileName = fileService.saveUploadedFile(file, "avatars");
+
+            userService.updateAvatar(currentUser.getId(), fileName)
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+
+            return "redirect:/profile";
+        } catch (IOException e) {
+            throw new FileUploadException("Failed to upload avatar");
+        }
     }
 }

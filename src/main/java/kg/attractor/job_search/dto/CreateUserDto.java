@@ -35,7 +35,7 @@ public class CreateUserDto {
 
     @NotBlank(message = "Phone number cannot be empty")
     @Pattern(regexp = "^\\+?\\d{10,15}$",
-            message = "Phone nubmer must contain from 10 to 15 digits and may start with +")
+            message = "Phone number must contain from 10 to 15 digits and may start with +")
     private String phoneNumber;
 
     @NotNull(message = "Account type must be selected")

@@ -1,75 +1,89 @@
 package kg.attractor.job_search.exception.handler;
 
-import kg.attractor.job_search.exception.*;
+import jakarta.servlet.http.HttpServletRequest;
+import kg.attractor.job_search.exception.BadRequestException;
+import kg.attractor.job_search.exception.ConflictException;
+import kg.attractor.job_search.exception.FileUploadException;
+import kg.attractor.job_search.exception.ForbiddenException;
+import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.List;
-
-@RestControllerAdvice
+@ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalControllerAdvice {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        List<String> errors = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .toList();
+    private final UserService userService;
 
-        ErrorResponse response = new ErrorResponse("Validation failed", errors);
-        return ResponseEntity.badRequest().body(response);
-    }
+    private void addCurrentUser(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    @ExceptionHandler(BindException.class)
-    public ResponseEntity<ErrorResponse> handleBindException(BindException e) {
-        List<String> errors = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .toList();
-
-        ErrorResponse response = new ErrorResponse("Validation failed", errors);
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage(), List.of());
-        return ResponseEntity.badRequest().body(response);
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            userService.findByEmail(authentication.getName())
+                    .ifPresent(user -> model.addAttribute("currentUser", user));
+        }
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage(), List.of());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    public String handleNotFound(HttpServletRequest request, Model model, NotFoundException e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+        model.addAttribute("reason", HttpStatus.NOT_FOUND.getReasonPhrase() + ": " + e.getMessage());
+        model.addAttribute("details", request);
+        return "errors/error";
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public String handleBadRequest(HttpServletRequest request, Model model, BadRequestException e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase() + ": " + e.getMessage());
+        model.addAttribute("details", request);
+        return "errors/error";
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage(), List.of());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    public String handleForbidden(HttpServletRequest request, Model model, ForbiddenException e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.FORBIDDEN.value());
+        model.addAttribute("reason", HttpStatus.FORBIDDEN.getReasonPhrase() + ": " + e.getMessage());
+        model.addAttribute("details", request);
+        return "errors/error";
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponse> handleConflict(ConflictException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage(), List.of());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    public String handleConflict(HttpServletRequest request, Model model, ConflictException e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.CONFLICT.value());
+        model.addAttribute("reason", HttpStatus.CONFLICT.getReasonPhrase() + ": " + e.getMessage());
+        model.addAttribute("details", request);
+        return "errors/error";
     }
 
     @ExceptionHandler(FileUploadException.class)
-    public ResponseEntity<ErrorResponse> handleFileUpload(FileUploadException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage(), List.of());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public String handleFileUpload(HttpServletRequest request, Model model, FileUploadException e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        model.addAttribute("reason", "File upload error: " + e.getMessage());
+        model.addAttribute("details", request);
+        return "errors/error";
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception e) {
-        ErrorResponse response = new ErrorResponse("Internal server error", List.of(e.getMessage()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public String handleOtherExceptions(HttpServletRequest request, Model model, Exception e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        model.addAttribute("reason", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "errors/error";
     }
 }

@@ -13,17 +13,46 @@
                     Работодатель
                 </#if>
             </span>
+
+            <div class="mt-3">
+                <p class="mb-2">
+                    <strong>Текущее фото:</strong>
+                    <#if user.avatar?? && user.avatar?has_content>
+                        ${user.avatar}
+                    <#else>
+                        не установлено
+                    </#if>
+                </p>
+
+                <form action="/profile/avatar" method="post" enctype="multipart/form-data">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-8">
+                            <input type="file" name="file" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-outline-dark w-100">Загрузить фото</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="mb-4">
+    <div class="mb-4 d-flex gap-2">
         <a href="/profile/edit" class="btn btn-dark btn-sm">Редактировать профиль</a>
+
+        <#if user.accountType?string == "EMPLOYER">
+            <a href="/employer/resumes" class="btn btn-outline-dark btn-sm">Список резюме</a>
+        </#if>
     </div>
 
     <#if user.accountType?string == "APPLICANT">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="mb-0">Мои резюме</h3>
-            <a href="/resumes" class="btn btn-outline-dark btn-sm">Смотреть все</a>
+            <div class="d-flex gap-2">
+                <a href="/resumes/create" class="btn btn-dark btn-sm">Добавить</a>
+                <a href="/resumes" class="btn btn-outline-dark btn-sm">Смотреть все</a>
+            </div>
         </div>
 
         <#if resumes?? && (resumes?size > 0)>
@@ -33,10 +62,10 @@
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
                                 <h5>${resume.name}</h5>
-                                <p class="mb-2 text-muted">Обновлено: ${resume.updateTime!""}</p>
+                                <p class="mb-2">Зарплата: ${resume.salary!0}</p>
+                                <p class="text-muted mb-2">Обновлено: ${resume.updateTime!""}</p>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-dark btn-sm" type="button">Редактировать</button>
-                                    <button class="btn btn-dark btn-sm" type="button">Обновить</button>
+                                    <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +78,10 @@
     <#else>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="mb-0">Мои вакансии</h3>
-            <a href="/my-vacancies" class="btn btn-outline-dark btn-sm">Смотреть все</a>
+            <div class="d-flex gap-2">
+                <a href="/my-vacancies/create" class="btn btn-dark btn-sm">Добавить</a>
+                <a href="/my-vacancies" class="btn btn-outline-dark btn-sm">Смотреть все</a>
+            </div>
         </div>
 
         <#if vacancies?? && (vacancies?size > 0)>
@@ -59,10 +91,10 @@
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
                                 <h5>${vacancy.name}</h5>
-                                <p class="mb-2 text-muted">Обновлено: ${vacancy.updateTime!""}</p>
+                                <p class="mb-2">Зарплата: ${vacancy.salary!0}</p>
+                                <p class="text-muted mb-2">Обновлено: ${vacancy.updateTime!""}</p>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-dark btn-sm" type="button">Редактировать</button>
-                                    <button class="btn btn-dark btn-sm" type="button">Обновить</button>
+                                    <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                                 </div>
                             </div>
                         </div>
