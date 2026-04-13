@@ -45,7 +45,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Зарплата</label>
-                            <input type="number" step="0.01" name="salary" class="form-control" value="${resume.salary!''}">
+                            <input type="number" step="0.01" name="salary" class="form-control"
+                                   value="<#if resume.salary??>${resume.salary?c}</#if>">
                             <#if errors?has_content && errors.hasFieldErrors("salary")>
                                 <div class="text-danger small mt-1">
                                     ${errors.getFieldError("salary").defaultMessage}
@@ -53,18 +54,20 @@
                             </#if>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Активность</label>
-                            <select name="isActive" class="form-select">
-                                <option value="true" <#if resume.isActive?? && resume.isActive>selected</#if>>Активно</option>
-                                <option value="false" <#if resume.isActive?? && !resume.isActive>selected</#if>>Неактивно</option>
-                            </select>
-                            <#if errors?has_content && errors.hasFieldErrors("isActive")>
-                                <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("isActive").defaultMessage}
-                                </div>
-                            </#if>
-                        </div>
+                        <#if resumeId??>
+                            <div class="mb-3">
+                                <label class="form-label">Активность</label>
+                                <select name="isActive" class="form-select">
+                                    <option value="true" <#if resume.isActive?? && resume.isActive>selected</#if>>Активно</option>
+                                    <option value="false" <#if resume.isActive?? && !resume.isActive>selected</#if>>Неактивно</option>
+                                </select>
+                                <#if errors?has_content && errors.hasFieldErrors("isActive")>
+                                    <div class="text-danger small mt-1">
+                                        ${errors.getFieldError("isActive").defaultMessage}
+                                    </div>
+                                </#if>
+                            </div>
+                        </#if>
 
                         <button type="submit" class="btn btn-dark">
                             <#if resumeId??>
