@@ -8,9 +8,11 @@ import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.security.core.Authentication;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class ResumePageController {
 
     private final ResumeService resumeService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
@@ -41,6 +43,7 @@ public class ResumePageController {
         }
 
         model.addAttribute("resume", new CreateResumeDto());
+        model.addAttribute("categories", categoryService.getAll());
         model.addAttribute("currentUser", currentUser);
 
         return "resume-form";
@@ -60,6 +63,7 @@ public class ResumePageController {
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAll());
             model.addAttribute("currentUser", currentUser);
             return "resume-form";
         }
@@ -91,6 +95,7 @@ public class ResumePageController {
                 .build();
 
         model.addAttribute("resume", dto);
+        model.addAttribute("categories", categoryService.getAll());
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("resumeId", id);
 
@@ -119,6 +124,7 @@ public class ResumePageController {
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAll());
             model.addAttribute("currentUser", currentUser);
             model.addAttribute("resumeId", id);
             return "resume-form";
