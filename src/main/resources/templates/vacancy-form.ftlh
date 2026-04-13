@@ -36,8 +36,16 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Category ID</label>
-                            <input type="number" name="categoryId" class="form-control" value="${vacancy.categoryId!''}">
+                            <label class="form-label">Категория</label>
+                            <select name="categoryId" class="form-select">
+                                <option value="">Выберите категорию</option>
+                                <#list categories as category>
+                                    <option value="${category.id}"
+                                            <#if vacancy.categoryId?? && vacancy.categoryId == category.id>selected</#if>>
+                                        ${category.name}
+                                    </option>
+                                </#list>
+                            </select>
                             <#if errors?has_content && errors.hasFieldErrors("categoryId")>
                                 <div class="text-danger small mt-1">
                                     ${errors.getFieldError("categoryId").defaultMessage}
