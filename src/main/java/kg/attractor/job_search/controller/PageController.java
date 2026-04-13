@@ -35,6 +35,7 @@ public class PageController {
         User currentUser = getCurrentUser(authentication);
 
         model.addAttribute("user", currentUser);
+        model.addAttribute("currentUser", currentUser);
 
         if ("APPLICANT".equals(currentUser.getAccountType().name())) {
             model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
@@ -67,7 +68,7 @@ public class PageController {
     @GetMapping("/resumes")
     public String resumesPage(Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);
-        model.addAttribute("user", currentUser);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
         return "resume-list";
     }
@@ -75,7 +76,7 @@ public class PageController {
     @GetMapping("/my-vacancies")
     public String myVacanciesPage(Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);
-        model.addAttribute("user", currentUser);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
         return "my-vacancies";
     }
@@ -88,7 +89,7 @@ public class PageController {
                 && !"anonymousUser".equals(authentication.getName())) {
             User currentUser = userService.findByEmail(authentication.getName())
                     .orElseThrow(() -> new NotFoundException("User not found"));
-            model.addAttribute("user", currentUser);
+            model.addAttribute("currentUser", currentUser);
         }
 
         return "vacancy-list";
