@@ -62,8 +62,8 @@ public class VacancyPageController {
             throw new ForbiddenException("Only employers can create vacancies");
         }
 
-        if (dto.getExpFrom() != null && dto.getExpTo() != null && dto.getExpTo() < dto.getExpFrom()) {
-            bindingResult.rejectValue("expTo", "error.vacancy", "Опыт до не может быть меньше опыта от");
+        if (dto.getExpFrom() != null && dto.getExpTo() != null && dto.getExpTo() <= dto.getExpFrom()) {
+            bindingResult.rejectValue("expTo", "error.vacancy", "Опыт до должен быть больше опыта от");
         }
 
         if (bindingResult.hasErrors()) {
@@ -130,8 +130,8 @@ public class VacancyPageController {
             throw new ForbiddenException("You can edit only your own vacancy");
         }
 
-        if (dto.getExpFrom() != null && dto.getExpTo() != null && dto.getExpTo() < dto.getExpFrom()) {
-            bindingResult.rejectValue("expTo", "error.vacancy", "Опыт до не может быть меньше опыта от");
+        if (dto.getExpFrom() != null && dto.getExpTo() != null && dto.getExpTo() <= dto.getExpFrom()) {
+            bindingResult.rejectValue("expTo", "error.vacancy", "Опыт до должен быть больше опыта от");
         }
 
         if (bindingResult.hasErrors()) {
