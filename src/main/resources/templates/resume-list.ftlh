@@ -3,7 +3,10 @@
 <@main.layout>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Мои резюме</h2>
-        <a href="/profile" class="btn btn-outline-dark">Назад в личный кабинет</a>
+        <div class="d-flex gap-2">
+            <a href="/resumes/create" class="btn btn-dark">Добавить резюме</a>
+            <a href="/profile" class="btn btn-outline-dark">Назад в личный кабинет</a>
+        </div>
     </div>
 
     <#if resumes?? && (resumes?size > 0)>
@@ -16,8 +19,7 @@
                             <p class="mb-2">Зарплата: ${resume.salary!0}</p>
                             <p class="text-muted mb-2">Обновлено: ${resume.updateTime!""}</p>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-outline-dark btn-sm" type="button">Редактировать</button>
-                                <button class="btn btn-dark btn-sm" type="button">Обновить</button>
+                                <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                             </div>
                         </div>
                     </div>
