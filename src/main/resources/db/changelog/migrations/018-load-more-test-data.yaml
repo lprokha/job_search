@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 18
+      author: Leyla P.
+      changes:
+        - sql: |
+            INSERT INTO users (id, name, surname, age, email, password, phone_number, avatar, account_type, enabled)
+            VALUES
+            (3, 'Aida', 'Sadykova', 22, 'aida@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700333333', 'default-avatar.png', 'APPLICANT', TRUE),
+            (4, 'Nursultan', 'Toktomambetov', 23, 'nursultan@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700444444', 'default-avatar.png', 'APPLICANT', TRUE),
+            (5, 'Ainura', 'Ibraimova', 25, 'ainura@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700555555', 'default-avatar.png', 'APPLICANT', TRUE),
+            (6, 'Bekzat', 'Asanaliev', 26, 'bekzat@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700666666', 'default-avatar.png', 'APPLICANT', TRUE),
+            (7, 'Madina', 'Kurbanova', 24, 'madina@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700777777', 'default-avatar.png', 'APPLICANT', TRUE),
+            (8, 'Ermek', 'Joldoshov', 27, 'ermek@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700888888', 'default-avatar.png', 'APPLICANT', TRUE),
+            (9, 'Meerim', 'Osmonova', 21, 'meerim@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996700999999', 'default-avatar.png', 'APPLICANT', TRUE),
+            (10, 'Ruslan', 'Aitbaev', 28, 'ruslan@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701111111', 'default-avatar.png', 'APPLICANT', TRUE),
+            (11, 'Kanykei', 'Muratova', 23, 'kanykei@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701222222', 'default-avatar.png', 'APPLICANT', TRUE),
+            (12, 'Adilet', 'Satarov', 29, 'adilet@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701333333', 'default-avatar.png', 'APPLICANT', TRUE),
+            (13, 'Aigerim', 'Nazarbekova', 22, 'aigerim@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701444444', 'default-avatar.png', 'APPLICANT', TRUE),
+            (14, 'Tilek', 'Abdyldaev', 30, 'tilek@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701555555', 'default-avatar.png', 'APPLICANT', TRUE),
+            (15, 'Altynai', 'Smanalieva', 24, 'altynai@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701666666', 'default-avatar.png', 'APPLICANT', TRUE),
+            (16, 'Temir', 'Isakov', 27, 'temir@example.com', '$2a$10$EBr29Ej0Rt.e3W/xkXx1gu6kv69c8L1Zl1Czv859xOLJVhMVE2XuO', '+996701777777', 'default-avatar.png', 'APPLICANT', TRUE),
+
+            (17, 'Company', 'One', 35, 'company1@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702111111', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (18, 'Company', 'Two', 36, 'company2@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702222222', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (19, 'Company', 'Three', 37, 'company3@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702333333', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (20, 'Company', 'Four', 38, 'company4@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702444444', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (21, 'Company', 'Five', 34, 'company5@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702555555', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (22, 'Company', 'Six', 39, 'company6@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702666666', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (23, 'Company', 'Seven', 33, 'company7@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702777777', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (24, 'Company', 'Eight', 40, 'company8@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702888888', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (25, 'Company', 'Nine', 35, 'company9@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996702999999', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (26, 'Company', 'Ten', 41, 'company10@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996703111111', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (27, 'Company', 'Eleven', 36, 'company11@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996703222222', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (28, 'Company', 'Twelve', 37, 'company12@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996703333333', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (29, 'Company', 'Thirteen', 38, 'company13@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996703444444', 'default-avatar.png', 'EMPLOYER', TRUE),
+            (30, 'Company', 'Fourteen', 39, 'company14@example.com', '$2a$10$0iHlNh.EXmRY8IMgKKk2O./PdUL8yre0qeix4qaW.VXbs0Qna2GjO', '+996703555555', 'default-avatar.png', 'EMPLOYER', TRUE);
+
+            INSERT INTO resumes (applicant_id, name, category_id, salary, is_active, created_date, update_time)
+            VALUES
+            (3, 'Backend Developer Resume', 2, 90000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (4, 'QA Engineer Resume', 3, 65000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (5, 'Marketing Specialist Resume', 4, 55000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (6, 'Java Developer Resume', 2, 85000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (7, 'Manual QA Resume', 3, 60000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (8, 'Backend Engineer Resume', 2, 95000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (9, 'Marketing Manager Resume', 4, 70000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (10, 'Junior Backend Resume', 2, 50000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (11, 'QA Automation Resume', 3, 78000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (12, 'Spring Developer Resume', 2, 92000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (13, 'Digital Marketing Resume', 4, 62000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (14, 'Middle Backend Resume', 2, 98000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (15, 'QA Analyst Resume', 3, 68000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            (16, 'Backend Java Resume', 2, 93000, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+            INSERT INTO vacancies (name, description, category_id, salary, exp_from, exp_to, is_active, author_id, created_date, update_time)
+            VALUES
+            ('Backend Developer', 'Work with Java and Spring Boot', 2, 95000, 1, 3, TRUE, 17, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('QA Engineer', 'Manual testing of web applications', 3, 60000, 1, 2, TRUE, 18, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Marketing Specialist', 'Promotion of company products', 4, 58000, 1, 3, TRUE, 19, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Java Middle Developer', 'Develop backend services', 2, 110000, 2, 4, TRUE, 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Manual QA', 'Test business logic and UI', 3, 62000, 1, 2, TRUE, 21, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Backend Engineer', 'Create REST APIs and integrations', 2, 120000, 2, 5, TRUE, 22, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Content Marketer', 'Create and manage marketing content', 4, 57000, 1, 2, TRUE, 23, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Junior Java Developer', 'Support backend team', 2, 70000, 1, 2, TRUE, 24, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('QA Automation Engineer', 'Write and maintain autotests', 3, 85000, 2, 4, TRUE, 25, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Spring Boot Developer', 'Build internal services', 2, 115000, 2, 5, TRUE, 26, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Digital Marketer', 'Launch ad campaigns and analytics', 4, 63000, 1, 3, TRUE, 27, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Senior Backend Developer', 'Architect backend solutions', 2, 140000, 3, 6, TRUE, 28, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('QA Analyst', 'Prepare test plans and reports', 3, 67000, 1, 3, TRUE, 29, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+            ('Java Backend Engineer', 'Maintain enterprise services', 2, 118000, 2, 5, TRUE, 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
