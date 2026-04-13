@@ -43,12 +43,12 @@
                 </ul>
 
                 <div class="d-flex gap-2">
-                    <#if !user??>
+                    <#if !currentUser??>
                         <a href="/login" class="btn btn-outline-dark btn-sm">Войти</a>
                         <a href="/register" class="btn btn-dark btn-sm">Регистрация</a>
                     </#if>
 
-                    <#if user??>
+                    <#if currentUser??>
                         <form action="/logout" method="post" class="d-inline">
                             <button type="submit" class="btn btn-outline-secondary btn-sm">Выйти</button>
                         </form>
