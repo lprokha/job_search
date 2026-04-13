@@ -32,14 +32,14 @@ public class PageController {
 
     @GetMapping("/profile")
     public String profilePage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
+        User currentUser = getCurrentUser(authentication);
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", currentUser);
 
-        if ("APPLICANT".equals(user.getAccountType().name())) {
-            model.addAttribute("resumes", resumeService.getByApplicantId(user.getId()));
+        if ("APPLICANT".equals(currentUser.getAccountType().name())) {
+            model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
         } else {
-            model.addAttribute("vacancies", vacancyService.getByAuthorId(user.getId()));
+            model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
         }
 
         return "profile";
@@ -66,17 +66,17 @@ public class PageController {
 
     @GetMapping("/resumes")
     public String resumesPage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
-        model.addAttribute("user", user);
-        model.addAttribute("resumes", resumeService.getByApplicantId(user.getId()));
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
         return "resume-list";
     }
 
     @GetMapping("/my-vacancies")
     public String myVacanciesPage(Authentication authentication, Model model) {
-        User user = getCurrentUser(authentication);
-        model.addAttribute("user", user);
-        model.addAttribute("vacancies", vacancyService.getByAuthorId(user.getId()));
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
         return "my-vacancies";
     }
 
@@ -86,9 +86,9 @@ public class PageController {
 
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getName())) {
-            User user = userService.findByEmail(authentication.getName())
+            User currentUser = userService.findByEmail(authentication.getName())
                     .orElseThrow(() -> new NotFoundException("User not found"));
-            model.addAttribute("user", user);
+            model.addAttribute("user", currentUser);
         }
 
         return "vacancy-list";
