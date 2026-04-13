@@ -68,6 +68,7 @@ public class ResumePageController {
             return "resume-form";
         }
 
+        dto.setIsActive(true);
         resumeService.create(dto, currentUser.getId());
         return "redirect:/resumes";
     }
