@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 12
-      author: Leyla P.
-      changes:
-        - sqlFile:
-            path: db/changelog/migrations/data.sql
-            relativeToChangelogFile: false
