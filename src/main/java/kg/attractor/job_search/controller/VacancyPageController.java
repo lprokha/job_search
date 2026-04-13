@@ -8,6 +8,7 @@ import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
+import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class VacancyPageController {
 
     private final VacancyService vacancyService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
@@ -41,6 +43,7 @@ public class VacancyPageController {
         }
 
         model.addAttribute("vacancy", new CreateVacancyDto());
+        model.addAttribute("categories", categoryService.getAll());
         model.addAttribute("currentUser", currentUser);
 
         return "vacancy-form";
@@ -64,6 +67,7 @@ public class VacancyPageController {
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAll());
             model.addAttribute("currentUser", currentUser);
             return "vacancy-form";
         }
@@ -98,6 +102,7 @@ public class VacancyPageController {
                 .build();
 
         model.addAttribute("vacancy", dto);
+        model.addAttribute("categories", categoryService.getAll());
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("vacancyId", id);
 
@@ -130,6 +135,7 @@ public class VacancyPageController {
         }
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAll());
             model.addAttribute("currentUser", currentUser);
             model.addAttribute("vacancyId", id);
             return "vacancy-form";
