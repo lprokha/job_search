@@ -55,7 +55,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Зарплата</label>
-                            <input type="number" step="0.01" name="salary" class="form-control" value="${vacancy.salary!''}">
+                            <input type="number" step="0.01" name="salary" class="form-control"
+                                   value="<#if vacancy.salary??>${vacancy.salary?c}</#if>">
                             <#if errors?has_content && errors.hasFieldErrors("salary")>
                                 <div class="text-danger small mt-1">
                                     ${errors.getFieldError("salary").defaultMessage}
