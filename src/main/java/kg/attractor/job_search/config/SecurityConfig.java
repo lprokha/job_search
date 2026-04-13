@@ -65,6 +65,9 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login")
                         .permitAll()
                 )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/forbidden")
+                )
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(
