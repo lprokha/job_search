@@ -35,20 +35,22 @@ public class SecurityConfig {
             """);
 
         manager.setAuthoritiesByUsernameQuery("""
-            select u.email, concat('ROLE_', r.role_name) as authority
-            from users u
-            join user_role ur on u.id = ur.user_id
-            join roles r on ur.role_id = r.id
-            where u.email = ?
-
-            union
-
-            select u.email, a.authority
-            from users u
-            join user_role ur on u.id = ur.user_id
-            join role_authority ra on ur.role_id = ra.role_id
-            join authorities a on ra.authority_id = a.id
-            where u.email = ?
+            select auth.email, auth.authority
+            from (
+                select u.email, concat('ROLE_', r.role_name) as authority
+                from users u
+                join user_role ur on u.id = ur.user_id
+                join roles r on ur.role_id = r.id
+        
+                union
+        
+                select u.email, a.authority
+                from users u
+                join user_role ur on u.id = ur.user_id
+                join role_authority ra on ur.role_id = ra.role_id
+                join authorities a on ra.authority_id = a.id
+            ) auth
+            where auth.email = ?
             """);
 
         return manager;
