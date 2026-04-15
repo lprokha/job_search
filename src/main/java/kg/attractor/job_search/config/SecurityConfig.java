@@ -35,6 +35,14 @@ public class SecurityConfig {
             """);
 
         manager.setAuthoritiesByUsernameQuery("""
+            select u.email, concat('ROLE_', r.role_name) as authority
+            from users u
+            join user_role ur on u.id = ur.user_id
+            join roles r on ur.role_id = r.id
+            where u.email = ?
+
+            union
+
             select u.email, a.authority
             from users u
             join user_role ur on u.id = ur.user_id
@@ -69,7 +77,6 @@ public class SecurityConfig {
                         .accessDeniedPage("/forbidden")
                 )
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
                                 "/login",
                                 "/register",
@@ -82,19 +89,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/vacancies", "/api/vacancies/**").permitAll()
 
                         .requestMatchers("/profile/**").authenticated()
-                        .requestMatchers("/resumes/**").hasAuthority("APPLICANT")
-                        .requestMatchers("/my-vacancies/**").hasAuthority("EMPLOYER")
-                        .requestMatchers("/employer/resumes/**").hasAuthority("EMPLOYER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/resumes").hasAuthority("APPLICANT")
-                        .requestMatchers(HttpMethod.PUT, "/api/resumes/**").hasAuthority("APPLICANT")
-                        .requestMatchers(HttpMethod.DELETE, "/api/resumes/**").hasAuthority("APPLICANT")
-                        .requestMatchers(HttpMethod.POST, "/api/responses").hasAuthority("APPLICANT")
+                        .requestMatchers("/resumes/**").hasRole("APPLICANT")
+                        .requestMatchers("/my-vacancies/**").hasRole("EMPLOYER")
+                        .requestMatchers("/employer/resumes/**").hasRole("EMPLOYER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/vacancies").hasAuthority("EMPLOYER")
-                        .requestMatchers(HttpMethod.PUT, "/api/vacancies/**").hasAuthority("EMPLOYER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/vacancies/**").hasAuthority("EMPLOYER")
-                        .requestMatchers(HttpMethod.GET, "/api/responses/vacancy/**").hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.POST, "/api/resumes").hasAuthority("CREATE_RESUME")
+                        .requestMatchers(HttpMethod.PUT, "/api/resumes/**").hasAuthority("UPDATE_RESUME")
+                        .requestMatchers(HttpMethod.DELETE, "/api/resumes/**").hasAuthority("DELETE_RESUME")
+                        .requestMatchers(HttpMethod.POST, "/api/responses").hasAuthority("RESPOND_TO_VACANCY")
+
+                        .requestMatchers(HttpMethod.POST, "/api/vacancies").hasAuthority("CREATE_VACANCY")
+                        .requestMatchers(HttpMethod.PUT, "/api/vacancies/**").hasAuthority("UPDATE_VACANCY")
+                        .requestMatchers(HttpMethod.DELETE, "/api/vacancies/**").hasAuthority("DELETE_VACANCY")
+                        .requestMatchers(HttpMethod.GET, "/api/responses/vacancy/**").hasAuthority("VIEW_VACANCY_RESPONSES")
 
                         .requestMatchers(HttpMethod.PUT, "/api/accounts/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/accounts/*/avatar").authenticated()

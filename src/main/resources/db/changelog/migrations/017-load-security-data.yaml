@@ -3,22 +3,119 @@ databaseChangeLog:
       id: 17
       author: Leyla P.
       changes:
-        - sql:
-            sql: |
-              insert into authorities(authority)
-              values ('APPLICANT'),
-              ('EMPLOYER');
-              
-              insert into roles(role)
-              values ('APPLICANT'),
-              ('EMPLOYER');
-              
-              insert into role_authority(role_id, authority_id)
-              select r.id, a.id
-              from roles r
-              join authorities a on r.role = a.authority;
-              
-              insert into user_role(user_id, role_id)
-              select u.id, r.id
-              from users u
-              join roles r on r.role = u.account_type;
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: role_name
+                  value: APPLICANT
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: role_name
+                  value: EMPLOYER
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: CREATE_RESUME
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: UPDATE_RESUME
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: DELETE_RESUME
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: RESPOND_TO_VACANCY
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: CREATE_VACANCY
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: UPDATE_VACANCY
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: DELETE_VACANCY
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: VIEW_ALL_RESUMES
+
+        - insert:
+            tableName: authorities
+            columns:
+              - column:
+                  name: authority
+                  value: VIEW_VACANCY_RESPONSES
+
+        - sql: |
+            INSERT INTO role_authority (role_id, authority_id)
+            VALUES
+            (
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT'),
+                (SELECT id FROM authorities WHERE authority = 'CREATE_RESUME')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT'),
+                (SELECT id FROM authorities WHERE authority = 'UPDATE_RESUME')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT'),
+                (SELECT id FROM authorities WHERE authority = 'DELETE_RESUME')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT'),
+                (SELECT id FROM authorities WHERE authority = 'RESPOND_TO_VACANCY')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER'),
+                (SELECT id FROM authorities WHERE authority = 'CREATE_VACANCY')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER'),
+                (SELECT id FROM authorities WHERE authority = 'UPDATE_VACANCY')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER'),
+                (SELECT id FROM authorities WHERE authority = 'DELETE_VACANCY')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER'),
+                (SELECT id FROM authorities WHERE authority = 'VIEW_ALL_RESUMES')
+            ),
+            (
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER'),
+                (SELECT id FROM authorities WHERE authority = 'VIEW_VACANCY_RESPONSES')
+            );
