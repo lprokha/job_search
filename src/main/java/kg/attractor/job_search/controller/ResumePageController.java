@@ -21,6 +21,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class ResumePageController {
@@ -29,16 +35,45 @@ public class ResumePageController {
     private final UserService userService;
     private final CategoryService categoryService;
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    private String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "";
+        }
+        return dateTime.format(DATE_TIME_FORMATTER);
+    }
+
+    private Map<Integer, String> buildResumeUpdateTimeMap(List<Resume> resumes) {
+        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+
+        for (Resume resume : resumes) {
+            formattedDates.put(resume.getId(), formatDateTime(resume.getUpdateTime()));
+        }
+
+        return formattedDates;
+    }
+
     @GetMapping("/resumes")
     public String resumesPage(Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.APPLICANT) {
+            throw new ForbiddenException("Only applicants can view their resumes");
+        }
+
+        List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
+
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
+        model.addAttribute("resumes", resumes);
+        model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
+
         return "resume-list";
     }
 
@@ -151,8 +186,11 @@ public class ResumePageController {
             throw new ForbiddenException("Only employers can view all resumes");
         }
 
+        List<Resume> resumes = resumeService.getAll();
+
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("resumes", resumeService.getAll());
+        model.addAttribute("resumes", resumes);
+        model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
 
         return "employer-resume-list";
     }

@@ -6,7 +6,9 @@ import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.exception.BadRequestException;
 import kg.attractor.job_search.exception.FileUploadException;
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.service.FileService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
@@ -22,6 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,9 +38,39 @@ public class ProfilePageController {
     private final VacancyService vacancyService;
     private final FileService fileService;
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
                 .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "";
+        }
+        return dateTime.format(DATE_TIME_FORMATTER);
+    }
+
+    private Map<Integer, String> buildResumeUpdateTimeMap(List<Resume> resumes) {
+        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+
+        for (Resume resume : resumes) {
+            formattedDates.put(resume.getId(), formatDateTime(resume.getUpdateTime()));
+        }
+
+        return formattedDates;
+    }
+
+    private Map<Integer, String> buildVacancyUpdateTimeMap(List<Vacancy> vacancies) {
+        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+
+        for (Vacancy vacancy : vacancies) {
+            formattedDates.put(vacancy.getId(), formatDateTime(vacancy.getUpdateTime()));
+        }
+
+        return formattedDates;
     }
 
     @GetMapping("/profile")
@@ -44,9 +81,13 @@ public class ProfilePageController {
         model.addAttribute("currentUser", currentUser);
 
         if ("APPLICANT".equals(currentUser.getAccountType().name())) {
-            model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
+            List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
+            model.addAttribute("resumes", resumes);
+            model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
         } else {
-            model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
+            List<Vacancy> vacancies = vacancyService.getByAuthorId(currentUser.getId());
+            model.addAttribute("vacancies", vacancies);
+            model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
         }
 
         return "profile";
