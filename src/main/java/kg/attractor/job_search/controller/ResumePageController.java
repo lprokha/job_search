@@ -34,6 +34,14 @@ public class ResumePageController {
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    @GetMapping("/resumes")
+    public String resumesPage(Authentication authentication, Model model) {
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("resumes", resumeService.getByApplicantId(currentUser.getId()));
+        return "resume-list";
+    }
+
     @GetMapping("/resumes/create")
     public String createResumePage(Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);

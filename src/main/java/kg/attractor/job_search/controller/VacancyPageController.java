@@ -34,6 +34,28 @@ public class VacancyPageController {
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    @GetMapping("/my-vacancies")
+    public String myVacanciesPage(Authentication authentication, Model model) {
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("vacancies", vacancyService.getByAuthorId(currentUser.getId()));
+        return "my-vacancies";
+    }
+
+    @GetMapping("/vacancies")
+    public String vacanciesPage(Authentication authentication, Model model) {
+        model.addAttribute("vacancies", vacancyService.getAllActive());
+
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = userService.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "vacancy-list";
+    }
+
     @GetMapping("/my-vacancies/create")
     public String createVacancyPage(Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);
