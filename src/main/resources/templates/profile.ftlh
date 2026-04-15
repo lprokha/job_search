@@ -40,10 +40,6 @@
 
     <div class="mb-4 d-flex gap-2">
         <a href="/profile/edit" class="btn btn-dark btn-sm">Редактировать профиль</a>
-
-        <#if user.accountType?string == "EMPLOYER">
-            <a href="/employer/resumes" class="btn btn-outline-dark btn-sm">Список резюме</a>
-        </#if>
     </div>
 
     <#if user.accountType?string == "APPLICANT">
