@@ -59,7 +59,7 @@
                             <div class="card-body">
                                 <h5>${resume.name}</h5>
                                 <p class="mb-2">Зарплата: ${resume.salary!0}</p>
-                                <p class="text-muted mb-2">Обновлено: ${resumeUpdateTimes[resume.id]!""}</p>
+                                <p class="text-muted mb-2">Обновлено: ${resumeUpdateTimes[resume.id?string]!""}</p>
                                 <div class="d-flex gap-2">
                                     <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                                 </div>
@@ -88,7 +88,7 @@
                             <div class="card-body">
                                 <h5>${vacancy.name}</h5>
                                 <p class="mb-2">Зарплата: ${vacancy.salary!0}</p>
-                                <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id]!""}</p>
+                                <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id?string]!""}</p>
                                 <div class="d-flex gap-2">
                                     <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                                 </div>
