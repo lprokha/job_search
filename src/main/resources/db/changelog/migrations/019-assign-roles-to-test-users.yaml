@@ -1,0 +1,128 @@
+databaseChangeLog:
+  - changeSet:
+      id: 19
+      author: Leyla P.
+      changes:
+        - sql: |
+            INSERT INTO user_role (user_id, role_id)
+            VALUES
+            (
+                (SELECT id FROM users WHERE email = 'alice@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'bob@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'aida@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'nursultan@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'ainura@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'bekzat@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'madina@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'ermek@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'meerim@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'ruslan@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'kanykei@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'adilet@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'aigerim@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'tilek@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'altynai@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'temir@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'APPLICANT')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company1@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company2@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company3@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company4@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company5@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company6@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company7@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company8@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company9@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company10@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company11@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company12@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company13@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            ),
+            (
+                (SELECT id FROM users WHERE email = 'company14@example.com'),
+                (SELECT id FROM roles WHERE role_name = 'EMPLOYER')
+            );
