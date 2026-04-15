@@ -53,21 +53,21 @@ public class ProfilePageController {
         return dateTime.format(DATE_TIME_FORMATTER);
     }
 
-    private Map<Integer, String> buildResumeUpdateTimeMap(List<Resume> resumes) {
-        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+    private Map<String, String> buildResumeUpdateTimeMap(List<Resume> resumes) {
+        Map<String, String> formattedDates = new LinkedHashMap<>();
 
         for (Resume resume : resumes) {
-            formattedDates.put(resume.getId(), formatDateTime(resume.getUpdateTime()));
+            formattedDates.put(resume.getId().toString(), formatDateTime(resume.getUpdateTime()));
         }
 
         return formattedDates;
     }
 
-    private Map<Integer, String> buildVacancyUpdateTimeMap(List<Vacancy> vacancies) {
-        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+    private Map<String, String> buildVacancyUpdateTimeMap(List<Vacancy> vacancies) {
+        Map<String, String> formattedDates = new LinkedHashMap<>();
 
         for (Vacancy vacancy : vacancies) {
-            formattedDates.put(vacancy.getId(), formatDateTime(vacancy.getUpdateTime()));
+            formattedDates.put(vacancy.getId().toString(), formatDateTime(vacancy.getUpdateTime()));
         }
 
         return formattedDates;

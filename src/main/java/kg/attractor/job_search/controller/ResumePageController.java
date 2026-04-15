@@ -50,11 +50,11 @@ public class ResumePageController {
         return dateTime.format(DATE_TIME_FORMATTER);
     }
 
-    private Map<Integer, String> buildResumeUpdateTimeMap(List<Resume> resumes) {
-        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+    private Map<String, String> buildResumeUpdateTimeMap(List<Resume> resumes) {
+        Map<String, String> formattedDates = new LinkedHashMap<>();
 
         for (Resume resume : resumes) {
-            formattedDates.put(resume.getId(), formatDateTime(resume.getUpdateTime()));
+            formattedDates.put(resume.getId().toString(), formatDateTime(resume.getUpdateTime()));
         }
 
         return formattedDates;

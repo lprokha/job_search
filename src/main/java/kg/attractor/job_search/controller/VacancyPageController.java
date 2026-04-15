@@ -50,11 +50,11 @@ public class VacancyPageController {
         return dateTime.format(DATE_TIME_FORMATTER);
     }
 
-    private Map<Integer, String> buildVacancyUpdateTimeMap(List<Vacancy> vacancies) {
-        Map<Integer, String> formattedDates = new LinkedHashMap<>();
+    private Map<String, String> buildVacancyUpdateTimeMap(List<Vacancy> vacancies) {
+        Map<String, String> formattedDates = new LinkedHashMap<>();
 
         for (Vacancy vacancy : vacancies) {
-            formattedDates.put(vacancy.getId(), formatDateTime(vacancy.getUpdateTime()));
+            formattedDates.put(vacancy.getId().toString(), formatDateTime(vacancy.getUpdateTime()));
         }
 
         return formattedDates;
