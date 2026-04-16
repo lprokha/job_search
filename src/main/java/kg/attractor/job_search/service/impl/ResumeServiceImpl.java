@@ -62,12 +62,12 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<Resume> getByCategory(Integer categoryId) {
-        return resumeRepository.findByCategoryId(categoryId);
+        return resumeRepository.findByCategory_Id(categoryId);
     }
 
     @Override
     public List<Resume> getByApplicantId(Integer applicantId) {
-        return resumeRepository.findByApplicantId(applicantId);
+        return resumeRepository.findByApplicant_Id(applicantId);
     }
 
     @Override
