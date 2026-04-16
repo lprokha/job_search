@@ -21,6 +21,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class VacancyPageController {
@@ -29,9 +35,62 @@ public class VacancyPageController {
     private final UserService userService;
     private final CategoryService categoryService;
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
                 .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            return "";
+        }
+        return dateTime.format(DATE_TIME_FORMATTER);
+    }
+
+    private Map<String, String> buildVacancyUpdateTimeMap(List<Vacancy> vacancies) {
+        Map<String, String> formattedDates = new LinkedHashMap<>();
+
+        for (Vacancy vacancy : vacancies) {
+            formattedDates.put(vacancy.getId().toString(), formatDateTime(vacancy.getUpdateTime()));
+        }
+
+        return formattedDates;
+    }
+
+    @GetMapping("/vacancies")
+    public String vacanciesPage(Authentication authentication, Model model) {
+        List<Vacancy> vacancies = vacancyService.getAllActive();
+        model.addAttribute("vacancies", vacancies);
+        model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = getCurrentUser(authentication);
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "vacancy-list";
+    }
+
+    @GetMapping("/my-vacancies")
+    public String myVacanciesPage(Authentication authentication, Model model) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.EMPLOYER) {
+            throw new ForbiddenException("Only employers can view their vacancies");
+        }
+
+        List<Vacancy> vacancies = vacancyService.getByAuthorId(currentUser.getId());
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("vacancies", vacancies);
+        model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+
+        return "my-vacancies";
     }
 
     @GetMapping("/my-vacancies/create")

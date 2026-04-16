@@ -18,7 +18,7 @@
                             <h5>${vacancy.name}</h5>
                             <p class="mb-2">Зарплата: ${vacancy.salary!0}</p>
                             <p class="mb-2">Опыт: ${vacancy.expFrom!0} - ${vacancy.expTo!0} лет</p>
-                            <p class="text-muted mb-2">Обновлено: ${vacancy.updateTime!""}</p>
+                            <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id?string]!""}</p>
                             <div class="d-flex gap-2">
                                 <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                             </div>

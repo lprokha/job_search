@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <h4 class="mb-1">${vacancy.name}</h4>
                     <p class="mb-1 fw-semibold">Зарплата: ${vacancy.salary!0}</p>
-                    <p class="text-muted mb-2">Обновлено: ${vacancy.updateTime!""}</p>
+                    <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id?string]!""}</p>
                     <p class="mb-0">${vacancy.description!""}</p>
                 </div>
             </div>

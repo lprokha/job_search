@@ -40,10 +40,6 @@
 
     <div class="mb-4 d-flex gap-2">
         <a href="/profile/edit" class="btn btn-dark btn-sm">Редактировать профиль</a>
-
-        <#if user.accountType?string == "EMPLOYER">
-            <a href="/employer/resumes" class="btn btn-outline-dark btn-sm">Список резюме</a>
-        </#if>
     </div>
 
     <#if user.accountType?string == "APPLICANT">
@@ -63,7 +59,7 @@
                             <div class="card-body">
                                 <h5>${resume.name}</h5>
                                 <p class="mb-2">Зарплата: ${resume.salary!0}</p>
-                                <p class="text-muted mb-2">Обновлено: ${resume.updateTime!""}</p>
+                                <p class="text-muted mb-2">Обновлено: ${resumeUpdateTimes[resume.id?string]!""}</p>
                                 <div class="d-flex gap-2">
                                     <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                                 </div>
@@ -92,7 +88,7 @@
                             <div class="card-body">
                                 <h5>${vacancy.name}</h5>
                                 <p class="mb-2">Зарплата: ${vacancy.salary!0}</p>
-                                <p class="text-muted mb-2">Обновлено: ${vacancy.updateTime!""}</p>
+                                <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id?string]!""}</p>
                                 <div class="d-flex gap-2">
                                     <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
                                 </div>

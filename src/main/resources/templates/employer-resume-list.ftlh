@@ -14,7 +14,7 @@
                         <div class="card-body">
                             <h5>${resume.name}</h5>
                             <p class="mb-2">Зарплата: ${resume.salary!0}</p>
-                            <p class="text-muted mb-2">Обновлено: ${resume.updateTime!""}</p>
+                            <p class="text-muted mb-2">Обновлено: ${resumeUpdateTimes[resume.id?string]!""}</p>
                         </div>
                     </div>
                 </div>
