@@ -10,9 +10,9 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Integer> {
 
     List<Vacancy> findByIsActiveTrue();
 
-    List<Vacancy> findByIsActiveTrueAndCategoryId(Integer categoryId);
+    List<Vacancy> findByIsActiveTrueAndCategory_Id(Integer categoryId);
 
-    List<Vacancy> findByAuthorId(Integer authorId);
+    List<Vacancy> findByAuthor_Id(Integer authorId);
 
     @Query("""
             select v

@@ -70,13 +70,11 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<Vacancy> getActiveByCategory(Integer categoryId) {
-        return vacancyRepository.findByIsActiveTrueAndCategoryId(categoryId);
-    }
+        return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId);    }
 
     @Override
     public List<Vacancy> getByAuthorId(Integer authorId) {
-        return vacancyRepository.findByAuthorId(authorId);
-    }
+        return vacancyRepository.findByAuthor_Id(authorId);    }
 
     @Override
     public List<Vacancy> getRespondedVacanciesByApplicantId(Integer applicantId) {
