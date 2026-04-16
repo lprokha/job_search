@@ -56,4 +56,32 @@ public class Vacancy {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    public Integer getCategoryId() {
+        return category != null ? category.getId() : null;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        if (categoryId == null) {
+            this.category = null;
+            return;
+        }
+        Category category = new Category();
+        category.setId(categoryId);
+        this.category = category;
+    }
+
+    public Integer getAuthorId() {
+        return author != null ? author.getId() : null;
+    }
+
+    public void setAuthorId(Integer authorId) {
+        if (authorId == null) {
+            this.author = null;
+            return;
+        }
+        User user = new User();
+        user.setId(authorId);
+        this.author = user;
+    }
 }

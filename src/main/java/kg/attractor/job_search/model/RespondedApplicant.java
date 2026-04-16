@@ -35,4 +35,32 @@ public class RespondedApplicant {
 
     @Column(name = "confirmation")
     private Boolean confirmation;
+
+    public Integer getResumeId() {
+        return resume != null ? resume.getId() : null;
+    }
+
+    public void setResumeId(Integer resumeId) {
+        if (resumeId == null) {
+            this.resume = null;
+            return;
+        }
+        Resume resume = new Resume();
+        resume.setId(resumeId);
+        this.resume = resume;
+    }
+
+    public Integer getVacancyId() {
+        return vacancy != null ? vacancy.getId() : null;
+    }
+
+    public void setVacancyId(Integer vacancyId) {
+        if (vacancyId == null) {
+            this.vacancy = null;
+            return;
+        }
+        Vacancy vacancy = new Vacancy();
+        vacancy.setId(vacancyId);
+        this.vacancy = vacancy;
+    }
 }

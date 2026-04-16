@@ -49,4 +49,32 @@ public class Resume {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    public Integer getApplicantId() {
+        return applicant != null ? applicant.getId() : null;
+    }
+
+    public void setApplicantId(Integer applicantId) {
+        if (applicantId == null) {
+            this.applicant = null;
+            return;
+        }
+        User user = new User();
+        user.setId(applicantId);
+        this.applicant = user;
+    }
+
+    public Integer getCategoryId() {
+        return category != null ? category.getId() : null;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        if (categoryId == null) {
+            this.category = null;
+            return;
+        }
+        Category category = new Category();
+        category.setId(categoryId);
+        this.category = category;
+    }
 }
