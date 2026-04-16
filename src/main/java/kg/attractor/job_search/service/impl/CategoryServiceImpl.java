@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.CategoryDao;
 import kg.attractor.job_search.model.Category;
+import kg.attractor.job_search.repository.CategoryRepository;
 import kg.attractor.job_search.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,10 +12,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CategoryDao categoryDao;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<Category> getAll() {
-        return categoryDao.findAll();
+        return categoryRepository.findAll();
     }
 }
