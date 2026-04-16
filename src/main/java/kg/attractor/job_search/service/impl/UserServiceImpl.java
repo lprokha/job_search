@@ -1,11 +1,14 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.UserDao;
-import kg.attractor.job_search.dao.UserRoleDao;
 import kg.attractor.job_search.dto.CreateUserDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.model.AccountType;
+import kg.attractor.job_search.model.Role;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.model.UserRole;
+import kg.attractor.job_search.repository.RoleRepository;
+import kg.attractor.job_search.repository.UserRepository;
+import kg.attractor.job_search.repository.UserRoleRepository;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +23,9 @@ import java.util.Optional;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao;
-    private final UserRoleDao userRoleDao;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -40,11 +44,16 @@ public class UserServiceImpl implements UserService {
                 .enabled(true)
                 .build();
 
-        User savedUser = userDao.save(user);
+        User savedUser = userRepository.save(user);
         log.debug("User created successfully with id={}", savedUser.getId());
 
-        userRoleDao.assignRole(savedUser.getId(), dto.getAccountType().name());
-        log.debug("Role {} assigned to user id={}", dto.getAccountType().name(), savedUser.getId());
+        Role role = roleRepository.findByRoleName(dto.getAccountType().name()).orElse(null);
+        if (role != null) {
+            UserRole.UserRoleId userRoleId = new UserRole.UserRoleId(savedUser, role);
+            UserRole userRole = new UserRole(userRoleId);
+            userRoleRepository.save(userRole);
+            log.debug("Role {} assigned to user id={}", dto.getAccountType().name(), savedUser.getId());
+        }
 
         return savedUser;
     }
@@ -53,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> updateProfile(Integer id, UpdateUserDto dto) {
         log.info("Updating profile for user id={}", id);
 
-        Optional<User> existingUser = userDao.findById(id);
+        Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isEmpty()) {
             log.warn("User not found for profile update, id={}", id);
             return Optional.empty();
@@ -70,56 +79,65 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        Optional<User> updatedUser = userDao.updateProfile(id, user);
+        User updatedUser = userRepository.save(user);
         log.debug("Profile updated successfully for user id={}", id);
 
-        return updatedUser;
+        return Optional.of(updatedUser);
     }
 
     @Override
     public Optional<User> getById(Integer id) {
-        return userDao.findById(id);
+        return userRepository.findById(id);
     }
 
     @Override
     public Optional<User> findApplicant(Integer id) {
-        return userDao.findById(id)
+        return userRepository.findById(id)
                 .filter(user -> user.getAccountType() == AccountType.APPLICANT);
     }
 
     @Override
     public Optional<User> findEmployer(Integer id) {
-        return userDao.findById(id)
+        return userRepository.findById(id)
                 .filter(user -> user.getAccountType() == AccountType.EMPLOYER);
     }
 
     @Override
     public List<User> getAll() {
-        return userDao.findAll();
+        return userRepository.findAll();
     }
 
     @Override
     public List<User> findByName(String name) {
-        return userDao.findByName(name);
+        return userRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override
     public Optional<User> findByPhoneNumber(String phoneNumber) {
-        return userDao.findByPhoneNumber(phoneNumber);
+        return userRepository.findByPhoneNumber(phoneNumber);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userDao.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return userDao.existsByEmail(email);
+        return userRepository.existsByEmail(email);
     }
 
     @Override
     public Optional<User> updateAvatar(Integer userId, String avatarFileName) {
-        return userDao.updateAvatar(userId, avatarFileName);
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        User user = existingUser.get();
+        user.setAvatar(avatarFileName);
+
+        User updatedUser = userRepository.save(user);
+        return Optional.of(updatedUser);
     }
 }
