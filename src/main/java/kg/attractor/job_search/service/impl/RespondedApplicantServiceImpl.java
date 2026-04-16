@@ -1,8 +1,12 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.RespondedApplicantDao;
 import kg.attractor.job_search.dto.RespondToVacancyDto;
 import kg.attractor.job_search.model.RespondedApplicant;
+import kg.attractor.job_search.model.Resume;
+import kg.attractor.job_search.model.Vacancy;
+import kg.attractor.job_search.repository.RespondedApplicantRepository;
+import kg.attractor.job_search.repository.ResumeRepository;
+import kg.attractor.job_search.repository.VacancyRepository;
 import kg.attractor.job_search.service.RespondedApplicantService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,25 +19,28 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class RespondedApplicantServiceImpl implements RespondedApplicantService {
-    private final RespondedApplicantDao respondedApplicantDao;
+    private final RespondedApplicantRepository respondedApplicantRepository;
+    private final ResumeRepository resumeRepository;
+    private final VacancyRepository vacancyRepository;
 
     @Override
     public boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId) {
-        return respondedApplicantDao.existsByResumeIdAndVacancyId(resumeId, vacancyId);
+        return respondedApplicantRepository.existsByResumeIdAndVacancyId(resumeId, vacancyId);
     }
 
     @Override
     public RespondedApplicant create(RespondToVacancyDto dto) {
         log.info("Creating response for resumeId={} and vacancyId={}", dto.getResumeId(), dto.getVacancyId());
 
-        RespondedApplicant response = new RespondedApplicant(
-                null,
-                dto.getResumeId(),
-                dto.getVacancyId(),
-                false
-        );
+        Resume resume = resumeRepository.findById(dto.getResumeId()).orElse(null);
+        Vacancy vacancy = vacancyRepository.findById(dto.getVacancyId()).orElse(null);
 
-        RespondedApplicant savedResponse = respondedApplicantDao.save(response);
+        RespondedApplicant response = new RespondedApplicant();
+        response.setResume(resume);
+        response.setVacancy(vacancy);
+        response.setConfirmation(false);
+
+        RespondedApplicant savedResponse = respondedApplicantRepository.save(response);
         log.debug("Response created successfully with id={}", savedResponse.getId());
 
         return savedResponse;
@@ -41,21 +48,21 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
 
     @Override
     public List<RespondedApplicant> getByVacancyId(Integer vacancyId) {
-        return respondedApplicantDao.findByVacancyId(vacancyId);
+        return respondedApplicantRepository.findByVacancyId(vacancyId);
     }
 
     @Override
     public List<RespondedApplicant> getByResumeId(Integer resumeId) {
-        return respondedApplicantDao.findByResumeId(resumeId);
+        return respondedApplicantRepository.findByResumeId(resumeId);
     }
 
     @Override
     public List<RespondedApplicant> getAll() {
-        return respondedApplicantDao.findAll();
+        return respondedApplicantRepository.findAll();
     }
 
     @Override
     public Optional<RespondedApplicant> getById(Integer id) {
-        return respondedApplicantDao.findById(id);
+        return respondedApplicantRepository.findById(id);
     }
 }
