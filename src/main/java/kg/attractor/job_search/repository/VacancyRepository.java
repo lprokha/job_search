@@ -19,6 +19,26 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Integer> {
     @Query("""
             select v
             from Vacancy v
+            left join RespondedApplicant ra on ra.vacancy.id = v.id
+            where v.isActive = true
+            group by v
+            order by count(ra.id) desc, v.createdDate desc
+            """)
+    Page<Vacancy> findAllActiveOrderByResponsesDesc(Pageable pageable);
+
+    @Query("""
+            select v
+            from Vacancy v
+            left join RespondedApplicant ra on ra.vacancy.id = v.id
+            where v.author.id = :authorId
+            group by v
+            order by count(ra.id) desc, v.createdDate desc
+            """)
+    Page<Vacancy> findByAuthorIdOrderByResponsesDesc(Integer authorId, Pageable pageable);
+
+    @Query("""
+            select v
+            from Vacancy v
             join RespondedApplicant ra on ra.vacancy.id = v.id
             where ra.resume.applicant.id = :applicantId
             """)
