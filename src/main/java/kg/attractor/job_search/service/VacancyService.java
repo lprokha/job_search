@@ -15,6 +15,12 @@ public interface VacancyService {
 
     List<Vacancy> getAll();
 
+    List<Vacancy> getAllActive();
+
+    List<Vacancy> getActiveByCategory(Integer categoryId);
+
+    List<Vacancy> getByAuthorId(Integer authorId);
+
     Page<Vacancy> getAllActive(int page, int size, String sortBy);
 
     Page<Vacancy> getActiveByCategory(Integer categoryId, int page, int size, String sortBy);

@@ -68,6 +68,21 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
+    public List<Vacancy> getAllActive() {
+        return vacancyRepository.findByIsActiveTrue();
+    }
+
+    @Override
+    public List<Vacancy> getActiveByCategory(Integer categoryId) {
+        return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId);
+    }
+
+    @Override
+    public List<Vacancy> getByAuthorId(Integer authorId) {
+        return vacancyRepository.findByAuthor_Id(authorId);
+    }
+
+    @Override
     public Page<Vacancy> getAllActive(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, buildDefaultSort());
 
@@ -81,7 +96,6 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public Page<Vacancy> getActiveByCategory(Integer categoryId, int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, buildDefaultSort());
-
         return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId, pageable);
     }
 
