@@ -6,8 +6,15 @@ import kg.attractor.job_search.dto.UpdateResumeDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.AccountType;
+import kg.attractor.job_search.model.ContactInfo;
+import kg.attractor.job_search.model.EducationInfo;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.model.WorkExperienceInfo;
+import kg.attractor.job_search.repository.ContactInfoRepository;
+import kg.attractor.job_search.repository.ContactTypeRepository;
+import kg.attractor.job_search.repository.EducationInfoRepository;
+import kg.attractor.job_search.repository.WorkExperienceInfoRepository;
 import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
@@ -34,6 +41,10 @@ public class ResumePageController {
     private final ResumeService resumeService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final ContactTypeRepository contactTypeRepository;
+    private final ContactInfoRepository contactInfoRepository;
+    private final EducationInfoRepository educationInfoRepository;
+    private final WorkExperienceInfoRepository workExperienceInfoRepository;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -87,6 +98,7 @@ public class ResumePageController {
 
         model.addAttribute("resume", new CreateResumeDto());
         model.addAttribute("categories", categoryService.getAll());
+        model.addAttribute("contactTypes", contactTypeRepository.findAll());
         model.addAttribute("currentUser", currentUser);
 
         return "resume-form";
@@ -107,6 +119,7 @@ public class ResumePageController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAll());
+            model.addAttribute("contactTypes", contactTypeRepository.findAll());
             model.addAttribute("currentUser", currentUser);
             return "resume-form";
         }
@@ -131,15 +144,31 @@ public class ResumePageController {
             throw new ForbiddenException("You can edit only your own resume");
         }
 
+        ContactInfo contactInfo = contactInfoRepository.findByResumeId(id).stream().findFirst().orElse(null);
+        EducationInfo educationInfo = educationInfoRepository.findByResumeId(id).stream().findFirst().orElse(null);
+        WorkExperienceInfo workExperienceInfo = workExperienceInfoRepository.findByResumeId(id).stream().findFirst().orElse(null);
+
         UpdateResumeDto dto = UpdateResumeDto.builder()
                 .name(existingResume.getName())
                 .categoryId(existingResume.getCategoryId())
                 .salary(existingResume.getSalary())
                 .isActive(existingResume.getIsActive())
+                .contactTypeId(contactInfo != null && contactInfo.getType() != null ? contactInfo.getType().getId() : null)
+                .contactValue(contactInfo != null ? contactInfo.getContactValue() : null)
+                .institution(educationInfo != null ? educationInfo.getInstitution() : null)
+                .program(educationInfo != null ? educationInfo.getProgram() : null)
+                .startDate(educationInfo != null && educationInfo.getStartDate() != null ? educationInfo.getStartDate().toString() : null)
+                .endDate(educationInfo != null && educationInfo.getEndDate() != null ? educationInfo.getEndDate().toString() : null)
+                .degree(educationInfo != null ? educationInfo.getDegree() : null)
+                .years(workExperienceInfo != null ? workExperienceInfo.getYears() : null)
+                .companyName(workExperienceInfo != null ? workExperienceInfo.getCompanyName() : null)
+                .position(workExperienceInfo != null ? workExperienceInfo.getPosition() : null)
+                .responsibilities(workExperienceInfo != null ? workExperienceInfo.getResponsibilities() : null)
                 .build();
 
         model.addAttribute("resume", dto);
         model.addAttribute("categories", categoryService.getAll());
+        model.addAttribute("contactTypes", contactTypeRepository.findAll());
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("resumeId", id);
 
@@ -169,6 +198,7 @@ public class ResumePageController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAll());
+            model.addAttribute("contactTypes", contactTypeRepository.findAll());
             model.addAttribute("currentUser", currentUser);
             model.addAttribute("resumeId", id);
             return "resume-form";

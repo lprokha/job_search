@@ -28,4 +28,24 @@ public class UpdateResumeDto {
 
     @NotNull(message = "Статус активности должен быть выбран")
     private Boolean isActive;
+
+    @NotNull(message = "Тип контакта должен быть выбран")
+    @Positive(message = "Тип контакта должен быть выбран")
+    private Integer contactTypeId;
+
+    @NotBlank(message = "Контакт не может быть пустым")
+    private String contactValue;
+
+    @NotBlank(message = "Учебное заведение не может быть пустым")
+    private String institution;
+
+    private String program;
+    private String startDate;
+    private String endDate;
+    private String degree;
+
+    private Integer years;
+    private String companyName;
+    private String position;
+    private String responsibilities;
 }
