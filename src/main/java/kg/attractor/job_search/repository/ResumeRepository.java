@@ -10,6 +10,10 @@ import java.util.List;
 
 public interface ResumeRepository extends JpaRepository<Resume, Integer> {
 
+    List<Resume> findByCategory_Id(Integer categoryId);
+
+    List<Resume> findByApplicant_Id(Integer applicantId);
+
     Page<Resume> findByCategory_Id(Integer categoryId, Pageable pageable);
 
     Page<Resume> findByApplicant_Id(Integer applicantId, Pageable pageable);
