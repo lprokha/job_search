@@ -7,11 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,6 +38,9 @@ public class RespondedApplicant {
 
     @Column(name = "confirmation")
     private Boolean confirmation;
+
+    @OneToMany(mappedBy = "respondedApplicant")
+    private List<Message> messages;
 
     public Integer getResumeId() {
         return resume != null ? resume.getId() : null;
