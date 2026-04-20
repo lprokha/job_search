@@ -1,6 +1,8 @@
 package kg.attractor.job_search.repository;
 
 import kg.attractor.job_search.model.Vacancy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,6 +15,32 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Integer> {
     List<Vacancy> findByIsActiveTrueAndCategory_Id(Integer categoryId);
 
     List<Vacancy> findByAuthor_Id(Integer authorId);
+
+    Page<Vacancy> findByIsActiveTrue(Pageable pageable);
+
+    Page<Vacancy> findByIsActiveTrueAndCategory_Id(Integer categoryId, Pageable pageable);
+
+    Page<Vacancy> findByAuthor_Id(Integer authorId, Pageable pageable);
+
+    @Query("""
+            select v
+            from Vacancy v
+            left join RespondedApplicant ra on ra.vacancy.id = v.id
+            where v.isActive = true
+            group by v
+            order by count(ra.id) desc, v.createdDate desc
+            """)
+    Page<Vacancy> findAllActiveOrderByResponsesDesc(Pageable pageable);
+
+    @Query("""
+            select v
+            from Vacancy v
+            left join RespondedApplicant ra on ra.vacancy.id = v.id
+            where v.author.id = :authorId
+            group by v
+            order by count(ra.id) desc, v.createdDate desc
+            """)
+    Page<Vacancy> findByAuthorIdOrderByResponsesDesc(Integer authorId, Pageable pageable);
 
     @Query("""
             select v

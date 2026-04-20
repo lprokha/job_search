@@ -20,6 +20,20 @@
                 </div>
             </#list>
         </div>
+
+        <#if totalPages?? && (totalPages > 1)>
+            <nav class="mt-4">
+                <ul class="pagination">
+                    <#list 0..(totalPages - 1) as pageIndex>
+                        <li class="page-item <#if pageIndex == currentPage>active</#if>">
+                            <a class="page-link" href="/employer/resumes?page=${pageIndex}&size=5">
+                                ${pageIndex + 1}
+                            </a>
+                        </li>
+                    </#list>
+                </ul>
+            </nav>
+        </#if>
     <#else>
         <div class="alert alert-light border">Резюме не найдены.</div>
     </#if>

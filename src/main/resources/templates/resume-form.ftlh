@@ -54,6 +54,94 @@
                             </#if>
                         </div>
 
+                        <hr class="my-4">
+                        <h4 class="mb-3">Контактная информация</h4>
+
+                        <div class="mb-3">
+                            <label class="form-label">Тип контакта</label>
+                            <select name="contactTypeId" class="form-select">
+                                <option value="">Выберите тип контакта</option>
+                                <#list contactTypes as contactType>
+                                    <option value="${contactType.id}"
+                                            <#if resume.contactTypeId?? && resume.contactTypeId == contactType.id>selected</#if>>
+                                        ${contactType.type}
+                                    </option>
+                                </#list>
+                            </select>
+                            <#if errors?has_content && errors.hasFieldErrors("contactTypeId")>
+                                <div class="text-danger small mt-1">
+                                    ${errors.getFieldError("contactTypeId").defaultMessage}
+                                </div>
+                            </#if>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Контакт</label>
+                            <input type="text" name="contactValue" class="form-control" value="${resume.contactValue!''}">
+                            <#if errors?has_content && errors.hasFieldErrors("contactValue")>
+                                <div class="text-danger small mt-1">
+                                    ${errors.getFieldError("contactValue").defaultMessage}
+                                </div>
+                            </#if>
+                        </div>
+
+                        <hr class="my-4">
+                        <h4 class="mb-3">Образование</h4>
+
+                        <div class="mb-3">
+                            <label class="form-label">Учебное заведение</label>
+                            <input type="text" name="institution" class="form-control" value="${resume.institution!''}">
+                            <#if errors?has_content && errors.hasFieldErrors("institution")>
+                                <div class="text-danger small mt-1">
+                                    ${errors.getFieldError("institution").defaultMessage}
+                                </div>
+                            </#if>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Программа</label>
+                            <input type="text" name="program" class="form-control" value="${resume.program!''}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Дата начала</label>
+                            <input type="date" name="startDate" class="form-control" value="${resume.startDate!''}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Дата окончания</label>
+                            <input type="date" name="endDate" class="form-control" value="${resume.endDate!''}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Степень</label>
+                            <input type="text" name="degree" class="form-control" value="${resume.degree!''}">
+                        </div>
+
+                        <hr class="my-4">
+                        <h4 class="mb-3">Опыт работы</h4>
+
+                        <div class="mb-3">
+                            <label class="form-label">Стаж в годах</label>
+                            <input type="number" name="years" class="form-control"
+                                   value="<#if resume.years??>${resume.years?c}</#if>">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Компания</label>
+                            <input type="text" name="companyName" class="form-control" value="${resume.companyName!''}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Должность</label>
+                            <input type="text" name="position" class="form-control" value="${resume.position!''}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Обязанности</label>
+                            <textarea name="responsibilities" class="form-control" rows="4">${resume.responsibilities!''}</textarea>
+                        </div>
+
                         <#if resumeId??>
                             <div class="mb-3">
                                 <label class="form-label">Активность</label>

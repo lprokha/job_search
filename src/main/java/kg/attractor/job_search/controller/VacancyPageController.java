@@ -12,6 +12,7 @@ import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,10 +63,21 @@ public class VacancyPageController {
     }
 
     @GetMapping("/vacancies")
-    public String vacanciesPage(Authentication authentication, Model model) {
-        List<Vacancy> vacancies = vacancyService.getAllActive();
+    public String vacanciesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "date") String sort,
+            Authentication authentication,
+            Model model
+    ) {
+        Page<Vacancy> vacancyPage = vacancyService.getAllActive(page, size, sort);
+        List<Vacancy> vacancies = vacancyPage.getContent();
+
         model.addAttribute("vacancies", vacancies);
         model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", vacancyPage.getTotalPages());
+        model.addAttribute("sort", sort);
 
         if (authentication != null
                 && authentication.isAuthenticated()
@@ -77,18 +90,28 @@ public class VacancyPageController {
     }
 
     @GetMapping("/my-vacancies")
-    public String myVacanciesPage(Authentication authentication, Model model) {
+    public String myVacanciesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "date") String sort,
+            Authentication authentication,
+            Model model
+    ) {
         User currentUser = getCurrentUser(authentication);
 
         if (currentUser.getAccountType() != AccountType.EMPLOYER) {
             throw new ForbiddenException("Only employers can view their vacancies");
         }
 
-        List<Vacancy> vacancies = vacancyService.getByAuthorId(currentUser.getId());
+        Page<Vacancy> vacancyPage = vacancyService.getByAuthorId(currentUser.getId(), page, size, sort);
+        List<Vacancy> vacancies = vacancyPage.getContent();
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("vacancies", vacancies);
         model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", vacancyPage.getTotalPages());
+        model.addAttribute("sort", sort);
 
         return "my-vacancies";
     }
