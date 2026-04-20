@@ -10,6 +10,12 @@ import java.util.List;
 
 public interface VacancyRepository extends JpaRepository<Vacancy, Integer> {
 
+    List<Vacancy> findByIsActiveTrue();
+
+    List<Vacancy> findByIsActiveTrueAndCategory_Id(Integer categoryId);
+
+    List<Vacancy> findByAuthor_Id(Integer authorId);
+
     Page<Vacancy> findByIsActiveTrue(Pageable pageable);
 
     Page<Vacancy> findByIsActiveTrueAndCategory_Id(Integer categoryId, Pageable pageable);
