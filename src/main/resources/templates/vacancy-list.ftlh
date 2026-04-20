@@ -1,7 +1,23 @@
 <#import "layouts/layout.ftlh" as main>
 
 <@main.layout>
-    <h2 class="mb-4">Список вакансий</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Список вакансий</h2>
+
+        <form method="get" action="/vacancies" class="d-flex gap-2 align-items-center">
+            <input type="hidden" name="page" value="0">
+
+            <label for="sort" class="mb-0">Сортировка:</label>
+            <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
+                <option value="date" <#if sort?? && sort == "date">selected</#if>>
+                    По дате публикации
+                </option>
+                <option value="responses" <#if sort?? && sort == "responses">selected</#if>>
+                    По количеству откликов
+                </option>
+            </select>
+        </form>
+    </div>
 
     <#if vacancies?? && (vacancies?size > 0)>
         <#list vacancies as vacancy>
@@ -14,6 +30,20 @@
                 </div>
             </div>
         </#list>
+
+        <#if totalPages?? && (totalPages > 1)>
+            <nav class="mt-4">
+                <ul class="pagination">
+                    <#list 0..(totalPages - 1) as pageIndex>
+                        <li class="page-item <#if pageIndex == currentPage>active</#if>">
+                            <a class="page-link" href="/vacancies?page=${pageIndex}&size=5&sort=${sort!date}">
+                                ${pageIndex + 1}
+                            </a>
+                        </li>
+                    </#list>
+                </ul>
+            </nav>
+        </#if>
     <#else>
         <div class="alert alert-light border">Активных вакансий пока нет.</div>
     </#if>
