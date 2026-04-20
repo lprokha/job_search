@@ -11,6 +11,10 @@ import kg.attractor.job_search.repository.VacancyRepository;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -64,17 +68,22 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<Vacancy> getAllActive() {
-        return vacancyRepository.findByIsActiveTrue();
+    public Page<Vacancy> getAllActive(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, buildSort(sortBy));
+        return vacancyRepository.findByIsActiveTrue(pageable);
     }
 
     @Override
-    public List<Vacancy> getActiveByCategory(Integer categoryId) {
-        return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId);    }
+    public Page<Vacancy> getActiveByCategory(Integer categoryId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, buildSort(sortBy));
+        return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId, pageable);
+    }
 
     @Override
-    public List<Vacancy> getByAuthorId(Integer authorId) {
-        return vacancyRepository.findByAuthor_Id(authorId);    }
+    public Page<Vacancy> getByAuthorId(Integer authorId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, buildSort(sortBy));
+        return vacancyRepository.findByAuthor_Id(authorId, pageable);
+    }
 
     @Override
     public List<Vacancy> getRespondedVacanciesByApplicantId(Integer applicantId) {
@@ -119,5 +128,13 @@ public class VacancyServiceImpl implements VacancyService {
 
         vacancyRepository.deleteById(id);
         return true;
+    }
+
+    private Sort buildSort(String sortBy) {
+        if ("date".equals(sortBy)) {
+            return Sort.by(Sort.Direction.DESC, "createdDate");
+        }
+
+        return Sort.by(Sort.Direction.DESC, "createdDate");
     }
 }

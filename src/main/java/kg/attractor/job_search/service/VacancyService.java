@@ -3,6 +3,7 @@ package kg.attractor.job_search.service;
 import kg.attractor.job_search.dto.CreateVacancyDto;
 import kg.attractor.job_search.dto.UpdateVacancyDto;
 import kg.attractor.job_search.model.Vacancy;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +15,11 @@ public interface VacancyService {
 
     List<Vacancy> getAll();
 
-    List<Vacancy> getAllActive();
+    Page<Vacancy> getAllActive(int page, int size, String sortBy);
 
-    List<Vacancy> getActiveByCategory(Integer categoryId);
+    Page<Vacancy> getActiveByCategory(Integer categoryId, int page, int size, String sortBy);
 
-    List<Vacancy> getByAuthorId(Integer authorId);
+    Page<Vacancy> getByAuthorId(Integer authorId, int page, int size, String sortBy);
 
     List<Vacancy> getRespondedVacanciesByApplicantId(Integer applicantId);
 
