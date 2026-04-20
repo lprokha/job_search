@@ -69,19 +69,30 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<Vacancy> getAllActive(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, buildSort(sortBy));
+        Pageable pageable = PageRequest.of(page, size, buildDefaultSort());
+
+        if ("responses".equals(sortBy)) {
+            return vacancyRepository.findAllActiveOrderByResponsesDesc(pageable);
+        }
+
         return vacancyRepository.findByIsActiveTrue(pageable);
     }
 
     @Override
     public Page<Vacancy> getActiveByCategory(Integer categoryId, int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, buildSort(sortBy));
+        Pageable pageable = PageRequest.of(page, size, buildDefaultSort());
+
         return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId, pageable);
     }
 
     @Override
     public Page<Vacancy> getByAuthorId(Integer authorId, int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, buildSort(sortBy));
+        Pageable pageable = PageRequest.of(page, size, buildDefaultSort());
+
+        if ("responses".equals(sortBy)) {
+            return vacancyRepository.findByAuthorIdOrderByResponsesDesc(authorId, pageable);
+        }
+
         return vacancyRepository.findByAuthor_Id(authorId, pageable);
     }
 
@@ -130,11 +141,7 @@ public class VacancyServiceImpl implements VacancyService {
         return true;
     }
 
-    private Sort buildSort(String sortBy) {
-        if ("date".equals(sortBy)) {
-            return Sort.by(Sort.Direction.DESC, "createdDate");
-        }
-
+    private Sort buildDefaultSort() {
         return Sort.by(Sort.Direction.DESC, "createdDate");
     }
 }
