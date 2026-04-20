@@ -2,23 +2,14 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
-import kg.attractor.job_search.model.Category;
-import kg.attractor.job_search.model.ContactInfo;
-import kg.attractor.job_search.model.ContactType;
-import kg.attractor.job_search.model.EducationInfo;
-import kg.attractor.job_search.model.Resume;
-import kg.attractor.job_search.model.User;
-import kg.attractor.job_search.model.WorkExperienceInfo;
-import kg.attractor.job_search.repository.CategoryRepository;
-import kg.attractor.job_search.repository.ContactInfoRepository;
-import kg.attractor.job_search.repository.ContactTypeRepository;
-import kg.attractor.job_search.repository.EducationInfoRepository;
-import kg.attractor.job_search.repository.ResumeRepository;
-import kg.attractor.job_search.repository.UserRepository;
-import kg.attractor.job_search.repository.WorkExperienceInfoRepository;
+import kg.attractor.job_search.model.*;
+import kg.attractor.job_search.repository.*;
 import kg.attractor.job_search.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -61,7 +52,6 @@ public class ResumeServiceImpl implements ResumeService {
 
         saveOrUpdateAdditionalInfo(savedResume, dto);
 
-        log.debug("Resume created successfully with id={}", savedResume.getId());
         return savedResume;
     }
 
@@ -76,13 +66,21 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<Resume> getByCategory(Integer categoryId) {
-        return resumeRepository.findByCategory_Id(categoryId);
+    public Page<Resume> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resumeRepository.findAll(pageable);
     }
 
     @Override
-    public List<Resume> getByApplicantId(Integer applicantId) {
-        return resumeRepository.findByApplicant_Id(applicantId);
+    public Page<Resume> getByApplicantId(Integer applicantId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resumeRepository.findByApplicant_Id(applicantId, pageable);
+    }
+
+    @Override
+    public Page<Resume> getByCategory(Integer categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resumeRepository.findByCategory_Id(categoryId, pageable);
     }
 
     @Override
@@ -92,11 +90,8 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public Optional<Resume> update(Integer id, UpdateResumeDto dto) {
-        log.info("Updating resume id={}", id);
-
         Optional<Resume> existingResume = resumeRepository.findById(id);
         if (existingResume.isEmpty()) {
-            log.warn("Resume not found for update, id={}", id);
             return Optional.empty();
         }
 
@@ -113,14 +108,11 @@ public class ResumeServiceImpl implements ResumeService {
 
         saveOrUpdateAdditionalInfo(updatedResume, dto);
 
-        log.debug("Resume updated successfully, id={}", id);
         return Optional.of(updatedResume);
     }
 
     @Override
     public boolean delete(Integer id) {
-        log.warn("Deleting resume id={}", id);
-
         if (!resumeRepository.existsById(id)) {
             return false;
         }
