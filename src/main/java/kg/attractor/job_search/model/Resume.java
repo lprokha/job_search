@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,6 +51,18 @@ public class Resume {
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
+
+    @OneToMany(mappedBy = "resume")
+    private List<ContactInfo> contacts;
+
+    @OneToMany(mappedBy = "resume")
+    private List<EducationInfo> educationInfoList;
+
+    @OneToMany(mappedBy = "resume")
+    private List<WorkExperienceInfo> workExperienceInfoList;
+
+    @OneToMany(mappedBy = "resume")
+    private List<RespondedApplicant> respondedApplicants;
 
     public Integer getApplicantId() {
         return applicant != null ? applicant.getId() : null;
