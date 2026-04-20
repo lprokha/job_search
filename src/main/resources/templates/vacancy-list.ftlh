@@ -36,7 +36,7 @@
                 <ul class="pagination">
                     <#list 0..(totalPages - 1) as pageIndex>
                         <li class="page-item <#if pageIndex == currentPage>active</#if>">
-                            <a class="page-link" href="/vacancies?page=${pageIndex}&size=5&sort=${sort!date}">
+                            <a class="page-link" href="/vacancies?page=${pageIndex}&size=5&sort=${sort!'date'}">
                                 ${pageIndex + 1}
                             </a>
                         </li>

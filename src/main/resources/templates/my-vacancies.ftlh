@@ -2,8 +2,23 @@
 
 <@main.layout>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Мои вакансии</h2>
+        <h2 class="mb-0">Мои вакансии</h2>
+
         <div class="d-flex gap-2">
+            <form method="get" action="/my-vacancies" class="d-flex gap-2 align-items-center">
+                <input type="hidden" name="page" value="0">
+
+                <label for="sort" class="mb-0">Сортировка:</label>
+                <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
+                    <option value="date" <#if sort?? && sort == "date">selected</#if>>
+                        По дате публикации
+                    </option>
+                    <option value="responses" <#if sort?? && sort == "responses">selected</#if>>
+                        По количеству откликов
+                    </option>
+                </select>
+            </form>
+
             <a href="/my-vacancies/create" class="btn btn-dark">Добавить вакансию</a>
             <a href="/profile" class="btn btn-outline-dark">Назад в личный кабинет</a>
         </div>
@@ -19,14 +34,31 @@
                             <p class="mb-2">Зарплата: ${vacancy.salary!0}</p>
                             <p class="mb-2">Опыт: ${vacancy.expFrom!0} - ${vacancy.expTo!0} лет</p>
                             <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id?string]!""}</p>
+
                             <div class="d-flex gap-2">
-                                <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
+                                <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">
+                                    Редактировать
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </#list>
         </div>
+
+        <#if totalPages?? && (totalPages > 1)>
+            <nav class="mt-4">
+                <ul class="pagination">
+                    <#list 0..(totalPages - 1) as pageIndex>
+                        <li class="page-item <#if pageIndex == currentPage>active</#if>">
+                            <a class="page-link" href="/my-vacancies?page=${pageIndex}&size=5&sort=${sort!'date'}">
+                                ${pageIndex + 1}
+                            </a>
+                        </li>
+                    </#list>
+                </ul>
+            </nav>
+        </#if>
     <#else>
         <div class="alert alert-light border">Вакансии не найдены.</div>
     </#if>
