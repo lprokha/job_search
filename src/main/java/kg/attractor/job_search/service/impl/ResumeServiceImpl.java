@@ -2,8 +2,20 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
-import kg.attractor.job_search.model.*;
-import kg.attractor.job_search.repository.*;
+import kg.attractor.job_search.model.Category;
+import kg.attractor.job_search.model.ContactInfo;
+import kg.attractor.job_search.model.ContactType;
+import kg.attractor.job_search.model.EducationInfo;
+import kg.attractor.job_search.model.Resume;
+import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.model.WorkExperienceInfo;
+import kg.attractor.job_search.repository.CategoryRepository;
+import kg.attractor.job_search.repository.ContactInfoRepository;
+import kg.attractor.job_search.repository.ContactTypeRepository;
+import kg.attractor.job_search.repository.EducationInfoRepository;
+import kg.attractor.job_search.repository.ResumeRepository;
+import kg.attractor.job_search.repository.UserRepository;
+import kg.attractor.job_search.repository.WorkExperienceInfoRepository;
 import kg.attractor.job_search.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +75,16 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public List<Resume> getAll() {
         return resumeRepository.findAll();
+    }
+
+    @Override
+    public List<Resume> getByCategory(Integer categoryId) {
+        return resumeRepository.findByCategory_Id(categoryId);
+    }
+
+    @Override
+    public List<Resume> getByApplicantId(Integer applicantId) {
+        return resumeRepository.findByApplicant_Id(applicantId);
     }
 
     @Override

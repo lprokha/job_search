@@ -15,6 +15,10 @@ public interface ResumeService {
 
     List<Resume> getAll();
 
+    List<Resume> getByCategory(Integer categoryId);
+
+    List<Resume> getByApplicantId(Integer applicantId);
+
     Page<Resume> getAll(int page, int size);
 
     Page<Resume> getByApplicantId(Integer applicantId, int page, int size);
