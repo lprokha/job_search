@@ -19,6 +19,7 @@ import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -72,18 +74,26 @@ public class ResumePageController {
     }
 
     @GetMapping("/resumes")
-    public String resumesPage(Authentication authentication, Model model) {
+    public String resumesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Authentication authentication,
+            Model model
+    ) {
         User currentUser = getCurrentUser(authentication);
 
         if (currentUser.getAccountType() != AccountType.APPLICANT) {
             throw new ForbiddenException("Only applicants can view their resumes");
         }
 
-        List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
+        Page<Resume> resumePage = resumeService.getByApplicantId(currentUser.getId(), page, size);
+        List<Resume> resumes = resumePage.getContent();
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("resumes", resumes);
         model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", resumePage.getTotalPages());
 
         return "resume-list";
     }
@@ -209,18 +219,26 @@ public class ResumePageController {
     }
 
     @GetMapping("/employer/resumes")
-    public String employerResumesPage(Authentication authentication, Model model) {
+    public String employerResumesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Authentication authentication,
+            Model model
+    ) {
         User currentUser = getCurrentUser(authentication);
 
         if (currentUser.getAccountType() != AccountType.EMPLOYER) {
             throw new ForbiddenException("Only employers can view all resumes");
         }
 
-        List<Resume> resumes = resumeService.getAll();
+        Page<Resume> resumePage = resumeService.getAll(page, size);
+        List<Resume> resumes = resumePage.getContent();
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("resumes", resumes);
         model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", resumePage.getTotalPages());
 
         return "employer-resume-list";
     }
