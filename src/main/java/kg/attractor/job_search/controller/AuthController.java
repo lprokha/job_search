@@ -1,7 +1,10 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateUserDto;
+import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -36,8 +39,9 @@ public class AuthController {
     public String register(
             @Valid @ModelAttribute("user") CreateUserDto dto,
             BindingResult bindingResult,
-            Model model
-    ) {
+            Model model,
+            HttpServletRequest request
+    ) throws ServletException {
         if (userService.existsByEmail(dto.getEmail())) {
             bindingResult.rejectValue("email", "error.user", "Пользователь с таким email уже существует");
         }
@@ -47,6 +51,13 @@ public class AuthController {
         }
 
         userService.create(dto);
-        return "redirect:/login";
+
+        request.login(dto.getEmail(), dto.getPassword());
+
+        if (dto.getAccountType() == AccountType.EMPLOYER) {
+            return "redirect:/employer/resumes";
+        }
+
+        return "redirect:/vacancies";
     }
 }
