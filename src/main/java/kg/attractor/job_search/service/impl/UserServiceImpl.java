@@ -103,6 +103,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllEmployers() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getAccountType() == AccountType.EMPLOYER)
+                .toList();
+    }
+
+    @Override
     public List<User> getAll() {
         return userRepository.findAll();
     }

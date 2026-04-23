@@ -18,6 +18,8 @@ public interface UserService {
 
     Optional<User> findEmployer(Integer id);
 
+    List<User> getAllEmployers();
+
     List<User> getAll();
 
     List<User> findByName(String name);

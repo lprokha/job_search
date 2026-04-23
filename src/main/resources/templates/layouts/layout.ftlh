@@ -22,6 +22,8 @@
 
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <#-- ОСНОВНАЯ НАВИГАЦИЯ -->
                     <#if currentUser?? && currentUser.accountType?string == "EMPLOYER">
                         <li class="nav-item">
                             <a class="nav-link" href="/employer/resumes">Резюме</a>
@@ -30,6 +32,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/vacancies">Вакансии</a>
                         </li>
+
+                        <#if currentUser?? && currentUser.accountType?string == "APPLICANT">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/companies">Компании</a>
+                            </li>
+                        </#if>
                     </#if>
 
                     <#if currentUser??>

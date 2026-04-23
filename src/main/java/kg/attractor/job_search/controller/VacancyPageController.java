@@ -89,6 +89,12 @@ public class VacancyPageController {
         return "vacancy-list";
     }
 
+    @GetMapping("/companies")
+    public String companies(Model model) {
+        model.addAttribute("companies", userService.getAllEmployers());
+        return "companies";
+    }
+
     @GetMapping("/my-vacancies")
     public String myVacanciesPage(
             @RequestParam(defaultValue = "0") int page,
