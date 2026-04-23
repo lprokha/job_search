@@ -11,16 +11,16 @@
                 <label for="sort" class="mb-0">Сортировка:</label>
                 <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
                     <option value="dateDesc" <#if sort?? && sort == "dateDesc">selected</#if>>
-                        По дате (новые сначала)
+                        По дате (сначала новые)
                     </option>
                     <option value="dateAsc" <#if sort?? && sort == "dateAsc">selected</#if>>
-                        По дате (старые сначала)
+                        По дате (сначала старые)
                     </option>
                     <option value="responsesDesc" <#if sort?? && sort == "responsesDesc">selected</#if>>
-                        По откликам (больше сначала)
+                        По откликам (сначала больше)
                     </option>
                     <option value="responsesAsc" <#if sort?? && sort == "responsesAsc">selected</#if>>
-                        По откликам (меньше сначала)
+                        По откликам (сначала меньше)
                     </option>
                 </select>
             </form>
