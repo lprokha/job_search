@@ -15,6 +15,12 @@
                     </h2>
 
                     <form action="<#if vacancyId??>/my-vacancies/edit/${vacancyId}<#else>/my-vacancies/create</#if>" method="post">
+                        <#if _csrf??>
+                            <input
+                                    type="hidden"
+                                    name="${(_csrf.parameterName)!'csrf'}"
+                                    value="${(_csrf.token)!''}">
+                        </#if>
                         <div class="mb-3">
                             <label class="form-label">Название вакансии</label>
                             <input type="text" name="name" class="form-control" value="${vacancy.name!''}">

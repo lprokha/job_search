@@ -2,9 +2,9 @@
 
 <@main.layout>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Список вакансий</h2>
+        <h2 class="mb-0">Вакансии компании: ${company.name} ${company.surname}</h2>
 
-        <form method="get" action="/vacancies" class="d-flex gap-2 align-items-center">
+        <form method="get" action="/companies/${company.id}" class="d-flex gap-2 align-items-center">
             <input type="hidden" name="page" value="0">
 
             <label for="sort" class="mb-0">Сортировка:</label>
@@ -42,7 +42,8 @@
                 <ul class="pagination">
                     <#list 0..(totalPages - 1) as pageIndex>
                         <li class="page-item <#if pageIndex == currentPage>active</#if>">
-                            <a class="page-link" href="/vacancies?page=${pageIndex}&size=5&sort=${sort!'dateDesc'}">
+                            <a class="page-link"
+                               href="/companies/${company.id}?page=${pageIndex}&size=5&sort=${sort!'dateDesc'}">
                                 ${pageIndex + 1}
                             </a>
                         </li>
@@ -51,6 +52,6 @@
             </nav>
         </#if>
     <#else>
-        <div class="alert alert-light border">Активных вакансий пока нет.</div>
+        <div class="alert alert-light border">У этой компании пока нет вакансий.</div>
     </#if>
 </@main.layout>

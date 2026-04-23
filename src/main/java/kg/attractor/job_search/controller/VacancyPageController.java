@@ -66,7 +66,7 @@ public class VacancyPageController {
     public String vacanciesPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "date") String sort,
+            @RequestParam(defaultValue = "dateDesc") String sort,
             Authentication authentication,
             Model model
     ) {
@@ -89,11 +89,81 @@ public class VacancyPageController {
         return "vacancy-list";
     }
 
+    @GetMapping("/companies")
+    public String companiesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            Authentication authentication,
+            Model model
+    ) {
+        List<User> allEmployers = userService.getAllEmployers();
+
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, allEmployers.size());
+
+        List<User> companies = fromIndex >= allEmployers.size()
+                ? List.of()
+                : allEmployers.subList(fromIndex, toIndex);
+
+        int totalPages = (int) Math.ceil((double) allEmployers.size() / size);
+
+        Map<String, Integer> companyVacancyCounts = new LinkedHashMap<>();
+        for (User company : companies) {
+            companyVacancyCounts.put(company.getId().toString(), vacancyService.getByAuthorId(company.getId()).size());
+        }
+
+        model.addAttribute("companies", companies);
+        model.addAttribute("companyVacancyCounts", companyVacancyCounts);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = getCurrentUser(authentication);
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "companies";
+    }
+
+    @GetMapping("/companies/{id}")
+    public String companyVacanciesPage(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "dateDesc") String sort,
+            Authentication authentication,
+            Model model
+    ) {
+        User company = userService.findEmployer(id)
+                .orElseThrow(() -> new NotFoundException("Company not found"));
+
+        Page<Vacancy> vacancyPage = vacancyService.getByAuthorId(id, page, size, sort);
+        List<Vacancy> vacancies = vacancyPage.getContent();
+
+        model.addAttribute("company", company);
+        model.addAttribute("vacancies", vacancies);
+        model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", vacancyPage.getTotalPages());
+        model.addAttribute("sort", sort);
+
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = getCurrentUser(authentication);
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "company-vacancies";
+    }
+
     @GetMapping("/my-vacancies")
     public String myVacanciesPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "date") String sort,
+            @RequestParam(defaultValue = "dateDesc") String sort,
             Authentication authentication,
             Model model
     ) {

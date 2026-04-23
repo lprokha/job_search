@@ -25,6 +25,12 @@
                 </p>
 
                 <form action="/profile/avatar" method="post" enctype="multipart/form-data">
+                    <#if _csrf??>
+                        <input
+                                type="hidden"
+                                name="${(_csrf.parameterName)!'csrf'}"
+                                value="${(_csrf.token)!''}">
+                    </#if>
                     <div class="row g-2 align-items-center">
                         <div class="col-md-8">
                             <input type="file" name="file" class="form-control" accept="image/*">

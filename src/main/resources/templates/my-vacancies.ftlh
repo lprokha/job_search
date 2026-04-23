@@ -10,11 +10,17 @@
 
                 <label for="sort" class="mb-0">Сортировка:</label>
                 <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
-                    <option value="date" <#if sort?? && sort == "date">selected</#if>>
-                        По дате публикации
+                    <option value="dateDesc" <#if sort?? && sort == "dateDesc">selected</#if>>
+                        По дате (сначала новые)
                     </option>
-                    <option value="responses" <#if sort?? && sort == "responses">selected</#if>>
-                        По количеству откликов
+                    <option value="dateAsc" <#if sort?? && sort == "dateAsc">selected</#if>>
+                        По дате (сначала старые)
+                    </option>
+                    <option value="responsesDesc" <#if sort?? && sort == "responsesDesc">selected</#if>>
+                        По откликам (сначала больше)
+                    </option>
+                    <option value="responsesAsc" <#if sort?? && sort == "responsesAsc">selected</#if>>
+                        По откликам (сначала меньше)
                     </option>
                 </select>
             </form>
@@ -51,7 +57,7 @@
                 <ul class="pagination">
                     <#list 0..(totalPages - 1) as pageIndex>
                         <li class="page-item <#if pageIndex == currentPage>active</#if>">
-                            <a class="page-link" href="/my-vacancies?page=${pageIndex}&size=5&sort=${sort!'date'}">
+                            <a class="page-link" href="/my-vacancies?page=${pageIndex}&size=5&sort=${sort!'dateDesc'}">
                                 ${pageIndex + 1}
                             </a>
                         </li>
