@@ -9,6 +9,13 @@
                     <h2 class="mb-4 text-center">Регистрация пользователя</h2>
 
                     <form action="/register" method="post">
+                        <#if _csrf??>
+                            <input
+                                    type="hidden"
+                                    name="${(_csrf.parameterName)!'csrf'}"
+                                    value="${(_csrf.token)!''}">
+                        </#if>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Имя</label>

@@ -11,7 +11,10 @@
 
     <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/vacancies">JobSearch</a>
+            <a class="navbar-brand fw-bold"
+               href="<#if currentUser?? && currentUser.accountType?string == 'EMPLOYER'>/employer/resumes<#else>/vacancies</#if>">
+                JobSearch
+            </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -56,6 +59,12 @@
 
                     <#if currentUser??>
                         <form action="/logout" method="post" class="d-inline">
+                            <#if _csrf??>
+                                <input
+                                        type="hidden"
+                                        name="${(_csrf.parameterName)!'csrf'}"
+                                        value="${(_csrf.token)!''}">
+                            </#if>
                             <button type="submit" class="btn btn-outline-secondary btn-sm">Выйти</button>
                         </form>
                     </#if>
