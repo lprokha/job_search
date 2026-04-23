@@ -2,7 +2,7 @@
 
 <@main.layout>
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Все резюме</h2>
+        <h2 class="mb-0">Все резюме</h2>
         <a href="/profile" class="btn btn-outline-dark">Назад в личный кабинет</a>
     </div>
 
@@ -11,10 +11,10 @@
             <#list resumes as resume>
                 <div class="col-md-6 col-lg-4 mb-3">
                     <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h5>${resume.name}</h5>
-                            <p class="mb-2">Зарплата: ${resume.salary!0}</p>
-                            <p class="text-muted mb-2">Обновлено: ${resumeUpdateTimes[resume.id?string]!""}</p>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="mb-2">${resume.name}</h5>
+                            <p class="mb-2 fw-semibold">Зарплата: ${resume.salary!0}</p>
+                            <p class="text-muted mb-3">Обновлено: ${resumeUpdateTimes[resume.id?string]!""}</p>
                         </div>
                     </div>
                 </div>
