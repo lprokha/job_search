@@ -9,12 +9,10 @@
 
             <label for="sort" class="mb-0">Сортировка:</label>
             <select name="sort" id="sort" class="form-select" onchange="this.form.submit()">
-                <option value="date" <#if sort?? && sort == "date">selected</#if>>
-                    По дате публикации
-                </option>
-                <option value="responses" <#if sort?? && sort == "responses">selected</#if>>
-                    По количеству откликов
-                </option>
+                <option value="dateDesc">По дате (новые сначала)</option>
+                <option value="dateAsc">По дате (старые сначала)</option>
+                <option value="responsesDesc">По откликам (больше сначала)</option>
+                <option value="responsesAsc">По откликам (меньше сначала)</option>
             </select>
         </form>
     </div>
