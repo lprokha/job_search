@@ -15,6 +15,12 @@
                     </h2>
 
                     <form action="<#if resumeId??>/resumes/edit/${resumeId}<#else>/resumes/create</#if>" method="post">
+                        <#if _csrf??>
+                            <input
+                                    type="hidden"
+                                    name="${(_csrf.parameterName)!'csrf'}"
+                                    value="${(_csrf.token)!''}">
+                        </#if>
                         <div class="mb-3">
                             <label class="form-label">Название резюме</label>
                             <input type="text" name="name" class="form-control" value="${resume.name!''}">
