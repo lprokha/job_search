@@ -1,72 +1,49 @@
 package kg.attractor.job_search.config;
 
+import kg.attractor.job_search.service.impl.AuthUserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final DataSource dataSource;
+    private final AuthUserDetailsServiceImpl authUserDetailsService;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public JdbcUserDetailsManager userDetailsService() {
-        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
-
-        manager.setUsersByUsernameQuery("""
-            select email, password, enabled
-            from users
-            where email = ?
-            """);
-
-        manager.setAuthoritiesByUsernameQuery("""
-            select auth.email, auth.authority
-            from (
-                select u.email, concat('ROLE_', r.role_name) as authority
-                from users u
-                join user_role ur on u.id = ur.user_id
-                join roles r on ur.role_id = r.id
-        
-                union
-        
-                select u.email, a.authority
-                from users u
-                join user_role ur on u.id = ur.user_id
-                join role_authority ra on ur.role_id = ra.role_id
-                join authorities a on ra.authority_id = a.id
-            ) auth
-            where auth.email = ?
-            """);
-
-        return manager;
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .userDetailsService(authUserDetailsService)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/profile", true)
+                        .successHandler((request, response, authentication) -> {
+                            boolean isEmployer = authentication.getAuthorities().stream()
+                                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_EMPLOYER"));
+
+                            if (isEmployer) {
+                                response.sendRedirect("/employer/resumes");
+                            } else {
+                                response.sendRedirect("/vacancies");
+                            }
+                        })
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
