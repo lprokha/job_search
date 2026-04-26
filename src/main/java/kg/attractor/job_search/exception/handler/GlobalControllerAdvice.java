@@ -1,11 +1,7 @@
 package kg.attractor.job_search.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kg.attractor.job_search.exception.BadRequestException;
-import kg.attractor.job_search.exception.ConflictException;
-import kg.attractor.job_search.exception.FileUploadException;
-import kg.attractor.job_search.exception.ForbiddenException;
-import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +27,15 @@ public class GlobalControllerAdvice {
             userService.findByEmail(authentication.getName())
                     .ifPresent(user -> model.addAttribute("currentUser", user));
         }
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public String handleUserNotFound(HttpServletRequest request, Model model, UserNotFoundException e) {
+        addCurrentUser(model);
+        model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+        model.addAttribute("reason", e.getMessage());
+        model.addAttribute("details", request);
+        return "errors/error";
     }
 
     @ExceptionHandler(NotFoundException.class)
