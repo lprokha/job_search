@@ -1,4 +1,5 @@
 <#import "layouts/layout.ftlh" as main>
+<#assign errors = .data_model["org.springframework.validation.BindingResult.form"]!>
 
 <@main.layout>
     <div class="row justify-content-center">
@@ -21,10 +22,11 @@
                                        value="${(_csrf.token)!''}">
                             </#if>
 
-                            <input type="hidden" name="token" value="${token!}">
+                            <input type="hidden" name="token" value="${form.token!}">
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Новый пароль</label>
+
                                 <input type="password"
                                        id="password"
                                        name="password"
@@ -32,6 +34,12 @@
                                        placeholder="Введите новый пароль"
                                        required
                                        autofocus>
+
+                                <#if errors?has_content && errors.hasFieldErrors("password")>
+                                    <div class="text-danger small mt-1">
+                                        ${errors.getFieldError("password").defaultMessage}
+                                    </div>
+                                </#if>
                             </div>
 
                             <div class="d-flex gap-2">
