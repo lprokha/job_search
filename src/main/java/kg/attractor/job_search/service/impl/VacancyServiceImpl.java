@@ -39,10 +39,16 @@ public class VacancyServiceImpl implements VacancyService {
         LocalDateTime now = LocalDateTime.now();
 
         User author = userRepository.findById(authorId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> {
+                    log.warn("User not found for vacancy creation, id={}", authorId);
+                    return new UserNotFoundException();
+                });
 
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(CategoryNotFoundException::new);
+                .orElseThrow(() -> {
+                    log.warn("Category not found for vacancy creation, id={}", dto.getCategoryId());
+                    return new CategoryNotFoundException();
+                });
 
         Vacancy vacancy = Vacancy.builder()
                 .name(dto.getName())

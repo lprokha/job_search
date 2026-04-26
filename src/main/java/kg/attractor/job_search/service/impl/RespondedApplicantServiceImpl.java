@@ -35,10 +35,16 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
         log.info("Creating response for resumeId={} and vacancyId={}", dto.getResumeId(), dto.getVacancyId());
 
         Resume resume = resumeRepository.findById(dto.getResumeId())
-                .orElseThrow(ResumeNotFoundException::new);
+                .orElseThrow(() -> {
+                    log.warn("Resume not found for response creation, id={}", dto.getResumeId());
+                    return new ResumeNotFoundException();
+                });
 
         Vacancy vacancy = vacancyRepository.findById(dto.getVacancyId())
-                .orElseThrow(VacancyNotFoundException::new);
+                .orElseThrow(() -> {
+                    log.warn("Vacancy not found for response creation, id={}", dto.getVacancyId());
+                    return new VacancyNotFoundException();
+                });
 
         RespondedApplicant response = new RespondedApplicant();
         response.setResume(resume);
