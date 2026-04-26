@@ -1,9 +1,13 @@
 package kg.attractor.job_search.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import kg.attractor.job_search.dto.CreateUserDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
+import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.model.User;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,4 +35,12 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     Optional<User> updateAvatar(Integer userId, String avatarFileName);
+
+    void updateResetPasswordToken(String token, String email);
+
+    User getByResetPasswordToken(String token);
+
+    void updatePassword(User user, String newPassword);
+
+    void makeResetPwdLink(HttpServletRequest request) throws NotFoundException, MessagingException, UnsupportedEncodingException;
 }
