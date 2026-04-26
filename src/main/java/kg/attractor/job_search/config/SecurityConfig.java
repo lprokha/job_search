@@ -58,6 +58,8 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/vacancies",
+                                "/forgot-password",
+                                "/reset-password",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
