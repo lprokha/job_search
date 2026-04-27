@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.ResumeNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.ContactInfo;
@@ -149,7 +150,7 @@ public class ResumePageController {
         }
 
         Resume existingResume = resumeService.getById(id)
-                .orElseThrow(() -> new NotFoundException("Resume not found with id = " + id));
+                .orElseThrow(ResumeNotFoundException::new);
 
         if (!existingResume.getApplicantId().equals(currentUser.getId())) {
             throw new ForbiddenException("You can edit only your own resume");
@@ -201,7 +202,7 @@ public class ResumePageController {
         }
 
         Resume existingResume = resumeService.getById(id)
-                .orElseThrow(() -> new NotFoundException("Resume not found with id = " + id));
+                .orElseThrow(ResumeNotFoundException::new);
 
         if (!existingResume.getApplicantId().equals(currentUser.getId())) {
             throw new ForbiddenException("You can edit only your own resume");
