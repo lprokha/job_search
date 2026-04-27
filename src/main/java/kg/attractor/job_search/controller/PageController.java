@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,5 +39,10 @@ public class PageController {
         model.addAttribute("details", null);
 
         return "errors/error";
+    }
+
+    @GetMapping("/favicon.ico")
+    @ResponseBody
+    public void favicon() {
     }
 }
