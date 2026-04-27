@@ -79,8 +79,8 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(FileUploadException.class)
     public String handleFileUpload(HttpServletRequest request, Model model, FileUploadException e) {
         addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        model.addAttribute("reason", "File upload error: " + e.getMessage());
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", "Ошибка загрузки файла: " + e.getMessage());
         model.addAttribute("details", request);
         return "errors/error";
     }
