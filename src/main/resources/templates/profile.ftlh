@@ -17,14 +17,16 @@
             <div class="mt-3">
                 <p class="mb-2">
                     <strong>Текущее фото:</strong>
-                    <#if user.avatar?? && user.avatar?has_content>
-                        <img src="/uploads/avatars/${user.avatar}"
-                             alt="Аватар"
-                             class="rounded mt-2"
-                             style="max-width: 150px;">
-                    <#else>
-                        не установлено
-                    </#if>
+                    <#if user.avatar?? && user.avatar?has_content && user.avatar != "default-avatar.png">
+                <div class="mt-2">
+                    <img src="/uploads/avatars/${user.avatar}"
+                         alt="Аватар"
+                         class="rounded"
+                         style="max-width: 150px;">
+                </div>
+                <#else>
+                    не установлено
+                </#if>
                 </p>
 
                 <form action="/profile/avatar" method="post" enctype="multipart/form-data">
