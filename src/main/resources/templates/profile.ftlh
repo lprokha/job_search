@@ -18,7 +18,10 @@
                 <p class="mb-2">
                     <strong>Текущее фото:</strong>
                     <#if user.avatar?? && user.avatar?has_content>
-                        ${user.avatar}
+                        <img src="/uploads/avatars/${user.avatar}"
+                             alt="Аватар"
+                             class="rounded mt-2"
+                             style="max-width: 150px;">
                     <#else>
                         не установлено
                     </#if>
