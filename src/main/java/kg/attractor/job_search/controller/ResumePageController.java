@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.ContactInfo;
 import kg.attractor.job_search.model.EducationInfo;
@@ -53,7 +54,7 @@ public class ResumePageController {
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

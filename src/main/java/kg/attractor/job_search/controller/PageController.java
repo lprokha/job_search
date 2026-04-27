@@ -1,6 +1,7 @@
 package kg.attractor.job_search.controller;
 
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
@@ -20,7 +21,7 @@ public class PageController {
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @GetMapping("/forbidden")

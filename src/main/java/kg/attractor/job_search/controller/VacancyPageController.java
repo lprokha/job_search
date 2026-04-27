@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.CreateVacancyDto;
 import kg.attractor.job_search.dto.UpdateVacancyDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
@@ -42,7 +43,7 @@ public class VacancyPageController {
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
