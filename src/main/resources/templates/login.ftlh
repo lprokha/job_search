@@ -25,13 +25,17 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Пароль</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label mb-0">Пароль</label>
+                                <a href="/forgot-password" class="small text-muted text-decoration-none">
+                                    Забыли пароль?
+                                </a>
+                            </div>
+                            <input type="password" name="password" class="form-control mt-1" required>
                         </div>
 
                         <button type="submit" class="btn btn-dark w-100">Войти</button>
                     </form>
-
                     <div class="text-center mt-3">
                         <a href="/register" class="text-decoration-none text-dark">Создать аккаунт</a>
                     </div>

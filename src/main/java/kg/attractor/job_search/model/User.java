@@ -39,6 +39,7 @@ public class User implements UserDetails {
     private Integer age;
     private String email;
     private String password;
+    private String resetPasswordToken;
 
     @Column(name = "phone_number")
     private String phoneNumber;

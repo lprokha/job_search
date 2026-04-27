@@ -1,6 +1,8 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.RespondToVacancyDto;
+import kg.attractor.job_search.exception.ResumeNotFoundException;
+import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.RespondedApplicant;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.Vacancy;
@@ -32,8 +34,17 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
     public RespondedApplicant create(RespondToVacancyDto dto) {
         log.info("Creating response for resumeId={} and vacancyId={}", dto.getResumeId(), dto.getVacancyId());
 
-        Resume resume = resumeRepository.findById(dto.getResumeId()).orElse(null);
-        Vacancy vacancy = vacancyRepository.findById(dto.getVacancyId()).orElse(null);
+        Resume resume = resumeRepository.findById(dto.getResumeId())
+                .orElseThrow(() -> {
+                    log.warn("Resume not found for response creation, id={}", dto.getResumeId());
+                    return new ResumeNotFoundException();
+                });
+
+        Vacancy vacancy = vacancyRepository.findById(dto.getVacancyId())
+                .orElseThrow(() -> {
+                    log.warn("Vacancy not found for response creation, id={}", dto.getVacancyId());
+                    return new VacancyNotFoundException();
+                });
 
         RespondedApplicant response = new RespondedApplicant();
         response.setResume(resume);

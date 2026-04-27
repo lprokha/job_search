@@ -1,6 +1,7 @@
 package kg.attractor.job_search.controller;
 
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class PageController {
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @GetMapping("/forbidden")
@@ -37,5 +39,10 @@ public class PageController {
         model.addAttribute("details", null);
 
         return "errors/error";
+    }
+
+    @GetMapping("/favicon.ico")
+    @ResponseBody
+    public void favicon() {
     }
 }

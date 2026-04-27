@@ -2,6 +2,9 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.CreateVacancyDto;
 import kg.attractor.job_search.dto.UpdateVacancyDto;
+import kg.attractor.job_search.exception.CategoryNotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
+import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.Category;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
@@ -35,8 +38,17 @@ public class VacancyServiceImpl implements VacancyService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        User author = userRepository.findById(authorId).orElse(null);
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> {
+                    log.warn("User not found for vacancy creation, id={}", authorId);
+                    return new UserNotFoundException();
+                });
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> {
+                    log.warn("Category not found for vacancy creation, id={}", dto.getCategoryId());
+                    return new CategoryNotFoundException();
+                });
 
         Vacancy vacancy = Vacancy.builder()
                 .name(dto.getName())
@@ -141,15 +153,18 @@ public class VacancyServiceImpl implements VacancyService {
     public Optional<Vacancy> update(Integer id, UpdateVacancyDto dto) {
         log.info("Updating vacancy id={}", id);
 
-        Optional<Vacancy> existingVacancy = vacancyRepository.findById(id);
-        if (existingVacancy.isEmpty()) {
-            log.warn("Vacancy not found for update, id={}", id);
-            return Optional.empty();
-        }
+        Vacancy vacancy = vacancyRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Vacancy not found for update, id={}", id);
+                    return new VacancyNotFoundException();
+                });
 
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> {
+                    log.warn("Category not found, id={}", dto.getCategoryId());
+                    return new CategoryNotFoundException();
+                });
 
-        Vacancy vacancy = existingVacancy.get();
         vacancy.setName(dto.getName());
         vacancy.setDescription(dto.getDescription());
         vacancy.setCategory(category);

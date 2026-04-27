@@ -5,6 +5,8 @@ import kg.attractor.job_search.dto.CreateVacancyDto;
 import kg.attractor.job_search.dto.UpdateVacancyDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
+import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
@@ -42,7 +44,7 @@ public class VacancyPageController {
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
@@ -237,7 +239,7 @@ public class VacancyPageController {
         }
 
         Vacancy existingVacancy = vacancyService.getById(id)
-                .orElseThrow(() -> new NotFoundException("Vacancy not found with id = " + id));
+                .orElseThrow(VacancyNotFoundException::new);
 
         if (!existingVacancy.getAuthorId().equals(currentUser.getId())) {
             throw new ForbiddenException("You can edit only your own vacancy");
@@ -276,7 +278,7 @@ public class VacancyPageController {
         }
 
         Vacancy existingVacancy = vacancyService.getById(id)
-                .orElseThrow(() -> new NotFoundException("Vacancy not found with id = " + id));
+                .orElseThrow(VacancyNotFoundException::new);
 
         if (!existingVacancy.getAuthorId().equals(currentUser.getId())) {
             throw new ForbiddenException("You can edit only your own vacancy");

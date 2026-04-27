@@ -6,6 +6,7 @@ import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.exception.BadRequestException;
 import kg.attractor.job_search.exception.FileUploadException;
 import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
@@ -43,7 +44,7 @@ public class ProfilePageController {
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
@@ -96,7 +97,7 @@ public class ProfilePageController {
     @GetMapping("/profile/edit")
     public String editProfilePage(Authentication authentication, Model model) {
         User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         UpdateProfileDto dto = UpdateProfileDto.builder()
                 .name(currentUser.getName())
@@ -120,7 +121,7 @@ public class ProfilePageController {
             Model model
     ) {
         User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentUser", currentUser);
@@ -142,18 +143,32 @@ public class ProfilePageController {
     }
 
     @PostMapping("/profile/avatar")
-    public String uploadAvatar(MultipartFile file, Authentication authentication) {
+    public String uploadAvatar(MultipartFile file, Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);
 
         if (file == null || file.isEmpty()) {
-            throw new BadRequestException("File cannot be empty");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("currentUser", currentUser);
+            model.addAttribute("avatarError", "Сначала выберите фото для загрузки");
+
+            if ("APPLICANT".equals(currentUser.getAccountType().name())) {
+                List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
+                model.addAttribute("resumes", resumes);
+                model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
+            } else {
+                List<Vacancy> vacancies = vacancyService.getByAuthorId(currentUser.getId());
+                model.addAttribute("vacancies", vacancies);
+                model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+            }
+
+            return "profile";
         }
 
         try {
             String fileName = fileService.saveUploadedFile(file, "avatars");
 
             userService.updateAvatar(currentUser.getId(), fileName)
-                    .orElseThrow(() -> new NotFoundException("User not found"));
+                    .orElseThrow(UserNotFoundException::new);
 
             return "redirect:/profile";
         } catch (IOException e) {

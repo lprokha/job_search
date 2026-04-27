@@ -2,6 +2,7 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
+import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.model.Category;
 import kg.attractor.job_search.model.ContactInfo;
 import kg.attractor.job_search.model.ContactType;
@@ -47,8 +48,17 @@ public class ResumeServiceImpl implements ResumeService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        User applicant = userRepository.findById(applicantId).orElse(null);
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+        User applicant = userRepository.findById(applicantId)
+                .orElseThrow(() -> {
+                    log.warn("User not found for resume creation, id={}", applicantId);
+                    return new UserNotFoundException();
+                });
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> {
+                    log.warn("Category not found for resume creation, id={}", dto.getCategoryId());
+                    return new CategoryNotFoundException();
+                });
 
         Resume resume = Resume.builder()
                 .applicant(applicant)
@@ -112,14 +122,18 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public Optional<Resume> update(Integer id, UpdateResumeDto dto) {
-        Optional<Resume> existingResume = resumeRepository.findById(id);
-        if (existingResume.isEmpty()) {
-            return Optional.empty();
-        }
+        Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Resume not found for update, id={}", id);
+                    return new ResumeNotFoundException();
+                });
 
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> {
+                    log.warn("Category not found, id={}", dto.getCategoryId());
+                    return new CategoryNotFoundException();
+                });
 
-        Resume resume = existingResume.get();
         resume.setName(dto.getName());
         resume.setCategory(category);
         resume.setSalary(dto.getSalary());
@@ -160,8 +174,11 @@ public class ResumeServiceImpl implements ResumeService {
 
     private void saveOrUpdateContactInfo(Resume resume, Integer contactTypeId, String contactValue) {
         ContactInfo contactInfo = contactInfoRepository.findByResumeId(resume.getId()).stream().findFirst().orElse(new ContactInfo());
-        ContactType contactType = contactTypeRepository.findById(contactTypeId).orElse(null);
-
+        ContactType contactType = contactTypeRepository.findById(contactTypeId)
+                .orElseThrow(() -> {
+                    log.warn("Contact type not found, id={}", contactTypeId);
+                    return new ContactTypeNotFoundException();
+                });
         contactInfo.setResume(resume);
         contactInfo.setType(contactType);
         contactInfo.setContactValue(contactValue);
@@ -198,6 +215,11 @@ public class ResumeServiceImpl implements ResumeService {
         if (value == null || value.isBlank()) {
             return null;
         }
-        return LocalDate.parse(value);
+
+        try {
+            return LocalDate.parse(value);
+        } catch (Exception e) {
+            throw new BadRequestException("Некорректный формат даты");
+        }
     }
 }
