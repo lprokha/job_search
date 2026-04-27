@@ -5,6 +5,7 @@ import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class GlobalControllerAdvice {
 
     private final UserService userService;
@@ -86,6 +88,8 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(Exception.class)
     public String handleOtherExceptions(HttpServletRequest request, Model model, Exception e) {
         addCurrentUser(model);
+        log.error("Unhandled exception occurred", e);
+
         model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         model.addAttribute("reason", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         model.addAttribute("details", request);
