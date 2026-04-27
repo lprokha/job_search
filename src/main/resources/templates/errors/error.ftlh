@@ -6,8 +6,8 @@
     <div class="error_block">
         <div class="main_block">
             <div class="content">
-                <h1>${status}</h1>
-                <h2>${reason}</h2>
+                <h1>${status!}</h1>
+                <h2>${reason!}</h2>
 
                 <#if details??>
                     <ul class="details">
