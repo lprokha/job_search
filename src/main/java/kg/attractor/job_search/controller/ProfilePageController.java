@@ -143,11 +143,25 @@ public class ProfilePageController {
     }
 
     @PostMapping("/profile/avatar")
-    public String uploadAvatar(MultipartFile file, Authentication authentication) {
+    public String uploadAvatar(MultipartFile file, Authentication authentication, Model model) {
         User currentUser = getCurrentUser(authentication);
 
         if (file == null || file.isEmpty()) {
-            throw new BadRequestException("File cannot be empty");
+            model.addAttribute("user", currentUser);
+            model.addAttribute("currentUser", currentUser);
+            model.addAttribute("avatarError", "Сначала выберите фото для загрузки");
+
+            if ("APPLICANT".equals(currentUser.getAccountType().name())) {
+                List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
+                model.addAttribute("resumes", resumes);
+                model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
+            } else {
+                List<Vacancy> vacancies = vacancyService.getByAuthorId(currentUser.getId());
+                model.addAttribute("vacancies", vacancies);
+                model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
+            }
+
+            return "profile";
         }
 
         try {
