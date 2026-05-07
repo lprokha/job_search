@@ -80,11 +80,11 @@ public class AuthController {
     public String processForgotPassword(HttpServletRequest request, Model model) {
         try{
             userService.makeResetPwdLink(request);
-            model.addAttribute("message", "На ваш email отправлена ссылка для смены пароля");
+            model.addAttribute("message", "password.reset.link.sent");
         } catch (NotFoundException | UnsupportedEncodingException e) {
             model.addAttribute("error", e.getMessage());
         } catch (MessagingException e) {
-            model.addAttribute("error", "Ошибка отправки письма");
+            model.addAttribute("error", "password.reset.email.error");
         }
         return "forgot-password-form";
     }
@@ -97,7 +97,7 @@ public class AuthController {
             form.setToken(token);
             model.addAttribute("form", form);
         } catch (NotFoundException e) {
-            model.addAttribute("error", "Invalid token!");
+            model.addAttribute("error", "password.reset.invalidToken");
         }
 
         return "reset-password-form";
@@ -117,9 +117,9 @@ public class AuthController {
         try {
             User user = userService.getByResetPasswordToken(form.getToken());
             userService.updatePassword(user, form.getPassword());
-            model.addAttribute("message", "Пароль успешно изменен");
+            model.addAttribute("message", "password.reset.success");
         } catch (NotFoundException e) {
-            model.addAttribute("message", "Invalid token");
+            model.addAttribute("message", "password.reset.invalidToken");
         }
 
         return "partial/message";
