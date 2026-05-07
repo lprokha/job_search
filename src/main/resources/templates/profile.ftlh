@@ -1,22 +1,26 @@
 <#import "layouts/layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
 
 <@main.layout>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <h2>${user.name} ${user.surname}</h2>
+
             <p class="text-muted mb-1">${user.email}</p>
             <p class="mb-1">${user.phoneNumber!""}</p>
+
             <span class="badge text-bg-secondary">
                 <#if user.accountType?string == "APPLICANT">
-                    Соискатель
+                    <@spring.message "profile.applicant"/>
                 <#else>
-                    Работодатель
+                    <@spring.message "profile.employer"/>
                 </#if>
             </span>
 
             <div class="mt-3">
                 <p class="mb-2">
-                    <strong>Текущее фото:</strong>
+                    <strong><@spring.message "profile.currentPhoto"/>:</strong>
+
                     <#if user.avatar?? && user.avatar?has_content && user.avatar != "default-avatar.png">
                 <div class="mt-2">
                     <img src="/uploads/avatars/${user.avatar}"
@@ -25,11 +29,14 @@
                          style="max-width: 150px;">
                 </div>
                 <#else>
-                    не установлено
+                    <@spring.message "profile.notSet"/>
                 </#if>
                 </p>
 
-                <form action="/profile/avatar" method="post" enctype="multipart/form-data">
+                <form action="/profile/avatar"
+                      method="post"
+                      enctype="multipart/form-data">
+
                     <#if _csrf??>
                         <input
                                 type="hidden"
@@ -39,10 +46,17 @@
 
                     <div class="row g-2 align-items-center">
                         <div class="col-md-8">
-                            <input type="file" name="file" class="form-control" accept="image/*">
+                            <input type="file"
+                                   name="file"
+                                   class="form-control"
+                                   accept="image/*">
                         </div>
+
                         <div class="col-md-4">
-                            <button type="submit" class="btn btn-outline-dark w-100">Загрузить фото</button>
+                            <button type="submit"
+                                    class="btn btn-outline-dark w-100">
+                                <@spring.message "profile.uploadPhoto"/>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -57,15 +71,26 @@
     </div>
 
     <div class="mb-4 d-flex gap-2">
-        <a href="/profile/edit" class="btn btn-dark btn-sm">Редактировать профиль</a>
+        <a href="/profile/edit" class="btn btn-dark btn-sm">
+            <@spring.message "profile.edit"/>
+        </a>
     </div>
 
     <#if user.accountType?string == "APPLICANT">
+
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="mb-0">Мои резюме</h3>
+            <h3 class="mb-0">
+                <@spring.message "resumes.myTitle"/>
+            </h3>
+
             <div class="d-flex gap-2">
-                <a href="/resumes/create" class="btn btn-dark btn-sm">Добавить</a>
-                <a href="/resumes" class="btn btn-outline-dark btn-sm">Смотреть все</a>
+                <a href="/resumes/create" class="btn btn-dark btn-sm">
+                    <@spring.message "button.add"/>
+                </a>
+
+                <a href="/resumes" class="btn btn-outline-dark btn-sm">
+                    <@spring.message "button.viewAll"/>
+                </a>
             </div>
         </div>
 
@@ -76,10 +101,22 @@
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
                                 <h5>${resume.name}</h5>
-                                <p class="mb-2">Зарплата: ${resume.salary!0}</p>
-                                <p class="text-muted mb-2">Обновлено: ${resumeUpdateTimes[resume.id?string]!""}</p>
+
+                                <p class="mb-2">
+                                    <@spring.message "vacancy.salary"/>:
+                                    ${resume.salary!0}
+                                </p>
+
+                                <p class="text-muted mb-2">
+                                    <@spring.message "vacancy.updated"/>:
+                                    ${resumeUpdateTimes[resume.id?string]!""}
+                                </p>
+
                                 <div class="d-flex gap-2">
-                                    <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
+                                    <a href="/resumes/edit/${resume.id}"
+                                       class="btn btn-outline-dark btn-sm">
+                                        <@spring.message "button.edit"/>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -87,14 +124,26 @@
                 </#list>
             </div>
         <#else>
-            <div class="alert alert-light border">У вас пока нет резюме.</div>
+            <div class="alert alert-light border">
+                <@spring.message "profile.noResumes"/>
+            </div>
         </#if>
+
     <#else>
+
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="mb-0">Мои вакансии</h3>
+            <h3 class="mb-0">
+                <@spring.message "nav.myVacancies"/>
+            </h3>
+
             <div class="d-flex gap-2">
-                <a href="/my-vacancies/create" class="btn btn-dark btn-sm">Добавить</a>
-                <a href="/my-vacancies" class="btn btn-outline-dark btn-sm">Смотреть все</a>
+                <a href="/my-vacancies/create" class="btn btn-dark btn-sm">
+                    <@spring.message "button.add"/>
+                </a>
+
+                <a href="/my-vacancies" class="btn btn-outline-dark btn-sm">
+                    <@spring.message "button.viewAll"/>
+                </a>
             </div>
         </div>
 
@@ -105,10 +154,22 @@
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
                                 <h5>${vacancy.name}</h5>
-                                <p class="mb-2">Зарплата: ${vacancy.salary!0}</p>
-                                <p class="text-muted mb-2">Обновлено: ${vacancyUpdateTimes[vacancy.id?string]!""}</p>
+
+                                <p class="mb-2">
+                                    <@spring.message "vacancy.salary"/>:
+                                    ${vacancy.salary!0}
+                                </p>
+
+                                <p class="text-muted mb-2">
+                                    <@spring.message "vacancy.updated"/>:
+                                    ${vacancyUpdateTimes[vacancy.id?string]!""}
+                                </p>
+
                                 <div class="d-flex gap-2">
-                                    <a href="/my-vacancies/edit/${vacancy.id}" class="btn btn-outline-dark btn-sm">Редактировать</a>
+                                    <a href="/my-vacancies/edit/${vacancy.id}"
+                                       class="btn btn-outline-dark btn-sm">
+                                        <@spring.message "button.edit"/>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -116,7 +177,9 @@
                 </#list>
             </div>
         <#else>
-            <div class="alert alert-light border">У вас пока нет вакансий.</div>
+            <div class="alert alert-light border">
+                <@spring.message "profile.noVacancies"/>
+            </div>
         </#if>
     </#if>
 </@main.layout>
