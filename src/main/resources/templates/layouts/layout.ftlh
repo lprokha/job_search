@@ -83,7 +83,7 @@
                             </option>
                         </select>
 
-                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        <button type="submit" class="btn btn-dark btn-sm text-nowrap">
                             <@spring.message "button.changeLanguage"/>
                         </button>
                     </form>
