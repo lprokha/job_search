@@ -1,6 +1,8 @@
+<#import "/spring.ftl" as spring>
+
 <#macro layout>
     <!DOCTYPE html>
-    <html lang="ru">
+    <html lang="${.locale?string?substring(0, 2)}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,46 +25,76 @@
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                    <#-- ОСНОВНАЯ НАВИГАЦИЯ -->
                     <#if currentUser?? && currentUser.accountType?string == "EMPLOYER">
                         <li class="nav-item">
-                            <a class="nav-link" href="/employer/resumes">Резюме</a>
+                            <a class="nav-link" href="/employer/resumes">
+                                <@spring.message "nav.resumes"/>
+                            </a>
                         </li>
                     <#else>
                         <li class="nav-item">
-                            <a class="nav-link" href="/vacancies">Вакансии</a>
+                            <a class="nav-link" href="/vacancies">
+                                <@spring.message "nav.vacancies"/>
+                            </a>
                         </li>
 
                         <#if currentUser?? && currentUser.accountType?string == "APPLICANT">
                             <li class="nav-item">
-                                <a class="nav-link" href="/companies">Компании</a>
+                                <a class="nav-link" href="/companies">
+                                    <@spring.message "nav.companies"/>
+                                </a>
                             </li>
                         </#if>
                     </#if>
 
                     <#if currentUser??>
                         <li class="nav-item">
-                            <a class="nav-link" href="/profile">Личный кабинет</a>
+                            <a class="nav-link" href="/profile">
+                                <@spring.message "nav.profile"/>
+                            </a>
                         </li>
 
                         <#if currentUser.accountType?string == "APPLICANT">
                             <li class="nav-item">
-                                <a class="nav-link" href="/resumes">Мои резюме</a>
+                                <a class="nav-link" href="/resumes">
+                                    <@spring.message "nav.myResumes"/>
+                                </a>
                             </li>
                         </#if>
 
                         <#if currentUser.accountType?string == "EMPLOYER">
                             <li class="nav-item">
-                                <a class="nav-link" href="/my-vacancies">Мои вакансии</a>
+                                <a class="nav-link" href="/my-vacancies">
+                                    <@spring.message "nav.myVacancies"/>
+                                </a>
                             </li>
                         </#if>
                     </#if>
                 </ul>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 align-items-center">
+                    <form method="get" class="d-flex gap-2 align-items-center">
+                        <select name="lang" class="form-select form-select-sm">
+                            <option value="ru" <#if .locale?string?starts_with("ru")>selected</#if>>
+                                RU
+                            </option>
+                            <option value="en" <#if .locale?string?starts_with("en")>selected</#if>>
+                                EN
+                            </option>
+                        </select>
+
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            <@spring.message "button.changeLanguage"/>
+                        </button>
+                    </form>
+
                     <#if !currentUser??>
-                        <a href="/login" class="btn btn-outline-dark btn-sm">Войти</a>
-                        <a href="/register" class="btn btn-dark btn-sm">Регистрация</a>
+                        <a href="/login" class="btn btn-outline-dark btn-sm">
+                            <@spring.message "button.login"/>
+                        </a>
+                        <a href="/register" class="btn btn-dark btn-sm">
+                            <@spring.message "button.register"/>
+                        </a>
                     </#if>
 
                     <#if currentUser??>
@@ -73,7 +105,9 @@
                                         name="${(_csrf.parameterName)!'csrf'}"
                                         value="${(_csrf.token)!''}">
                             </#if>
-                            <button type="submit" class="btn btn-outline-secondary btn-sm">Выйти</button>
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <@spring.message "button.logout"/>
+                            </button>
                         </form>
                     </#if>
                 </div>
