@@ -12,27 +12,27 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateUserDto {
 
-    @NotBlank(message = "{validation.name.notBlank}")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
 
-    @NotBlank(message = "{validation.surname.notBlank}")
+    @NotBlank(message = "Surname cannot be empty")
     private String surname;
 
-    @NotNull(message = "{validation.age.notNull}")
-    @Min(value = 16, message = "{validation.age.min}")
-    @Max(value = 100, message = "{validation.age.max}")
+    @NotNull(message = "Age cannot be null")
+    @Min(value = 16, message = "Age must be at least 16")
+    @Max(value = 100, message = "Age must be no more than 100")
     private Integer age;
 
-    @NotBlank(message = "{validation.email.notBlank}")
-    @Email(message = "{validation.email.invalid}")
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Email is invalid")
     private String email;
 
     private String password;
 
-    @NotBlank(message = "{validation.phone.notBlank}")
+    @NotBlank(message = "Phone number cannot be empty")
     @Pattern(
             regexp = "^\\+?\\d{10,15}$",
-            message = "{validation.phone.pattern}"
+            message = "Phone number must contain from 10 to 15 digits and may start with +"
     )
     private String phoneNumber;
 }
