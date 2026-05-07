@@ -49,7 +49,11 @@ public class AuthController {
             HttpServletRequest request
     ) throws ServletException {
         if (userService.existsByEmail(dto.getEmail())) {
-            bindingResult.rejectValue("email", "error.user", "Пользователь с таким email уже существует");
+            bindingResult.rejectValue(
+                    "email",
+                    "error.user",
+                    "validation.email.exists"
+            );
         }
 
         if (bindingResult.hasErrors()) {
