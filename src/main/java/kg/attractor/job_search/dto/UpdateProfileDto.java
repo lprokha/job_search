@@ -12,25 +12,27 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateProfileDto {
 
-    @NotBlank(message = "Имя не может быть пустым")
+    @NotBlank(message = "{validation.name.notBlank}")
     private String name;
 
-    @NotBlank(message = "Фамилия не может быть пустой")
+    @NotBlank(message = "{validation.surname.notBlank}")
     private String surname;
 
-    @NotNull(message = "Возраст не может быть пустым")
-    @Min(value = 16, message = "Возраст должен быть не меньше 16")
-    @Max(value = 100, message = "Возраст должен быть не больше 100")
+    @NotNull(message = "{validation.age.notNull}")
+    @Min(value = 16, message = "{validation.age.min}")
+    @Max(value = 100, message = "{validation.age.max}")
     private Integer age;
 
-    @NotBlank(message = "Email не может быть пустым")
-    @Email(message = "Некорректный email")
+    @NotBlank(message = "{validation.email.notBlank}")
+    @Email(message = "{validation.email.invalid}")
     private String email;
 
-    @NotBlank(message = "Номер телефона не может быть пустым")
+    private String password;
+
+    @NotBlank(message = "{validation.phone.notBlank}")
     @Pattern(
             regexp = "^\\+?\\d{10,15}$",
-            message = "Телефон должен содержать от 10 до 15 цифр и может начинаться с +"
+            message = "{validation.phone.pattern}"
     )
     private String phoneNumber;
 }
