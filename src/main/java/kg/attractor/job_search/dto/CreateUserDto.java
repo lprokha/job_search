@@ -12,32 +12,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUserDto {
-    @NotBlank(message = "Name cannot be empty")
+
+    @NotBlank(message = "{validation.name.notBlank}")
     private String name;
 
-    @NotBlank(message = "Surname cannot be empty")
+    @NotBlank(message = "{validation.surname.notBlank}")
     private String surname;
 
-    @NotNull(message = "Age cannot be null")
-    @Min(value = 16, message = "Age must be at least 16")
-    @Max(value = 100, message = "Age must be no more than 100")
+    @NotNull(message = "{validation.age.notNull}")
+    @Min(value = 16, message = "{validation.age.min}")
+    @Max(value = 100, message = "{validation.age.max}")
     private Integer age;
 
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Email is invalid")
+    @NotBlank(message = "{validation.email.notBlank}")
+    @Email(message = "{validation.email.invalid}")
     private String email;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 4, max = 24, message = "Password must be from 4 to 24 characters long")
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$",
-            message = "Password must contain at least one lowercase letter, one uppercase letter and one digit")
+    @NotBlank(message = "{validation.password.notBlank}")
+    @Size(min = 4, max = 24, message = "{validation.password.size}")
+    @Pattern(
+            regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$",
+            message = "{validation.password.pattern}"
+    )
     private String password;
 
-    @NotBlank(message = "Phone number cannot be empty")
-    @Pattern(regexp = "^\\+?\\d{10,15}$",
-            message = "Phone number must contain from 10 to 15 digits and may start with +")
+    @NotBlank(message = "{validation.phone.notBlank}")
+    @Pattern(
+            regexp = "^\\+?\\d{10,15}$",
+            message = "{validation.phone.pattern}"
+    )
     private String phoneNumber;
 
-    @NotNull(message = "Account type must be selected")
+    @NotNull(message = "{validation.accountType.notNull}")
     private AccountType accountType;
 }
