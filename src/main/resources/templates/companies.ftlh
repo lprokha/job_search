@@ -9,23 +9,23 @@
     </div>
 
     <#if companies?? && (companies?size > 0)>
-        <div class="row">
+        <div class="list-group shadow-sm">
             <#list companies as company>
-                <div class="col-12 mb-3">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body d-flex flex-column">
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
                             <h5 class="mb-2">${company.name} ${company.surname}</h5>
 
-                            <p class="text-muted mb-3">
+                            <p class="text-muted mb-0">
                                 <@spring.message "companies.vacancyCount"/>:
                                 ${companyVacancyCounts[company.id?string]!0}
                             </p>
+                        </div>
 
-                            <div class="mt-auto">
-                                <a href="/companies/${company.id}" class="btn btn-outline-dark btn-sm">
-                                    <@spring.message "button.viewVacancies"/>
-                                </a>
-                            </div>
+                        <div class="text-nowrap">
+                            <a href="/companies/${company.id}" class="btn btn-outline-dark btn-sm">
+                                <@spring.message "button.viewVacancies"/>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -19,26 +19,30 @@
     </div>
 
     <#if resumes?? && (resumes?size > 0)>
-        <div class="row">
+        <div class="list-group shadow-sm">
             <#list resumes as resume>
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h5>${resume.name}</h5>
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <h5 class="mb-2">${resume.name}</h5>
 
-                            <p class="mb-2">
-                                <@spring.message "vacancy.salary"/>: ${resume.salary!0}
+                            <p class="mb-1">
+                                <span class="fw-semibold">
+                                    <@spring.message "vacancy.salary"/>:
+                                </span>
+                                ${resume.salary!0}
                             </p>
 
-                            <p class="text-muted mb-2">
-                                <@spring.message "vacancy.updated"/>: ${resumeUpdateTimes[resume.id?string]!""}
+                            <p class="text-muted mb-0">
+                                <@spring.message "vacancy.updated"/>:
+                                ${resumeUpdateTimes[resume.id?string]!""}
                             </p>
+                        </div>
 
-                            <div class="d-flex gap-2">
-                                <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">
-                                    <@spring.message "button.edit"/>
-                                </a>
-                            </div>
+                        <div class="text-nowrap">
+                            <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">
+                                <@spring.message "button.edit"/>
+                            </a>
                         </div>
                     </div>
                 </div>

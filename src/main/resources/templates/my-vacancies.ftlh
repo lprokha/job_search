@@ -19,15 +19,12 @@
                     <option value="dateDesc" <#if sort?? && sort == "dateDesc">selected</#if>>
                         <@spring.message "sort.dateDesc"/>
                     </option>
-
                     <option value="dateAsc" <#if sort?? && sort == "dateAsc">selected</#if>>
                         <@spring.message "sort.dateAsc"/>
                     </option>
-
                     <option value="responsesDesc" <#if sort?? && sort == "responsesDesc">selected</#if>>
                         <@spring.message "sort.responsesDesc"/>
                     </option>
-
                     <option value="responsesAsc" <#if sort?? && sort == "responsesAsc">selected</#if>>
                         <@spring.message "sort.responsesAsc"/>
                     </option>
@@ -49,35 +46,39 @@
     </div>
 
     <#if vacancies?? && (vacancies?size > 0)>
-        <div class="row">
+        <div class="list-group shadow-sm">
             <#list vacancies as vacancy>
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h5>${vacancy.name}</h5>
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <h5 class="mb-2">${vacancy.name}</h5>
 
-                            <p class="mb-2">
-                                <@spring.message "vacancy.salary"/>:
+                            <p class="mb-1">
+                                <span class="fw-semibold">
+                                    <@spring.message "vacancy.salary"/>:
+                                </span>
                                 ${vacancy.salary!0}
                             </p>
 
-                            <p class="mb-2">
-                                <@spring.message "vacancy.experience"/>:
+                            <p class="mb-1">
+                                <span class="fw-semibold">
+                                    <@spring.message "vacancy.experience"/>:
+                                </span>
                                 ${vacancy.expFrom!0} - ${vacancy.expTo!0}
                                 <@spring.message "vacancy.years"/>
                             </p>
 
-                            <p class="text-muted mb-2">
+                            <p class="text-muted mb-0">
                                 <@spring.message "vacancy.updated"/>:
                                 ${vacancyUpdateTimes[vacancy.id?string]!""}
                             </p>
+                        </div>
 
-                            <div class="d-flex gap-2">
-                                <a href="/my-vacancies/edit/${vacancy.id}"
-                                   class="btn btn-outline-dark btn-sm">
-                                    <@spring.message "button.edit"/>
-                                </a>
-                            </div>
+                        <div class="text-nowrap">
+                            <a href="/my-vacancies/edit/${vacancy.id}"
+                               class="btn btn-outline-dark btn-sm">
+                                <@spring.message "button.edit"/>
+                            </a>
                         </div>
                     </div>
                 </div>
