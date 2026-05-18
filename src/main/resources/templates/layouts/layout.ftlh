@@ -73,7 +73,14 @@
                 </ul>
 
                 <div class="d-flex gap-2 align-items-center">
-                    <form method="get" class="d-flex gap-2 align-items-center">
+                    <form action="/change-language" method="post" class="d-flex gap-2 align-items-center">
+                        <#if _csrf??>
+                            <input
+                                    type="hidden"
+                                    name="${(_csrf.parameterName)!'csrf'}"
+                                    value="${(_csrf.token)!''}">
+                        </#if>
+
                         <select name="lang" class="form-select form-select-sm">
                             <option value="ru" <#if .locale?string?starts_with("ru")>selected</#if>>
                                 RU

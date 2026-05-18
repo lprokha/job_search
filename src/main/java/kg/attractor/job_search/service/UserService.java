@@ -43,4 +43,6 @@ public interface UserService {
     void updatePassword(User user, String newPassword);
 
     void makeResetPwdLink(HttpServletRequest request) throws NotFoundException, MessagingException, UnsupportedEncodingException;
+
+    void updateLocale(Integer userId, String locale);
 }

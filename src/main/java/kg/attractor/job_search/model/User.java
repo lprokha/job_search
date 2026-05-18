@@ -52,6 +52,8 @@ public class User implements UserDetails {
 
     private Boolean enabled;
 
+    private String locale;
+
     @OneToMany(mappedBy = "applicant")
     private List<Resume> resumes;
 

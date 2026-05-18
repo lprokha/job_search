@@ -72,7 +72,9 @@ public class ResumeServiceImpl implements ResumeService {
 
         Resume savedResume = resumeRepository.save(resume);
 
-        saveOrUpdateAdditionalInfo(savedResume, dto);
+        saveContactInfo(savedResume, dto.getContactTypeId(), dto.getContactValue());
+        saveEducationInfos(savedResume, dto.getEducationInfos());
+        saveWorkExperienceInfos(savedResume, dto.getWorkExperienceInfos());
 
         return savedResume;
     }
@@ -160,10 +162,63 @@ public class ResumeServiceImpl implements ResumeService {
         return true;
     }
 
-    private void saveOrUpdateAdditionalInfo(Resume resume, CreateResumeDto dto) {
-        saveOrUpdateContactInfo(resume, dto.getContactTypeId(), dto.getContactValue());
-        saveOrUpdateEducationInfo(resume, dto.getInstitution(), dto.getProgram(), dto.getStartDate(), dto.getEndDate(), dto.getDegree());
-        saveOrUpdateWorkExperienceInfo(resume, dto.getYears(), dto.getCompanyName(), dto.getPosition(), dto.getResponsibilities());
+    private void saveContactInfo(Resume resume, Integer contactTypeId, String contactValue) {
+        ContactType contactType = contactTypeRepository.findById(contactTypeId)
+                .orElseThrow(() -> {
+                    log.warn("Contact type not found, id={}", contactTypeId);
+                    return new ContactTypeNotFoundException();
+                });
+
+        ContactInfo contactInfo = new ContactInfo();
+        contactInfo.setResume(resume);
+        contactInfo.setType(contactType);
+        contactInfo.setContactValue(contactValue);
+
+        contactInfoRepository.save(contactInfo);
+    }
+
+    private void saveEducationInfos(Resume resume, List<CreateResumeDto.EducationDto> educationDtos) {
+        if (educationDtos == null) {
+            return;
+        }
+
+        for (CreateResumeDto.EducationDto dto : educationDtos) {
+            if (dto.getInstitution() == null || dto.getInstitution().isBlank()) {
+                continue;
+            }
+
+            EducationInfo educationInfo = new EducationInfo();
+            educationInfo.setResume(resume);
+            educationInfo.setInstitution(dto.getInstitution());
+            educationInfo.setProgram(dto.getProgram());
+            educationInfo.setStartDate(parseDate(dto.getStartDate()));
+            educationInfo.setEndDate(parseDate(dto.getEndDate()));
+            educationInfo.setDegree(dto.getDegree());
+
+            educationInfoRepository.save(educationInfo);
+        }
+    }
+
+    private void saveWorkExperienceInfos(Resume resume, List<CreateResumeDto.WorkExperienceDto> workExperienceDtos) {
+        if (workExperienceDtos == null) {
+            return;
+        }
+
+        for (CreateResumeDto.WorkExperienceDto dto : workExperienceDtos) {
+            if ((dto.getCompanyName() == null || dto.getCompanyName().isBlank())
+                    && (dto.getPosition() == null || dto.getPosition().isBlank())) {
+                continue;
+            }
+
+            WorkExperienceInfo workExperienceInfo = new WorkExperienceInfo();
+            workExperienceInfo.setResume(resume);
+            workExperienceInfo.setYears(dto.getYears());
+            workExperienceInfo.setCompanyName(dto.getCompanyName());
+            workExperienceInfo.setPosition(dto.getPosition());
+            workExperienceInfo.setResponsibilities(dto.getResponsibilities());
+
+            workExperienceInfoRepository.save(workExperienceInfo);
+        }
     }
 
     private void saveOrUpdateAdditionalInfo(Resume resume, UpdateResumeDto dto) {
@@ -174,11 +229,13 @@ public class ResumeServiceImpl implements ResumeService {
 
     private void saveOrUpdateContactInfo(Resume resume, Integer contactTypeId, String contactValue) {
         ContactInfo contactInfo = contactInfoRepository.findByResumeId(resume.getId()).stream().findFirst().orElse(new ContactInfo());
+
         ContactType contactType = contactTypeRepository.findById(contactTypeId)
                 .orElseThrow(() -> {
                     log.warn("Contact type not found, id={}", contactTypeId);
                     return new ContactTypeNotFoundException();
                 });
+
         contactInfo.setResume(resume);
         contactInfo.setType(contactType);
         contactInfo.setContactValue(contactValue);
