@@ -1,5 +1,6 @@
 package kg.attractor.job_search.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -8,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -35,16 +39,32 @@ public class CreateResumeDto {
     @NotBlank(message = "Контакт не может быть пустым")
     private String contactValue;
 
-    @NotBlank(message = "Учебное заведение не может быть пустым")
-    private String institution;
+    @Valid
+    @Builder.Default
+    private List<EducationDto> educationInfos = new ArrayList<>();
 
-    private String program;
-    private String startDate;
-    private String endDate;
-    private String degree;
+    @Valid
+    @Builder.Default
+    private List<WorkExperienceDto> workExperienceInfos = new ArrayList<>();
 
-    private Integer years;
-    private String companyName;
-    private String position;
-    private String responsibilities;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EducationDto {
+        private String institution;
+        private String program;
+        private String startDate;
+        private String endDate;
+        private String degree;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class WorkExperienceDto {
+        private Integer years;
+        private String companyName;
+        private String position;
+        private String responsibilities;
+    }
 }
