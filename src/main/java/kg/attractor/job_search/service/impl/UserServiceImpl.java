@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
                 .avatar("default-avatar.png")
                 .accountType(dto.getAccountType())
                 .enabled(true)
+                .locale("ru")
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -187,5 +188,18 @@ public class UserServiceImpl implements UserService {
 
         String resetPwdLink = UrlBuilder.getSiteUrl(request) + "/reset-password?token=" + token;
         emailService.send(email, resetPwdLink);
+    }
+
+    @Override
+    public void updateLocale(Integer userId, String locale) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!"ru".equals(locale) && !"en".equals(locale)) {
+            locale = "ru";
+        }
+
+        user.setLocale(locale);
+        userRepository.save(user);
     }
 }

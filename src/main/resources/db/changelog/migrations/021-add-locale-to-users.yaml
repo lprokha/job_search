@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 021-add-locale-to-users
+      author: Leyla P.
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: locale
+                  type: varchar(10)
+                  defaultValue: ru

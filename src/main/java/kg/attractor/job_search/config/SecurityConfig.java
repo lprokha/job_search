@@ -1,5 +1,7 @@
 package kg.attractor.job_search.config;
 
+import jakarta.servlet.http.Cookie;
+import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.impl.AuthUserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final AuthUserDetailsServiceImpl authUserDetailsService;
+    private final UserService userService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -33,6 +36,21 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .successHandler((request, response, authentication) -> {
+                            String email = authentication.getName();
+
+                            userService.findByEmail(email).ifPresent(user -> {
+                                String locale = user.getLocale();
+
+                                if (locale == null || locale.isBlank()) {
+                                    locale = "ru";
+                                }
+
+                                Cookie cookie = new Cookie("user-lang", locale);
+                                cookie.setPath("/");
+                                cookie.setMaxAge(30 * 24 * 60 * 60);
+                                response.addCookie(cookie);
+                            });
+
                             boolean isEmployer = authentication.getAuthorities().stream()
                                     .anyMatch(authority -> authority.getAuthority().equals("ROLE_EMPLOYER"));
 
@@ -60,10 +78,12 @@ public class SecurityConfig {
                                 "/vacancies",
                                 "/forgot-password",
                                 "/reset-password",
+                                "/change-language",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        .requestMatchers(HttpMethod.POST, "/change-language").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/vacancies", "/api/vacancies/**").permitAll()
 
