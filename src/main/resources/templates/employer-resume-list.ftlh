@@ -14,21 +14,21 @@
     </div>
 
     <#if resumes?? && (resumes?size > 0)>
-        <div class="row">
+        <div class="list-group shadow-sm">
             <#list resumes as resume>
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <div class="card shadow-sm border-0 h-100">
-
-                        <div class="card-body d-flex flex-column">
-
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
                             <h5 class="mb-2">${resume.name}</h5>
 
-                            <p class="mb-2 fw-semibold">
-                                <@spring.message "vacancy.salary"/>:
+                            <p class="mb-1">
+                                <span class="fw-semibold">
+                                    <@spring.message "vacancy.salary"/>:
+                                </span>
                                 ${resume.salary!0}
                             </p>
 
-                            <p class="text-muted mb-3">
+                            <p class="text-muted mb-0">
                                 <@spring.message "vacancy.updated"/>:
                                 ${resumeUpdateTimes[resume.id?string]!""}
                             </p>
