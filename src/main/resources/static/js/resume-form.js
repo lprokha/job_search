@@ -14,27 +14,27 @@ window.addEventListener('load', function () {
 
         block.innerHTML = `
             <div class="mb-3">
-                <label class="form-label">Учебное заведение</label>
+                <label class="form-label">${resumeForm.dataset.educationInstitution}</label>
                 <input type="text" name="educationInfos[${educationIndex}].institution" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Программа</label>
+                <label class="form-label">${resumeForm.dataset.educationProgram}</label>
                 <input type="text" name="educationInfos[${educationIndex}].program" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Дата начала</label>
+                <label class="form-label">${resumeForm.dataset.educationStartDate}</label>
                 <input type="date" name="educationInfos[${educationIndex}].startDate" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Дата окончания</label>
+                <label class="form-label">${resumeForm.dataset.educationEndDate}</label>
                 <input type="date" name="educationInfos[${educationIndex}].endDate" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Степень</label>
+                <label class="form-label">${resumeForm.dataset.educationDegree}</label>
                 <input type="text" name="educationInfos[${educationIndex}].degree" class="form-control">
             </div>
         `;
@@ -49,22 +49,22 @@ window.addEventListener('load', function () {
 
         block.innerHTML = `
             <div class="mb-3">
-                <label class="form-label">Стаж в годах</label>
+                <label class="form-label">${resumeForm.dataset.workYears}</label>
                 <input type="number" name="workExperienceInfos[${workIndex}].years" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Компания</label>
+                <label class="form-label">${resumeForm.dataset.workCompany}</label>
                 <input type="text" name="workExperienceInfos[${workIndex}].companyName" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Должность</label>
+                <label class="form-label">${resumeForm.dataset.workPosition}</label>
                 <input type="text" name="workExperienceInfos[${workIndex}].position" class="form-control">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Обязанности</label>
+                <label class="form-label">${resumeForm.dataset.workResponsibilities}</label>
                 <textarea name="workExperienceInfos[${workIndex}].responsibilities" class="form-control" rows="4"></textarea>
             </div>
         `;
@@ -77,21 +77,22 @@ window.addEventListener('load', function () {
         event.preventDefault();
 
         const formData = new FormData(resumeForm);
+        const data = new URLSearchParams(formData);
 
         try {
             const response = await fetch(resumeForm.action, {
                 method: 'POST',
-                body: formData
+                body: data
             });
 
             if (response.ok) {
                 window.location.href = '/resumes';
             } else {
-                alert('Ошибка при сохранении резюме');
+                alert(resumeForm.dataset.saveError);
             }
         } catch (error) {
             console.log(error);
-            alert('Ошибка при отправке запроса');
+            alert(resumeForm.dataset.requestError);
         }
     });
 });

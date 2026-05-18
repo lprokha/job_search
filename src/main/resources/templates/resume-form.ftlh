@@ -19,7 +19,18 @@
 
                     <form id="resume-form"
                           action="<#if resumeId??>/resumes/edit/${resumeId}<#else>/resumes/create</#if>"
-                          method="post">
+                          method="post"
+                          data-education-institution="<@spring.message 'resume.institution'/>"
+                          data-education-program="<@spring.message 'resume.program'/>"
+                          data-education-start-date="<@spring.message 'resume.startDate'/>"
+                          data-education-end-date="<@spring.message 'resume.endDate'/>"
+                          data-education-degree="<@spring.message 'resume.degree'/>"
+                          data-work-years="<@spring.message 'resume.years'/>"
+                          data-work-company="<@spring.message 'resume.company'/>"
+                          data-work-position="<@spring.message 'resume.position'/>"
+                          data-work-responsibilities="<@spring.message 'resume.responsibilities'/>"
+                          data-save-error="<@spring.message 'resume.saveError'/>"
+                          data-request-error="<@spring.message 'resume.requestError'/>">
 
                         <#if _csrf??>
                             <input type="hidden"
@@ -228,6 +239,6 @@
     </div>
 
     <#if !resumeId??>
-        <script src="/js/resume-form.js"></script>
+        <script src="/static/js/resume-form.js"></script>
     </#if>
 </@main.layout>
