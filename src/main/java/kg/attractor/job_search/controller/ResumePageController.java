@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateResumeDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
 import kg.attractor.job_search.exception.ForbiddenException;
-import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.exception.ResumeNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.AccountType;
@@ -156,26 +155,38 @@ public class ResumePageController {
             throw new ForbiddenException("You can edit only your own resume");
         }
 
-        ContactInfo contactInfo = contactInfoRepository.findByResumeId(id).stream().findFirst().orElse(null);
-        EducationInfo educationInfo = educationInfoRepository.findByResumeId(id).stream().findFirst().orElse(null);
-        WorkExperienceInfo workExperienceInfo = workExperienceInfoRepository.findByResumeId(id).stream().findFirst().orElse(null);
+        List<ContactInfo> contactInfos = contactInfoRepository.findByResumeId(id);
+        List<EducationInfo> educationInfos = educationInfoRepository.findByResumeId(id);
+        List<WorkExperienceInfo> workExperienceInfos = workExperienceInfoRepository.findByResumeId(id);
 
         UpdateResumeDto dto = UpdateResumeDto.builder()
                 .name(existingResume.getName())
                 .categoryId(existingResume.getCategoryId())
                 .salary(existingResume.getSalary())
                 .isActive(existingResume.getIsActive())
-                .contactTypeId(contactInfo != null && contactInfo.getType() != null ? contactInfo.getType().getId() : null)
-                .contactValue(contactInfo != null ? contactInfo.getContactValue() : null)
-                .institution(educationInfo != null ? educationInfo.getInstitution() : null)
-                .program(educationInfo != null ? educationInfo.getProgram() : null)
-                .startDate(educationInfo != null && educationInfo.getStartDate() != null ? educationInfo.getStartDate().toString() : null)
-                .endDate(educationInfo != null && educationInfo.getEndDate() != null ? educationInfo.getEndDate().toString() : null)
-                .degree(educationInfo != null ? educationInfo.getDegree() : null)
-                .years(workExperienceInfo != null ? workExperienceInfo.getYears() : null)
-                .companyName(workExperienceInfo != null ? workExperienceInfo.getCompanyName() : null)
-                .position(workExperienceInfo != null ? workExperienceInfo.getPosition() : null)
-                .responsibilities(workExperienceInfo != null ? workExperienceInfo.getResponsibilities() : null)
+                .contactInfos(contactInfos.stream()
+                        .map(contactInfo -> new UpdateResumeDto.ContactDto(
+                                contactInfo.getType() != null ? contactInfo.getType().getId() : null,
+                                contactInfo.getContactValue()
+                        ))
+                        .toList())
+                .educationInfos(educationInfos.stream()
+                        .map(educationInfo -> new UpdateResumeDto.EducationDto(
+                                educationInfo.getInstitution(),
+                                educationInfo.getProgram(),
+                                educationInfo.getStartDate() != null ? educationInfo.getStartDate().toString() : null,
+                                educationInfo.getEndDate() != null ? educationInfo.getEndDate().toString() : null,
+                                educationInfo.getDegree()
+                        ))
+                        .toList())
+                .workExperienceInfos(workExperienceInfos.stream()
+                        .map(workExperienceInfo -> new UpdateResumeDto.WorkExperienceDto(
+                                workExperienceInfo.getYears(),
+                                workExperienceInfo.getCompanyName(),
+                                workExperienceInfo.getPosition(),
+                                workExperienceInfo.getResponsibilities()
+                        ))
+                        .toList())
                 .build();
 
         model.addAttribute("resume", dto);
