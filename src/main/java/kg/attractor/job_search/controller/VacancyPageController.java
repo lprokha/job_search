@@ -80,6 +80,7 @@ public class VacancyPageController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", vacancyPage.getTotalPages());
         model.addAttribute("sort", sort);
+        model.addAttribute("categories", categoryService.getAll());
 
         if (authentication != null
                 && authentication.isAuthenticated()

@@ -35,31 +35,150 @@
         </form>
     </div>
 
-    <#if vacancies?? && (vacancies?size > 0)>
-        <#list vacancies as vacancy>
-            <div class="card shadow-sm border-0 mb-3">
-                <div class="card-body">
-                    <h4 class="mb-1">${vacancy.name}</h4>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">
+                <@spring.message "vacancy.filterTitle"/>
+            </h5>
 
-                    <p class="mb-1 fw-semibold">
-                        <@spring.message "vacancy.salary"/>: ${vacancy.salary!0}
-                    </p>
+            <form id="vacancy-filter-form"
+                  class="row g-3"
+                  data-empty-message="<@spring.message 'vacancies.filteredEmpty'/>">
 
-                    <p class="text-muted mb-2">
-                        <@spring.message "vacancy.updated"/>: ${vacancyUpdateTimes[vacancy.id?string]!""}
-                    </p>
+                <div class="col-md-4">
+                    <label for="filterText" class="form-label">
+                        <@spring.message "vacancy.filterText"/>
+                    </label>
 
-                    <p class="mb-0">${vacancy.description!""}</p>
+                    <input type="text"
+                           id="filterText"
+                           name="filterText"
+                           class="form-control"
+                           placeholder="<@spring.message 'vacancy.filterTextPlaceholder'/>">
                 </div>
-            </div>
-        </#list>
+
+                <div class="col-md-4">
+                    <label for="filterCategory" class="form-label">
+                        <@spring.message "label.category"/>
+                    </label>
+
+                    <select id="filterCategory"
+                            name="filterCategory"
+                            class="form-select">
+                        <option value="">
+                            <@spring.message "vacancy.anyCategory"/>
+                        </option>
+
+                        <#if categories??>
+                            <#list categories as category>
+                                <option value="${category.id}">
+                                    ${category.name}
+                                </option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="filterExperience" class="form-label">
+                        <@spring.message "vacancy.filterExperience"/>
+                    </label>
+
+                    <input type="number"
+                           id="filterExperience"
+                           name="filterExperience"
+                           class="form-control"
+                           min="0"
+                           placeholder="<@spring.message 'vacancy.filterExperiencePlaceholder'/>">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="filterSalaryFrom" class="form-label">
+                        <@spring.message "vacancy.salaryFrom"/>
+                    </label>
+
+                    <input type="number"
+                           id="filterSalaryFrom"
+                           name="filterSalaryFrom"
+                           class="form-control"
+                           min="0">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="filterSalaryTo" class="form-label">
+                        <@spring.message "vacancy.salaryTo"/>
+                    </label>
+
+                    <input type="number"
+                           id="filterSalaryTo"
+                           name="filterSalaryTo"
+                           class="form-control"
+                           min="0">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button type="button"
+                            id="applyVacancyFilter"
+                            class="btn btn-dark">
+                        <@spring.message "button.applyFilter"/>
+                    </button>
+
+                    <button type="button"
+                            id="clearVacancyFilter"
+                            class="btn btn-outline-dark">
+                        <@spring.message "button.clear"/>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="vacancy-filter-empty" class="alert alert-light border d-none">
+        <@spring.message "vacancies.filteredEmpty"/>
+    </div>
+
+    <#if vacancies?? && (vacancies?size > 0)>
+        <div id="vacancy-list">
+            <#list vacancies as vacancy>
+                <div class="card shadow-sm border-0 mb-3 vacancy-item"
+                     data-name="${(vacancy.name!'')?lower_case}"
+                     data-description="${(vacancy.description!'')?lower_case}"
+                     data-category-id="${(vacancy.category.id)!''}"
+                     data-salary="${vacancy.salary!0}"
+                     data-exp-from="${vacancy.expFrom!0}"
+                     data-exp-to="${vacancy.expTo!0}">
+
+                    <div class="card-body">
+                        <h4 class="mb-1">${vacancy.name}</h4>
+
+                        <p class="mb-1 fw-semibold">
+                            <@spring.message "vacancy.salary"/>: ${vacancy.salary!0}
+                        </p>
+
+                        <p class="mb-1">
+                            <@spring.message "vacancy.experience"/>:
+                            ${vacancy.expFrom!0} - ${vacancy.expTo!0}
+                            <@spring.message "vacancy.years"/>
+                        </p>
+
+                        <p class="text-muted mb-2">
+                            <@spring.message "vacancy.updated"/>:
+                            ${vacancyUpdateTimes[vacancy.id?string]!""}
+                        </p>
+
+                        <p class="mb-0">${vacancy.description!""}</p>
+                    </div>
+                </div>
+            </#list>
+        </div>
 
         <#if totalPages?? && (totalPages > 1)>
             <nav class="mt-4">
                 <ul class="pagination">
                     <#list 0..(totalPages - 1) as pageIndex>
                         <li class="page-item <#if pageIndex == currentPage>active</#if>">
-                            <a class="page-link" href="/vacancies?page=${pageIndex}&size=5&sort=${sort!'dateDesc'}">
+                            <a class="page-link"
+                               href="/vacancies?page=${pageIndex}&size=5&sort=${sort!'dateDesc'}">
                                 ${pageIndex + 1}
                             </a>
                         </li>
@@ -72,4 +191,6 @@
             <@spring.message "vacancies.empty"/>
         </div>
     </#if>
+
+    <script src="/static/js/vacancy-filter.js"></script>
 </@main.layout>
