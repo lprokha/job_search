@@ -1,5 +1,6 @@
 window.addEventListener('load', function () {
     const filterKey = 'vacancyFilter';
+    const pageSize = 5;
 
     const filterForm = document.getElementById('vacancy-filter-form');
     const filterText = document.getElementById('filterText');
@@ -10,7 +11,11 @@ window.addEventListener('load', function () {
     const applyButton = document.getElementById('applyVacancyFilter');
     const clearButton = document.getElementById('clearVacancyFilter');
     const emptyBlock = document.getElementById('vacancy-filter-empty');
-    const vacancyItems = document.querySelectorAll('.vacancy-item');
+    const pagination = document.getElementById('vacancy-pagination');
+    const vacancyItems = Array.from(document.querySelectorAll('.vacancy-item'));
+
+    let currentPage = 0;
+    let filteredVacancies = [];
 
     if (!filterForm || vacancyItems.length === 0) {
         return;
@@ -81,26 +86,75 @@ window.addEventListener('load', function () {
         return true;
     }
 
-    function applyFilter() {
-        const filterData = getFilterData();
-        let visibleCount = 0;
-
+    function hideAllVacancies() {
         vacancyItems.forEach(function (vacancy) {
-            if (vacancyMatchesFilter(vacancy, filterData)) {
-                vacancy.classList.remove('d-none');
-                visibleCount++;
-            } else {
-                vacancy.classList.add('d-none');
-            }
+            vacancy.classList.add('d-none');
         });
+    }
 
-        if (visibleCount === 0) {
+    function renderVacanciesPage() {
+        hideAllVacancies();
+
+        if (filteredVacancies.length === 0) {
             emptyBlock.classList.remove('d-none');
-        } else {
-            emptyBlock.classList.add('d-none');
+            pagination.innerHTML = '';
+            return;
         }
 
+        emptyBlock.classList.add('d-none');
+
+        const startIndex = currentPage * pageSize;
+        const endIndex = startIndex + pageSize;
+        const vacanciesForPage = filteredVacancies.slice(startIndex, endIndex);
+
+        vacanciesForPage.forEach(function (vacancy) {
+            vacancy.classList.remove('d-none');
+        });
+
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(filteredVacancies.length / pageSize);
+        pagination.innerHTML = '';
+
+        if (totalPages <= 1) {
+            return;
+        }
+
+        for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+            const item = document.createElement('li');
+            item.className = 'page-item';
+
+            if (pageIndex === currentPage) {
+                item.classList.add('active');
+            }
+
+            const link = document.createElement('button');
+            link.type = 'button';
+            link.className = 'page-link';
+            link.textContent = pageIndex + 1;
+
+            link.addEventListener('click', function () {
+                currentPage = pageIndex;
+                renderVacanciesPage();
+            });
+
+            item.appendChild(link);
+            pagination.appendChild(item);
+        }
+    }
+
+    function applyFilter() {
+        const filterData = getFilterData();
+
+        filteredVacancies = vacancyItems.filter(function (vacancy) {
+            return vacancyMatchesFilter(vacancy, filterData);
+        });
+
+        currentPage = 0;
         saveFilter(filterData);
+        renderVacanciesPage();
     }
 
     function clearFilter() {
@@ -112,11 +166,10 @@ window.addEventListener('load', function () {
         filterSalaryFrom.value = '';
         filterSalaryTo.value = '';
 
-        vacancyItems.forEach(function (vacancy) {
-            vacancy.classList.remove('d-none');
-        });
+        filteredVacancies = vacancyItems;
+        currentPage = 0;
 
-        emptyBlock.classList.add('d-none');
+        renderVacanciesPage();
     }
 
     applyButton.addEventListener('click', applyFilter);

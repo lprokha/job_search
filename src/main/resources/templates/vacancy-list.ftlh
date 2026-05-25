@@ -8,8 +8,6 @@
         </h2>
 
         <form method="get" action="/vacancies" class="d-flex gap-2 align-items-center">
-            <input type="hidden" name="page" value="0">
-
             <label for="sort" class="mb-0">
                 <@spring.message "label.sort"/>
             </label>
@@ -41,10 +39,7 @@
                 <@spring.message "vacancy.filterTitle"/>
             </h5>
 
-            <form id="vacancy-filter-form"
-                  class="row g-3"
-                  data-empty-message="<@spring.message 'vacancies.filteredEmpty'/>">
-
+            <form id="vacancy-filter-form" class="row g-3">
                 <div class="col-md-4">
                     <label for="filterText" class="form-label">
                         <@spring.message "vacancy.filterText"/>
@@ -172,20 +167,9 @@
             </#list>
         </div>
 
-        <#if totalPages?? && (totalPages > 1)>
-            <nav class="mt-4">
-                <ul class="pagination">
-                    <#list 0..(totalPages - 1) as pageIndex>
-                        <li class="page-item <#if pageIndex == currentPage>active</#if>">
-                            <a class="page-link"
-                               href="/vacancies?page=${pageIndex}&size=5&sort=${sort!'dateDesc'}">
-                                ${pageIndex + 1}
-                            </a>
-                        </li>
-                    </#list>
-                </ul>
-            </nav>
-        </#if>
+        <nav class="mt-4">
+            <ul id="vacancy-pagination" class="pagination"></ul>
+        </nav>
     <#else>
         <div class="alert alert-light border">
             <@spring.message "vacancies.empty"/>
