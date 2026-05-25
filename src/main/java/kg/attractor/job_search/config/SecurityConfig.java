@@ -80,7 +80,8 @@ public class SecurityConfig {
                                 "/reset-password",
                                 "/change-language",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/static/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/change-language").permitAll()
