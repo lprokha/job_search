@@ -139,9 +139,9 @@
                      data-name="${(vacancy.name!'')?lower_case}"
                      data-description="${(vacancy.description!'')?lower_case}"
                      data-category-id="${(vacancy.category.id)!''}"
-                     data-salary="${vacancy.salary!0}"
-                     data-exp-from="${vacancy.expFrom!0}"
-                     data-exp-to="${vacancy.expTo!0}">
+                     data-salary="<#if vacancy.salary??>${vacancy.salary?c}<#else>0</#if>"
+                     data-exp-from="<#if vacancy.expFrom??>${vacancy.expFrom?c}<#else>0</#if>"
+                     data-exp-to="<#if vacancy.expTo??>${vacancy.expTo?c}<#else>0</#if>">
 
                     <div class="card-body">
                         <h4 class="mb-1">${vacancy.name}</h4>
