@@ -66,20 +66,17 @@ public class VacancyPageController {
 
     @GetMapping("/vacancies")
     public String vacanciesPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "dateDesc") String sort,
             Authentication authentication,
             Model model
     ) {
-        Page<Vacancy> vacancyPage = vacancyService.getAllActive(page, size, sort);
+        Page<Vacancy> vacancyPage = vacancyService.getAllActive(0, 100, sort);
         List<Vacancy> vacancies = vacancyPage.getContent();
 
         model.addAttribute("vacancies", vacancies);
         model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", vacancyPage.getTotalPages());
         model.addAttribute("sort", sort);
+        model.addAttribute("categories", categoryService.getAll());
 
         if (authentication != null
                 && authentication.isAuthenticated()

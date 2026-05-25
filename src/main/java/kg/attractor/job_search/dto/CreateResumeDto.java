@@ -32,12 +32,12 @@ public class CreateResumeDto {
 
     private Boolean isActive;
 
-    @NotNull(message = "Тип контакта должен быть выбран")
-    @Positive(message = "Тип контакта должен быть выбран")
     private Integer contactTypeId;
-
-    @NotBlank(message = "Контакт не может быть пустым")
     private String contactValue;
+
+    @Valid
+    @Builder.Default
+    private List<ContactDto> contactInfos = new ArrayList<>();
 
     @Valid
     @Builder.Default
@@ -46,6 +46,14 @@ public class CreateResumeDto {
     @Valid
     @Builder.Default
     private List<WorkExperienceDto> workExperienceInfos = new ArrayList<>();
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ContactDto {
+        private Integer typeId;
+        private String contactValue;
+    }
 
     @Data
     @NoArgsConstructor
