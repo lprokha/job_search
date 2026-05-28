@@ -33,5 +33,7 @@ public interface VacancyService {
 
     Optional<Vacancy> refresh(Integer id);
 
+    Optional<Vacancy> toggleActive(Integer id);
+
     boolean delete(Integer id);
 }

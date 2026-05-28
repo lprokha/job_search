@@ -120,6 +120,18 @@
                                     ${resume.salary!0}
                                 </p>
 
+                                <p class="mb-1">
+                                    <#if resume.isActive?? && resume.isActive>
+                                        <span class="badge text-bg-success">
+                                            <@spring.message "status.active"/>
+                                        </span>
+                                    <#else>
+                                        <span class="badge text-bg-secondary">
+                                            <@spring.message "status.inactive"/>
+                                        </span>
+                                    </#if>
+                                </p>
+
                                 <p class="text-muted mb-0">
                                     <@spring.message "vacancy.updated"/>:
                                     ${resumeUpdateTimes[resume.id?string]!""}
@@ -128,6 +140,8 @@
 
                             <div class="d-flex flex-wrap gap-2 text-nowrap">
                                 <form action="/resumes/${resume.id}/refresh" method="post">
+                                    <input type="hidden" name="redirectTo" value="/profile">
+
                                     <#if _csrf??>
                                         <input
                                                 type="hidden"
@@ -138,6 +152,26 @@
                                     <button type="submit"
                                             class="btn btn-outline-dark btn-sm text-nowrap">
                                         <@spring.message "button.refresh"/>
+                                    </button>
+                                </form>
+
+                                <form action="/resumes/${resume.id}/toggle-active" method="post">
+                                    <input type="hidden" name="redirectTo" value="/profile">
+
+                                    <#if _csrf??>
+                                        <input
+                                                type="hidden"
+                                                name="${(_csrf.parameterName)!'csrf'}"
+                                                value="${(_csrf.token)!''}">
+                                    </#if>
+
+                                    <button type="submit"
+                                            class="btn btn-outline-dark btn-sm text-nowrap">
+                                        <#if resume.isActive?? && resume.isActive>
+                                            <@spring.message "button.unpublish"/>
+                                        <#else>
+                                            <@spring.message "button.publish"/>
+                                        </#if>
                                     </button>
                                 </form>
 
@@ -189,6 +223,18 @@
                                     ${vacancy.salary!0}
                                 </p>
 
+                                <p class="mb-1">
+                                    <#if vacancy.isActive?? && vacancy.isActive>
+                                        <span class="badge text-bg-success">
+                                            <@spring.message "status.active"/>
+                                        </span>
+                                    <#else>
+                                        <span class="badge text-bg-secondary">
+                                            <@spring.message "status.inactive"/>
+                                        </span>
+                                    </#if>
+                                </p>
+
                                 <p class="text-muted mb-0">
                                     <@spring.message "vacancy.updated"/>:
                                     ${vacancyUpdateTimes[vacancy.id?string]!""}
@@ -197,6 +243,8 @@
 
                             <div class="d-flex flex-wrap gap-2 text-nowrap">
                                 <form action="/my-vacancies/${vacancy.id}/refresh" method="post">
+                                    <input type="hidden" name="redirectTo" value="/profile">
+
                                     <#if _csrf??>
                                         <input
                                                 type="hidden"
@@ -207,6 +255,26 @@
                                     <button type="submit"
                                             class="btn btn-outline-dark btn-sm text-nowrap">
                                         <@spring.message "button.refresh"/>
+                                    </button>
+                                </form>
+
+                                <form action="/my-vacancies/${vacancy.id}/toggle-active" method="post">
+                                    <input type="hidden" name="redirectTo" value="/profile">
+
+                                    <#if _csrf??>
+                                        <input
+                                                type="hidden"
+                                                name="${(_csrf.parameterName)!'csrf'}"
+                                                value="${(_csrf.token)!''}">
+                                    </#if>
+
+                                    <button type="submit"
+                                            class="btn btn-outline-dark btn-sm text-nowrap">
+                                        <#if vacancy.isActive?? && vacancy.isActive>
+                                            <@spring.message "button.unpublish"/>
+                                        <#else>
+                                            <@spring.message "button.publish"/>
+                                        </#if>
                                     </button>
                                 </form>
 

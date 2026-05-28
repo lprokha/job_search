@@ -147,6 +147,13 @@ public class ResumePageController {
             throw new ForbiddenException("Only employers can view applicant resumes");
         }
 
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        if (!Boolean.TRUE.equals(resume.getIsActive())) {
+            throw new ResumeNotFoundException();
+        }
+
         addResumeDetailsToModel(id, currentUser, model);
 
         return "resume-detail";
@@ -301,9 +308,9 @@ public class ResumePageController {
         Page<Resume> resumePage;
 
         if (categoryId != null) {
-            resumePage = resumeService.getByCategory(categoryId, page, size);
+            resumePage = resumeService.getActiveByCategory(categoryId, page, size);
         } else {
-            resumePage = resumeService.getAll(page, size);
+            resumePage = resumeService.getAllActive(page, size);
         }
 
         List<Resume> resumes = resumePage.getContent();

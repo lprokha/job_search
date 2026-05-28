@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.UpdateProfileDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
 import kg.attractor.job_search.exception.FileUploadException;
 import kg.attractor.job_search.exception.ForbiddenException;
+import kg.attractor.job_search.exception.ResumeNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.AccountType;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -47,6 +49,14 @@ public class ProfilePageController {
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    private String normalizeRedirect(String redirectTo) {
+        if ("/resumes".equals(redirectTo) || "/my-vacancies".equals(redirectTo)) {
+            return redirectTo;
+        }
+
+        return "/profile";
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
@@ -175,7 +185,9 @@ public class ProfilePageController {
     }
 
     @PostMapping("/resumes/{id}/refresh")
-    public String refreshResume(@PathVariable Integer id, Authentication authentication) {
+    public String refreshResume(@PathVariable Integer id,
+                                @RequestParam(defaultValue = "/profile") String redirectTo,
+                                Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
 
         if (currentUser.getAccountType() != AccountType.APPLICANT) {
@@ -183,7 +195,7 @@ public class ProfilePageController {
         }
 
         Resume resume = resumeService.getById(id)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(ResumeNotFoundException::new);
 
         if (!resume.getApplicantId().equals(currentUser.getId())) {
             throw new ForbiddenException("You can refresh only your own resume");
@@ -191,11 +203,35 @@ public class ProfilePageController {
 
         resumeService.refresh(id);
 
-        return "redirect:/profile";
+        return "redirect:" + normalizeRedirect(redirectTo);
+    }
+
+    @PostMapping("/resumes/{id}/toggle-active")
+    public String toggleResumeActive(@PathVariable Integer id,
+                                     @RequestParam(defaultValue = "/profile") String redirectTo,
+                                     Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.APPLICANT) {
+            throw new ForbiddenException("Only applicants can change resume active status");
+        }
+
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        if (!resume.getApplicantId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can change only your own resume");
+        }
+
+        resumeService.toggleActive(id);
+
+        return "redirect:" + normalizeRedirect(redirectTo);
     }
 
     @PostMapping("/my-vacancies/{id}/refresh")
-    public String refreshVacancy(@PathVariable Integer id, Authentication authentication) {
+    public String refreshVacancy(@PathVariable Integer id,
+                                 @RequestParam(defaultValue = "/profile") String redirectTo,
+                                 Authentication authentication) {
         User currentUser = getCurrentUser(authentication);
 
         if (currentUser.getAccountType() != AccountType.EMPLOYER) {
@@ -211,6 +247,28 @@ public class ProfilePageController {
 
         vacancyService.refresh(id);
 
-        return "redirect:/profile";
+        return "redirect:" + normalizeRedirect(redirectTo);
+    }
+
+    @PostMapping("/my-vacancies/{id}/toggle-active")
+    public String toggleVacancyActive(@PathVariable Integer id,
+                                      @RequestParam(defaultValue = "/profile") String redirectTo,
+                                      Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.EMPLOYER) {
+            throw new ForbiddenException("Only employers can change vacancy active status");
+        }
+
+        Vacancy vacancy = vacancyService.getById(id)
+                .orElseThrow(VacancyNotFoundException::new);
+
+        if (!vacancy.getAuthorId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can change only your own vacancy");
+        }
+
+        vacancyService.toggleActive(id);
+
+        return "redirect:" + normalizeRedirect(redirectTo);
     }
 }

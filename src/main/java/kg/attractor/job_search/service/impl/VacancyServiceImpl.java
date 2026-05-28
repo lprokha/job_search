@@ -197,6 +197,23 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
+    public Optional<Vacancy> toggleActive(Integer id) {
+        Vacancy vacancy = vacancyRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Vacancy not found for active toggle, id={}", id);
+                    return new VacancyNotFoundException();
+                });
+
+        vacancy.setIsActive(!Boolean.TRUE.equals(vacancy.getIsActive()));
+        vacancy.setUpdateTime(LocalDateTime.now());
+
+        Vacancy updatedVacancy = vacancyRepository.save(vacancy);
+        log.debug("Vacancy active status changed successfully, id={}, active={}", id, updatedVacancy.getIsActive());
+
+        return Optional.of(updatedVacancy);
+    }
+
+    @Override
     public boolean delete(Integer id) {
         log.warn("Deleting vacancy id={}", id);
 
