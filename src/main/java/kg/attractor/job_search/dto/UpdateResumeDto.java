@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,33 +18,18 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateResumeDto {
 
-    @NotBlank(message = "Название резюме не может быть пустым")
+    @NotBlank(message = "{validation.resume.name.notBlank}")
     private String name;
 
-    @NotNull(message = "Категория должна быть выбрана")
-    @Positive(message = "Категория должна быть выбрана")
+    @NotNull(message = "{validation.category.notNull}")
     private Integer categoryId;
 
-    @NotNull(message = "Зарплата не может быть пустой")
-    @PositiveOrZero(message = "Зарплата не может быть отрицательной")
+    @NotNull(message = "{validation.salary.notNull}")
+    @Positive(message = "{validation.salary.positive}")
     private Double salary;
 
-    @NotNull(message = "Статус активности должен быть выбран")
+    @NotNull(message = "{validation.status.notNull}")
     private Boolean isActive;
-
-    private Integer contactTypeId;
-    private String contactValue;
-
-    private String institution;
-    private String program;
-    private String startDate;
-    private String endDate;
-    private String degree;
-
-    private Integer years;
-    private String companyName;
-    private String position;
-    private String responsibilities;
 
     @Valid
     @Builder.Default
@@ -63,7 +47,10 @@ public class UpdateResumeDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ContactDto {
+        @NotNull(message = "{validation.contact.type.notNull}")
         private Integer typeId;
+
+        @NotBlank(message = "{validation.contact.value.notBlank}")
         private String contactValue;
     }
 
@@ -82,7 +69,9 @@ public class UpdateResumeDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class WorkExperienceDto {
+        @Positive(message = "{validation.resume.workYears.positive}")
         private Integer years;
+
         private String companyName;
         private String position;
         private String responsibilities;

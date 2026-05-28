@@ -94,6 +94,12 @@ public class VacancyPageController {
         return formattedDates;
     }
 
+    private void validateExperienceRange(Integer expFrom, Integer expTo, BindingResult bindingResult) {
+        if (expFrom != null && expTo != null && expTo <= expFrom) {
+            bindingResult.rejectValue("expTo", "validation.vacancy.expRange");
+        }
+    }
+
     @GetMapping("/vacancies")
     public String vacanciesPage(
             @RequestParam(defaultValue = "dateDesc") String sort,
@@ -291,9 +297,7 @@ public class VacancyPageController {
             throw new ForbiddenException("Only employers can create vacancies");
         }
 
-        if (dto.getExpFrom() != null && dto.getExpTo() != null && dto.getExpTo() <= dto.getExpFrom()) {
-            bindingResult.rejectValue("expTo", "error.vacancy", "Опыт до должен быть больше опыта от");
-        }
+        validateExperienceRange(dto.getExpFrom(), dto.getExpTo(), bindingResult);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAll());
@@ -359,9 +363,7 @@ public class VacancyPageController {
             throw new ForbiddenException("You can edit only your own vacancy");
         }
 
-        if (dto.getExpFrom() != null && dto.getExpTo() != null && dto.getExpTo() <= dto.getExpFrom()) {
-            bindingResult.rejectValue("expTo", "error.vacancy", "Опыт до должен быть больше опыта от");
-        }
+        validateExperienceRange(dto.getExpFrom(), dto.getExpTo(), bindingResult);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("categories", categoryService.getAll());
