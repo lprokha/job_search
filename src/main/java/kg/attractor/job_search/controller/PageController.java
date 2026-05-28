@@ -1,11 +1,8 @@
 package kg.attractor.job_search.controller;
 
-import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.model.User;
-import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
-import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -23,6 +20,11 @@ public class PageController {
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    @GetMapping("/")
+    public String homePage() {
+        return "redirect:/vacancies";
     }
 
     @GetMapping("/forbidden")
