@@ -162,6 +162,18 @@ public class VacancyPageController {
             Authentication authentication,
             Model model
     ) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = getCurrentUser(authentication);
+
+            if (currentUser.getAccountType() == AccountType.EMPLOYER) {
+                throw new ForbiddenException("Employers cannot view companies");
+            }
+
+            model.addAttribute("currentUser", currentUser);
+        }
+
         List<User> allEmployers = userService.getAllEmployers();
 
         int fromIndex = page * size;
@@ -183,13 +195,6 @@ public class VacancyPageController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
 
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
-            User currentUser = getCurrentUser(authentication);
-            model.addAttribute("currentUser", currentUser);
-        }
-
         return "companies";
     }
 
@@ -202,6 +207,18 @@ public class VacancyPageController {
             Authentication authentication,
             Model model
     ) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = getCurrentUser(authentication);
+
+            if (currentUser.getAccountType() == AccountType.EMPLOYER) {
+                throw new ForbiddenException("Employers cannot view companies");
+            }
+
+            model.addAttribute("currentUser", currentUser);
+        }
+
         User company = userService.findEmployer(id)
                 .orElseThrow(() -> new NotFoundException("Company not found"));
 
@@ -214,13 +231,6 @@ public class VacancyPageController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", vacancyPage.getTotalPages());
         model.addAttribute("sort", sort);
-
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
-            User currentUser = getCurrentUser(authentication);
-            model.addAttribute("currentUser", currentUser);
-        }
 
         return "company-vacancies";
     }

@@ -31,11 +31,13 @@
                         </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="/companies">
-                            <@spring.message "nav.companies"/>
-                        </a>
-                    </li>
+                    <#if !currentUser?? || currentUser.accountType?string == "APPLICANT">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/companies">
+                                <@spring.message "nav.companies"/>
+                            </a>
+                        </li>
+                    </#if>
 
                     <#if currentUser?? && currentUser.accountType?string == "EMPLOYER">
                         <li class="nav-item">

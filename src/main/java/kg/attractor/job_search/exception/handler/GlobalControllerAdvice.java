@@ -88,8 +88,6 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(Exception.class)
     public String handleOtherExceptions(HttpServletRequest request, Model model, Exception e) {
         addCurrentUser(model);
-        log.error("Unhandled exception occurred", e);
-
         model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         model.addAttribute("reason", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         model.addAttribute("details", request);
