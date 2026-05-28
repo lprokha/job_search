@@ -37,11 +37,12 @@
     </div>
 
     <#if vacancies?? && (vacancies?size > 0)>
-        <#list vacancies as vacancy>
-            <div class="card shadow-sm border-0 mb-3">
-                <div class="card-body">
+        <div class="list-group shadow-sm">
+            <#list vacancies as vacancy>
+                <div class="list-group-item list-group-item-action position-relative">
                     <h5 class="mb-2">
-                        <a href="/vacancies/${vacancy.id}" class="text-decoration-none text-dark">
+                        <a href="/vacancies/${vacancy.id}"
+                           class="stretched-link text-decoration-none text-dark">
                             ${vacancy.name}
                         </a>
                     </h5>
@@ -58,8 +59,8 @@
 
                     <p class="mb-0">${vacancy.description!""}</p>
                 </div>
-            </div>
-        </#list>
+            </#list>
+        </div>
 
         <#if totalPages?? && (totalPages > 1)>
             <nav class="mt-4">

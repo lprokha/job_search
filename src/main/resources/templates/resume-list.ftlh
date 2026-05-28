@@ -8,6 +8,10 @@
         </h2>
 
         <div class="d-flex gap-2">
+            <a href="/responses/my" class="btn btn-outline-dark">
+                <@spring.message "responses.myTitle"/>
+            </a>
+
             <a href="/resumes/create" class="btn btn-dark">
                 <@spring.message "button.addResume"/>
             </a>
@@ -21,7 +25,7 @@
     <#if resumes?? && (resumes?size > 0)>
         <div class="list-group shadow-sm">
             <#list resumes as resume>
-                <div class="list-group-item list-group-item-action">
+                <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start gap-3">
                         <div>
                             <h5 class="mb-2">${resume.name}</h5>
@@ -39,7 +43,11 @@
                             </p>
                         </div>
 
-                        <div class="text-nowrap">
+                        <div class="text-nowrap d-flex gap-2">
+                            <a href="/responses/my" class="btn btn-outline-dark btn-sm">
+                                <@spring.message "button.responses"/>
+                            </a>
+
                             <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">
                                 <@spring.message "button.edit"/>
                             </a>

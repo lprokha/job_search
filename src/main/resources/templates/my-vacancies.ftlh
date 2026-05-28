@@ -48,10 +48,15 @@
     <#if vacancies?? && (vacancies?size > 0)>
         <div class="list-group shadow-sm">
             <#list vacancies as vacancy>
-                <div class="list-group-item list-group-item-action">
+                <div class="list-group-item list-group-item-action position-relative">
                     <div class="d-flex justify-content-between align-items-start gap-3">
                         <div>
-                            <h5 class="mb-2">${vacancy.name}</h5>
+                            <h5 class="mb-2">
+                                <a href="/vacancies/${vacancy.id}"
+                                   class="stretched-link text-decoration-none text-dark">
+                                    ${vacancy.name}
+                                </a>
+                            </h5>
 
                             <p class="mb-1">
                                 <span class="fw-semibold">
@@ -74,7 +79,12 @@
                             </p>
                         </div>
 
-                        <div class="text-nowrap">
+                        <div class="text-nowrap position-relative z-2 d-flex gap-2">
+                            <a href="/my-vacancies/${vacancy.id}/responses"
+                               class="btn btn-outline-dark btn-sm">
+                                <@spring.message "button.responses"/>
+                            </a>
+
                             <a href="/my-vacancies/edit/${vacancy.id}"
                                class="btn btn-outline-dark btn-sm">
                                 <@spring.message "button.edit"/>
