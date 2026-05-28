@@ -1,6 +1,6 @@
 window.addEventListener('load', function () {
-    const filterKey = 'vacancyFilter';
     const pageSize = 5;
+    const oldCommonFilterKey = 'vacancyFilter';
 
     const filterForm = document.getElementById('vacancy-filter-form');
     const filterText = document.getElementById('filterText');
@@ -21,6 +21,11 @@ window.addEventListener('load', function () {
         return;
     }
 
+    localStorage.removeItem(oldCommonFilterKey);
+
+    const filterOwner = filterForm.dataset.filterOwner || 'anonymous';
+    const filterKey = 'vacancyFilter_' + filterOwner;
+
     function getFilterData() {
         return {
             text: filterText.value.trim().toLowerCase(),
@@ -31,11 +36,21 @@ window.addEventListener('load', function () {
         };
     }
 
+    function clearFilterFields() {
+        filterText.value = '';
+        filterCategory.value = '';
+        filterExperience.value = '';
+        filterSalaryFrom.value = '';
+        filterSalaryTo.value = '';
+    }
+
     function saveFilter(filterData) {
         localStorage.setItem(filterKey, JSON.stringify(filterData));
     }
 
     function restoreFilter() {
+        clearFilterFields();
+
         const savedFilter = localStorage.getItem(filterKey);
 
         if (!savedFilter) {
@@ -159,12 +174,7 @@ window.addEventListener('load', function () {
 
     function clearFilter() {
         localStorage.removeItem(filterKey);
-
-        filterText.value = '';
-        filterCategory.value = '';
-        filterExperience.value = '';
-        filterSalaryFrom.value = '';
-        filterSalaryTo.value = '';
+        clearFilterFields();
 
         filteredVacancies = vacancyItems;
         currentPage = 0;

@@ -72,13 +72,13 @@
         </div>
     </div>
 
-    <div class="mb-4 d-flex gap-2">
-        <a href="/profile/edit" class="btn btn-dark btn-sm">
+    <div class="mb-4 d-flex flex-wrap gap-2">
+        <a href="/profile/edit" class="btn btn-dark btn-sm text-nowrap">
             <@spring.message "profile.edit"/>
         </a>
 
         <#if user.accountType?string == "APPLICANT">
-            <a href="/responses/my" class="btn btn-outline-dark btn-sm">
+            <a href="/responses/my" class="btn btn-outline-dark btn-sm text-nowrap">
                 <@spring.message "responses.myTitle"/>
             </a>
         </#if>
@@ -91,12 +91,12 @@
                 <@spring.message "resumes.myTitle"/>
             </h3>
 
-            <div class="d-flex gap-2">
-                <a href="/resumes/create" class="btn btn-dark btn-sm">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/resumes/create" class="btn btn-dark btn-sm text-nowrap">
                     <@spring.message "button.add"/>
                 </a>
 
-                <a href="/resumes" class="btn btn-outline-dark btn-sm">
+                <a href="/resumes" class="btn btn-outline-dark btn-sm text-nowrap">
                     <@spring.message "button.viewAll"/>
                 </a>
             </div>
@@ -122,13 +122,8 @@
                             </div>
 
                             <div class="d-flex gap-2 text-nowrap">
-                                <a href="/responses/my"
-                                   class="btn btn-outline-dark btn-sm">
-                                    <@spring.message "button.responses"/>
-                                </a>
-
                                 <a href="/resumes/edit/${resume.id}"
-                                   class="btn btn-outline-dark btn-sm">
+                                   class="btn btn-outline-dark btn-sm text-nowrap">
                                     <@spring.message "button.edit"/>
                                 </a>
                             </div>
@@ -149,12 +144,12 @@
                 <@spring.message "nav.myVacancies"/>
             </h3>
 
-            <div class="d-flex gap-2">
-                <a href="/my-vacancies/create" class="btn btn-dark btn-sm">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/my-vacancies/create" class="btn btn-dark btn-sm text-nowrap">
                     <@spring.message "button.add"/>
                 </a>
 
-                <a href="/my-vacancies" class="btn btn-outline-dark btn-sm">
+                <a href="/my-vacancies" class="btn btn-outline-dark btn-sm text-nowrap">
                     <@spring.message "button.viewAll"/>
                 </a>
             </div>
@@ -186,12 +181,12 @@
 
                             <div class="d-flex gap-2 text-nowrap position-relative z-2">
                                 <a href="/my-vacancies/${vacancy.id}/responses"
-                                   class="btn btn-outline-dark btn-sm">
+                                   class="btn btn-outline-dark btn-sm text-nowrap">
                                     <@spring.message "button.responses"/>
                                 </a>
 
                                 <a href="/my-vacancies/edit/${vacancy.id}"
-                                   class="btn btn-outline-dark btn-sm">
+                                   class="btn btn-outline-dark btn-sm text-nowrap">
                                     <@spring.message "button.edit"/>
                                 </a>
                             </div>
