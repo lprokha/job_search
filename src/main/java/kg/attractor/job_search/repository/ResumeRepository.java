@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, Integer> {
 
@@ -18,6 +19,10 @@ public interface ResumeRepository extends JpaRepository<Resume, Integer> {
     Page<Resume> findByCategory_Id(Integer categoryId, Pageable pageable);
 
     Page<Resume> findByApplicant_Id(Integer applicantId, Pageable pageable);
+
+    Page<Resume> findByIsActiveTrue(Pageable pageable);
+
+    Page<Resume> findByIsActiveTrueAndCategory_Id(Integer categoryId, Pageable pageable);
 
     Page<Resume> findAll(Pageable pageable);
 

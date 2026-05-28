@@ -31,5 +31,9 @@ public interface VacancyService {
 
     Optional<Vacancy> update(Integer id, UpdateVacancyDto dto);
 
+    Optional<Vacancy> refresh(Integer id);
+
+    Optional<Vacancy> toggleActive(Integer id);
+
     boolean delete(Integer id);
 }

@@ -25,25 +25,27 @@
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
+                    <#if !currentUser?? || currentUser.accountType?string == "APPLICANT">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/vacancies">
+                                <@spring.message "nav.vacancies"/>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/companies">
+                                <@spring.message "nav.companies"/>
+                            </a>
+                        </li>
+                    </#if>
+
                     <#if currentUser?? && currentUser.accountType?string == "EMPLOYER">
                         <li class="nav-item">
                             <a class="nav-link" href="/employer/resumes">
                                 <@spring.message "nav.resumes"/>
                             </a>
                         </li>
-                    <#else>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vacancies">
-                                <@spring.message "nav.vacancies"/>
-                            </a>
-                        </li>
                     </#if>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/companies">
-                            <@spring.message "nav.companies"/>
-                        </a>
-                    </li>
 
                     <#if currentUser??>
                         <li class="nav-item">

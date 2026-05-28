@@ -111,6 +111,12 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public Page<Resume> getAllActive(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resumeRepository.findByIsActiveTrue(pageable);
+    }
+
+    @Override
     public Page<Resume> getByApplicantId(Integer applicantId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return resumeRepository.findByApplicant_Id(applicantId, pageable);
@@ -120,6 +126,12 @@ public class ResumeServiceImpl implements ResumeService {
     public Page<Resume> getByCategory(Integer categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return resumeRepository.findByCategory_Id(categoryId, pageable);
+    }
+
+    @Override
+    public Page<Resume> getActiveByCategory(Integer categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return resumeRepository.findByIsActiveTrueAndCategory_Id(categoryId, pageable);
     }
 
     @Override
@@ -157,6 +169,39 @@ public class ResumeServiceImpl implements ResumeService {
         saveUpdateContactInfos(updatedResume, dto.getContactInfos());
         saveUpdateEducationInfos(updatedResume, dto.getEducationInfos());
         saveUpdateWorkExperienceInfos(updatedResume, dto.getWorkExperienceInfos());
+
+        return Optional.of(updatedResume);
+    }
+
+    @Override
+    public Optional<Resume> refresh(Integer id) {
+        Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Resume not found for refresh, id={}", id);
+                    return new ResumeNotFoundException();
+                });
+
+        resume.setUpdateTime(LocalDateTime.now());
+
+        Resume updatedResume = resumeRepository.save(resume);
+        log.debug("Resume refreshed successfully, id={}", id);
+
+        return Optional.of(updatedResume);
+    }
+
+    @Override
+    public Optional<Resume> toggleActive(Integer id) {
+        Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Resume not found for active toggle, id={}", id);
+                    return new ResumeNotFoundException();
+                });
+
+        resume.setIsActive(!Boolean.TRUE.equals(resume.getIsActive()));
+        resume.setUpdateTime(LocalDateTime.now());
+
+        Resume updatedResume = resumeRepository.save(resume);
+        log.debug("Resume active status changed successfully, id={}, active={}", id, updatedResume.getIsActive());
 
         return Optional.of(updatedResume);
     }

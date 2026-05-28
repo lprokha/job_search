@@ -2,17 +2,17 @@
 <#import "/spring.ftl" as spring>
 
 <@main.layout>
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3 mb-4">
         <h2 class="mb-0">
             <@spring.message "vacancies.title"/>
         </h2>
 
-        <form method="get" action="/vacancies" class="d-flex gap-2 align-items-center">
-            <label for="sort" class="mb-0">
+        <form method="get" action="/vacancies" class="d-flex flex-wrap gap-2 align-items-center">
+            <label for="sort" class="mb-0 text-nowrap">
                 <@spring.message "label.sort"/>
             </label>
 
-            <select name="sort" id="sort" class="form-select">
+            <select name="sort" id="sort" class="form-select form-select-sm w-auto">
                 <option value="dateDesc" <#if sort?? && sort == "dateDesc">selected</#if>>
                     <@spring.message "sort.dateDesc"/>
                 </option>
@@ -27,7 +27,7 @@
                 </option>
             </select>
 
-            <button type="submit" class="btn btn-outline-dark">
+            <button type="submit" class="btn btn-outline-dark btn-sm text-nowrap">
                 <@spring.message "button.apply"/>
             </button>
         </form>
@@ -39,7 +39,10 @@
                 <@spring.message "vacancy.filterTitle"/>
             </h5>
 
-            <form id="vacancy-filter-form" class="row g-3">
+            <form id="vacancy-filter-form"
+                  class="row g-3"
+                  data-filter-owner="<#if currentUser??>user_${currentUser.id}_${currentUser.email}<#else>anonymous</#if>">
+
                 <div class="col-md-4">
                     <label for="filterText" class="form-label">
                         <@spring.message "vacancy.filterText"/>
@@ -111,18 +114,20 @@
                            min="0">
                 </div>
 
-                <div class="col-md-4 d-flex align-items-end gap-2">
-                    <button type="button"
-                            id="applyVacancyFilter"
-                            class="btn btn-dark">
-                        <@spring.message "button.applyFilter"/>
-                    </button>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button"
+                                id="applyVacancyFilter"
+                                class="btn btn-dark btn-sm text-nowrap">
+                            <@spring.message "button.applyFilter"/>
+                        </button>
 
-                    <button type="button"
-                            id="clearVacancyFilter"
-                            class="btn btn-outline-dark">
-                        <@spring.message "button.clear"/>
-                    </button>
+                        <button type="button"
+                                id="clearVacancyFilter"
+                                class="btn btn-outline-dark btn-sm text-nowrap">
+                            <@spring.message "button.clear"/>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

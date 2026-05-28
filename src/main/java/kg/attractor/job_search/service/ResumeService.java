@@ -21,13 +21,21 @@ public interface ResumeService {
 
     Page<Resume> getAll(int page, int size);
 
+    Page<Resume> getAllActive(int page, int size);
+
     Page<Resume> getByApplicantId(Integer applicantId, int page, int size);
 
     Page<Resume> getByCategory(Integer categoryId, int page, int size);
 
+    Page<Resume> getActiveByCategory(Integer categoryId, int page, int size);
+
     List<Resume> getApplicantsByVacancyId(Integer vacancyId);
 
     Optional<Resume> update(Integer id, UpdateResumeDto dto);
+
+    Optional<Resume> refresh(Integer id);
+
+    Optional<Resume> toggleActive(Integer id);
 
     boolean delete(Integer id);
 }

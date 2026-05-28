@@ -1,8 +1,13 @@
 package kg.attractor.job_search.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kg.attractor.job_search.exception.*;
-import kg.attractor.job_search.model.User;
+import jakarta.servlet.http.HttpServletResponse;
+import kg.attractor.job_search.exception.BadRequestException;
+import kg.attractor.job_search.exception.ConflictException;
+import kg.attractor.job_search.exception.FileUploadException;
+import kg.attractor.job_search.exception.ForbiddenException;
+import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -31,68 +38,143 @@ public class GlobalControllerAdvice {
         }
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public String handleUserNotFound(HttpServletRequest request, Model model, UserNotFoundException e) {
+    private String errorPage(HttpServletResponse response,
+                             Model model,
+                             HttpStatus status,
+                             String reason,
+                             HttpServletRequest request) {
+        response.setStatus(status.value());
         addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.NOT_FOUND.value());
-        model.addAttribute("reason", e.getMessage());
+        model.addAttribute("status", status.value());
+        model.addAttribute("reason", reason);
         model.addAttribute("details", request);
+
         return "errors/error";
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public String handleNoHandlerFound(HttpServletRequest request,
+                                       HttpServletResponse response,
+                                       Model model) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.NOT_FOUND,
+                HttpStatus.NOT_FOUND.getReasonPhrase() + ": Page not found",
+                request
+        );
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public String handleNoResourceFound(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Model model) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.NOT_FOUND,
+                HttpStatus.NOT_FOUND.getReasonPhrase() + ": Resource not found",
+                request
+        );
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public String handleUserNotFound(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     Model model,
+                                     UserNotFoundException e) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                request
+        );
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public String handleNotFound(HttpServletRequest request, Model model, NotFoundException e) {
-        addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.NOT_FOUND.value());
-        model.addAttribute("reason", HttpStatus.NOT_FOUND.getReasonPhrase() + ": " + e.getMessage());
-        model.addAttribute("details", request);
-        return "errors/error";
+    public String handleNotFound(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 Model model,
+                                 NotFoundException e) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.NOT_FOUND,
+                HttpStatus.NOT_FOUND.getReasonPhrase() + ": " + e.getMessage(),
+                request
+        );
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public String handleBadRequest(HttpServletRequest request, Model model, BadRequestException e) {
-        addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
-        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase() + ": " + e.getMessage());
-        model.addAttribute("details", request);
-        return "errors/error";
+    public String handleBadRequest(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   Model model,
+                                   BadRequestException e) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.BAD_REQUEST,
+                HttpStatus.BAD_REQUEST.getReasonPhrase() + ": " + e.getMessage(),
+                request
+        );
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public String handleForbidden(HttpServletRequest request, Model model, ForbiddenException e) {
-        addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.FORBIDDEN.value());
-        model.addAttribute("reason", HttpStatus.FORBIDDEN.getReasonPhrase() + ": " + e.getMessage());
-        model.addAttribute("details", request);
-        return "errors/error";
+    public String handleForbidden(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  Model model,
+                                  ForbiddenException e) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.FORBIDDEN,
+                HttpStatus.FORBIDDEN.getReasonPhrase() + ": " + e.getMessage(),
+                request
+        );
     }
 
     @ExceptionHandler(ConflictException.class)
-    public String handleConflict(HttpServletRequest request, Model model, ConflictException e) {
-        addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.CONFLICT.value());
-        model.addAttribute("reason", HttpStatus.CONFLICT.getReasonPhrase() + ": " + e.getMessage());
-        model.addAttribute("details", request);
-        return "errors/error";
+    public String handleConflict(HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 Model model,
+                                 ConflictException e) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.CONFLICT,
+                HttpStatus.CONFLICT.getReasonPhrase() + ": " + e.getMessage(),
+                request
+        );
     }
 
     @ExceptionHandler(FileUploadException.class)
-    public String handleFileUpload(HttpServletRequest request, Model model, FileUploadException e) {
-        addCurrentUser(model);
-        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
-        model.addAttribute("reason", "Ошибка загрузки файла: " + e.getMessage());
-        model.addAttribute("details", request);
-        return "errors/error";
+    public String handleFileUpload(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   Model model,
+                                   FileUploadException e) {
+        return errorPage(
+                response,
+                model,
+                HttpStatus.BAD_REQUEST,
+                "Ошибка загрузки файла: " + e.getMessage(),
+                request
+        );
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleOtherExceptions(HttpServletRequest request, Model model, Exception e) {
-        addCurrentUser(model);
+    public String handleOtherExceptions(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Model model,
+                                        Exception e) {
         log.error("Unhandled exception occurred", e);
 
-        model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        model.addAttribute("reason", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        model.addAttribute("details", request);
-        return "errors/error";
+        return errorPage(
+                response,
+                model,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                request
+        );
     }
 }

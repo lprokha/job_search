@@ -3,10 +3,12 @@ package kg.attractor.job_search.controller;
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.UpdateProfileDto;
 import kg.attractor.job_search.dto.UpdateUserDto;
-import kg.attractor.job_search.exception.BadRequestException;
 import kg.attractor.job_search.exception.FileUploadException;
-import kg.attractor.job_search.exception.NotFoundException;
+import kg.attractor.job_search.exception.ForbiddenException;
+import kg.attractor.job_search.exception.ResumeNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
+import kg.attractor.job_search.exception.VacancyNotFoundException;
+import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
@@ -21,7 +23,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -45,6 +49,14 @@ public class ProfilePageController {
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    private String normalizeRedirect(String redirectTo) {
+        if ("/resumes".equals(redirectTo) || "/my-vacancies".equals(redirectTo)) {
+            return redirectTo;
+        }
+
+        return "/profile";
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
@@ -74,14 +86,25 @@ public class ProfilePageController {
         return formattedDates;
     }
 
-    @GetMapping("/profile")
-    public String profilePage(Authentication authentication, Model model) {
-        User currentUser = getCurrentUser(authentication);
+    private UpdateProfileDto buildUpdateProfileDto(User currentUser) {
+        return UpdateProfileDto.builder()
+                .name(currentUser.getName())
+                .surname(currentUser.getSurname())
+                .age(currentUser.getAge())
+                .email(currentUser.getEmail())
+                .phoneNumber(currentUser.getPhoneNumber())
+                .build();
+    }
 
+    private void fillProfileModel(User currentUser, Model model) {
         model.addAttribute("user", currentUser);
         model.addAttribute("currentUser", currentUser);
 
-        if ("APPLICANT".equals(currentUser.getAccountType().name())) {
+        if (!model.containsAttribute("profileForm")) {
+            model.addAttribute("profileForm", buildUpdateProfileDto(currentUser));
+        }
+
+        if (currentUser.getAccountType() == AccountType.APPLICANT) {
             List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
             model.addAttribute("resumes", resumes);
             model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
@@ -90,42 +113,38 @@ public class ProfilePageController {
             model.addAttribute("vacancies", vacancies);
             model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
         }
+    }
+
+    @GetMapping("/profile")
+    public String profilePage(Authentication authentication, Model model) {
+        User currentUser = getCurrentUser(authentication);
+        fillProfileModel(currentUser, model);
 
         return "profile";
     }
 
     @GetMapping("/profile/edit")
     public String editProfilePage(Authentication authentication, Model model) {
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(UserNotFoundException::new);
+        User currentUser = getCurrentUser(authentication);
+        fillProfileModel(currentUser, model);
+        model.addAttribute("showEditProfileModal", true);
 
-        UpdateProfileDto dto = UpdateProfileDto.builder()
-                .name(currentUser.getName())
-                .surname(currentUser.getSurname())
-                .age(currentUser.getAge())
-                .email(currentUser.getEmail())
-                .phoneNumber(currentUser.getPhoneNumber())
-                .build();
-
-        model.addAttribute("user", dto);
-        model.addAttribute("currentUser", currentUser);
-
-        return "edit-user";
+        return "profile";
     }
 
     @PostMapping("/profile/edit")
     public String updateProfile(
-            @Valid @ModelAttribute("user") UpdateProfileDto dto,
+            @Valid @ModelAttribute("profileForm") UpdateProfileDto dto,
             BindingResult bindingResult,
             Authentication authentication,
             Model model
     ) {
-        User currentUser = userService.findByEmail(authentication.getName())
-                .orElseThrow(UserNotFoundException::new);
+        User currentUser = getCurrentUser(authentication);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("currentUser", currentUser);
-            return "edit-user";
+            fillProfileModel(currentUser, model);
+            model.addAttribute("showEditProfileModal", true);
+            return "profile";
         }
 
         UpdateUserDto updateUserDto = UpdateUserDto.builder()
@@ -147,19 +166,8 @@ public class ProfilePageController {
         User currentUser = getCurrentUser(authentication);
 
         if (file == null || file.isEmpty()) {
-            model.addAttribute("user", currentUser);
-            model.addAttribute("currentUser", currentUser);
+            fillProfileModel(currentUser, model);
             model.addAttribute("avatarError", "Сначала выберите фото для загрузки");
-
-            if ("APPLICANT".equals(currentUser.getAccountType().name())) {
-                List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId());
-                model.addAttribute("resumes", resumes);
-                model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
-            } else {
-                List<Vacancy> vacancies = vacancyService.getByAuthorId(currentUser.getId());
-                model.addAttribute("vacancies", vacancies);
-                model.addAttribute("vacancyUpdateTimes", buildVacancyUpdateTimeMap(vacancies));
-            }
 
             return "profile";
         }
@@ -174,5 +182,93 @@ public class ProfilePageController {
         } catch (IOException e) {
             throw new FileUploadException("Failed to upload avatar");
         }
+    }
+
+    @PostMapping("/resumes/{id}/refresh")
+    public String refreshResume(@PathVariable Integer id,
+                                @RequestParam(defaultValue = "/profile") String redirectTo,
+                                Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.APPLICANT) {
+            throw new ForbiddenException("Only applicants can refresh resumes");
+        }
+
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        if (!resume.getApplicantId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can refresh only your own resume");
+        }
+
+        resumeService.refresh(id);
+
+        return "redirect:" + normalizeRedirect(redirectTo);
+    }
+
+    @PostMapping("/resumes/{id}/toggle-active")
+    public String toggleResumeActive(@PathVariable Integer id,
+                                     @RequestParam(defaultValue = "/profile") String redirectTo,
+                                     Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.APPLICANT) {
+            throw new ForbiddenException("Only applicants can change resume active status");
+        }
+
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        if (!resume.getApplicantId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can change only your own resume");
+        }
+
+        resumeService.toggleActive(id);
+
+        return "redirect:" + normalizeRedirect(redirectTo);
+    }
+
+    @PostMapping("/my-vacancies/{id}/refresh")
+    public String refreshVacancy(@PathVariable Integer id,
+                                 @RequestParam(defaultValue = "/profile") String redirectTo,
+                                 Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.EMPLOYER) {
+            throw new ForbiddenException("Only employers can refresh vacancies");
+        }
+
+        Vacancy vacancy = vacancyService.getById(id)
+                .orElseThrow(VacancyNotFoundException::new);
+
+        if (!vacancy.getAuthorId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can refresh only your own vacancy");
+        }
+
+        vacancyService.refresh(id);
+
+        return "redirect:" + normalizeRedirect(redirectTo);
+    }
+
+    @PostMapping("/my-vacancies/{id}/toggle-active")
+    public String toggleVacancyActive(@PathVariable Integer id,
+                                      @RequestParam(defaultValue = "/profile") String redirectTo,
+                                      Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.EMPLOYER) {
+            throw new ForbiddenException("Only employers can change vacancy active status");
+        }
+
+        Vacancy vacancy = vacancyService.getById(id)
+                .orElseThrow(VacancyNotFoundException::new);
+
+        if (!vacancy.getAuthorId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can change only your own vacancy");
+        }
+
+        vacancyService.toggleActive(id);
+
+        return "redirect:" + normalizeRedirect(redirectTo);
     }
 }
