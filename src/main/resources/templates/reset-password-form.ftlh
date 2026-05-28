@@ -12,16 +12,18 @@
                         <@spring.message "resetPassword.title"/>
                     </h2>
 
-                    <#if message??>
+                    <#if messageCode??>
                         <div class="alert alert-success">
-                            ${message}
+                            <@spring.message messageCode/>
                         </div>
 
                         <a href="/login" class="btn btn-dark">
-                            <@spring.message "nav.login"/>
+                            <@spring.message "forgotPassword.back"/>
                         </a>
-                    <#elseif error??>
-                        <div class="alert alert-danger">${error}</div>
+                    <#elseif errorCode??>
+                        <div class="alert alert-danger">
+                            <@spring.message errorCode/>
+                        </div>
 
                         <a href="/forgot-password" class="btn btn-outline-dark">
                             <@spring.message "forgotPassword.title"/>

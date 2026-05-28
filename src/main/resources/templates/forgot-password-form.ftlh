@@ -15,12 +15,16 @@
                         <@spring.message "forgotPassword.description"/>
                     </p>
 
-                    <#if error??>
-                        <div class="alert alert-danger">${error}</div>
+                    <#if errorCode??>
+                        <div class="alert alert-danger">
+                            <@spring.message errorCode/>
+                        </div>
                     </#if>
 
-                    <#if message??>
-                        <div class="alert alert-success">${message}</div>
+                    <#if messageCode??>
+                        <div class="alert alert-success">
+                            <@spring.message messageCode/>
+                        </div>
                     </#if>
 
                     <#if resetLink??>

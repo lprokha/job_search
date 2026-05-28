@@ -73,10 +73,10 @@ public class AuthController {
         try {
             String resetLink = userService.makeResetPwdLink(request);
 
-            model.addAttribute("message", "Ссылка для смены пароля создана");
+            model.addAttribute("messageCode", "forgotPassword.linkCreated");
             model.addAttribute("resetLink", resetLink);
         } catch (NotFoundException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("errorCode", "forgotPassword.userNotFound");
         }
 
         return "forgot-password-form";
@@ -92,7 +92,7 @@ public class AuthController {
 
             model.addAttribute("form", form);
         } catch (NotFoundException e) {
-            model.addAttribute("error", "Недействительная ссылка для восстановления пароля");
+            model.addAttribute("errorCode", "resetPassword.invalidToken");
         }
 
         return "reset-password-form";
@@ -112,9 +112,9 @@ public class AuthController {
             User user = userService.getByResetPasswordToken(form.getToken());
             userService.updatePassword(user, form.getPassword());
 
-            model.addAttribute("message", "Пароль успешно изменён. Теперь можно войти с новым паролем.");
+            model.addAttribute("messageCode", "resetPassword.success");
         } catch (NotFoundException e) {
-            model.addAttribute("error", "Недействительная ссылка для восстановления пароля");
+            model.addAttribute("errorCode", "resetPassword.invalidToken");
         }
 
         return "reset-password-form";
