@@ -1,8 +1,6 @@
 <#import "layouts/layout.ftlh" as main>
 <#import "/spring.ftl" as spring>
 
-<#assign errors = .data_model["org.springframework.validation.BindingResult.vacancy"]!>
-
 <@main.layout>
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -37,9 +35,12 @@
                                    class="form-control"
                                    value="${vacancy.name!''}">
 
-                            <#if errors?has_content && errors.hasFieldErrors("name")>
+                            <@spring.bind "vacancy.name"/>
+                            <#if spring.status.error>
                                 <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("name").defaultMessage}
+                                    <#list spring.status.errorMessages as error>
+                                        <div>${error}</div>
+                                    </#list>
                                 </div>
                             </#if>
                         </div>
@@ -53,9 +54,12 @@
                                       class="form-control"
                                       rows="4">${vacancy.description!''}</textarea>
 
-                            <#if errors?has_content && errors.hasFieldErrors("description")>
+                            <@spring.bind "vacancy.description"/>
+                            <#if spring.status.error>
                                 <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("description").defaultMessage}
+                                    <#list spring.status.errorMessages as error>
+                                        <div>${error}</div>
+                                    </#list>
                                 </div>
                             </#if>
                         </div>
@@ -78,9 +82,12 @@
                                 </#list>
                             </select>
 
-                            <#if errors?has_content && errors.hasFieldErrors("categoryId")>
+                            <@spring.bind "vacancy.categoryId"/>
+                            <#if spring.status.error>
                                 <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("categoryId").defaultMessage}
+                                    <#list spring.status.errorMessages as error>
+                                        <div>${error}</div>
+                                    </#list>
                                 </div>
                             </#if>
                         </div>
@@ -96,16 +103,18 @@
                                    class="form-control"
                                    value="<#if vacancy.salary??>${vacancy.salary?c}</#if>">
 
-                            <#if errors?has_content && errors.hasFieldErrors("salary")>
+                            <@spring.bind "vacancy.salary"/>
+                            <#if spring.status.error>
                                 <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("salary").defaultMessage}
+                                    <#list spring.status.errorMessages as error>
+                                        <div>${error}</div>
+                                    </#list>
                                 </div>
                             </#if>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "vacancy.expFrom"/>
                                 </label>
@@ -115,15 +124,17 @@
                                        class="form-control"
                                        value="${vacancy.expFrom!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("expFrom")>
+                                <@spring.bind "vacancy.expFrom"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("expFrom").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
 
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "vacancy.expTo"/>
                                 </label>
@@ -133,16 +144,18 @@
                                        class="form-control"
                                        value="${vacancy.expTo!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("expTo")>
+                                <@spring.bind "vacancy.expTo"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("expTo").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
                         </div>
 
                         <div class="mb-3">
-
                             <label class="form-label">
                                 <@spring.message "label.activity"/>
                             </label>
@@ -159,9 +172,12 @@
                                 </option>
                             </select>
 
-                            <#if errors?has_content && errors.hasFieldErrors("isActive")>
+                            <@spring.bind "vacancy.isActive"/>
+                            <#if spring.status.error>
                                 <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("isActive").defaultMessage}
+                                    <#list spring.status.errorMessages as error>
+                                        <div>${error}</div>
+                                    </#list>
                                 </div>
                             </#if>
                         </div>

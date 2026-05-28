@@ -31,11 +31,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -88,6 +92,295 @@ public class ResumePageController {
         model.addAttribute("educationInfos", educationInfos);
         model.addAttribute("workExperienceInfos", workExperienceInfos);
         model.addAttribute("updatedAt", formatDateTime(resume.getUpdateTime()));
+    }
+
+    private void fillResumeFormModel(User currentUser, Model model, Integer resumeId) {
+        model.addAttribute("categories", categoryService.getAll());
+        model.addAttribute("contactTypes", contactTypeRepository.findAll());
+        model.addAttribute("currentUser", currentUser);
+
+        if (resumeId != null) {
+            model.addAttribute("resumeId", resumeId);
+        }
+    }
+
+    private void validateCreateResume(CreateResumeDto dto, BindingResult bindingResult) {
+        validateCreateContactInfos(dto.getContactInfos(), bindingResult);
+        validateCreateEducationInfos(dto.getEducationInfos(), bindingResult);
+        validateCreateWorkExperienceInfos(dto.getWorkExperienceInfos(), bindingResult);
+    }
+
+    private void validateUpdateResume(UpdateResumeDto dto, BindingResult bindingResult) {
+        validateUpdateContactInfos(dto.getContactInfos(), bindingResult);
+        validateUpdateEducationInfos(dto.getEducationInfos(), bindingResult);
+        validateUpdateWorkExperienceInfos(dto.getWorkExperienceInfos(), bindingResult);
+    }
+
+    private void validateCreateContactInfos(List<CreateResumeDto.ContactDto> contactInfos,
+                                            BindingResult bindingResult) {
+        if (contactInfos == null) {
+            return;
+        }
+
+        for (int i = 0; i < contactInfos.size(); i++) {
+            CreateResumeDto.ContactDto contact = contactInfos.get(i);
+            validateContact(
+                    contact.getTypeId(),
+                    contact.getContactValue(),
+                    "contactInfos[" + i + "].typeId",
+                    "contactInfos[" + i + "].contactValue",
+                    bindingResult
+            );
+        }
+    }
+
+    private void validateUpdateContactInfos(List<UpdateResumeDto.ContactDto> contactInfos,
+                                            BindingResult bindingResult) {
+        if (contactInfos == null) {
+            return;
+        }
+
+        for (int i = 0; i < contactInfos.size(); i++) {
+            UpdateResumeDto.ContactDto contact = contactInfos.get(i);
+            validateContact(
+                    contact.getTypeId(),
+                    contact.getContactValue(),
+                    "contactInfos[" + i + "].typeId",
+                    "contactInfos[" + i + "].contactValue",
+                    bindingResult
+            );
+        }
+    }
+
+    private void validateContact(Integer typeId,
+                                 String contactValue,
+                                 String typeField,
+                                 String valueField,
+                                 BindingResult bindingResult) {
+        boolean typeEmpty = typeId == null;
+        boolean valueEmpty = isBlank(contactValue);
+
+        if (typeEmpty && valueEmpty) {
+            return;
+        }
+
+        if (typeEmpty) {
+            bindingResult.rejectValue(typeField, "validation.contact.type.required");
+        }
+
+        if (valueEmpty) {
+            bindingResult.rejectValue(valueField, "validation.contact.value.required");
+        }
+    }
+
+    private void validateCreateEducationInfos(List<CreateResumeDto.EducationDto> educationInfos,
+                                              BindingResult bindingResult) {
+        if (educationInfos == null) {
+            return;
+        }
+
+        for (int i = 0; i < educationInfos.size(); i++) {
+            CreateResumeDto.EducationDto education = educationInfos.get(i);
+
+            validateEducation(
+                    education.getInstitution(),
+                    education.getProgram(),
+                    education.getStartDate(),
+                    education.getEndDate(),
+                    education.getDegree(),
+                    "educationInfos[" + i + "].institution",
+                    "educationInfos[" + i + "].program",
+                    "educationInfos[" + i + "].startDate",
+                    "educationInfos[" + i + "].endDate",
+                    "educationInfos[" + i + "].degree",
+                    bindingResult
+            );
+        }
+    }
+
+    private void validateUpdateEducationInfos(List<UpdateResumeDto.EducationDto> educationInfos,
+                                              BindingResult bindingResult) {
+        if (educationInfos == null) {
+            return;
+        }
+
+        for (int i = 0; i < educationInfos.size(); i++) {
+            UpdateResumeDto.EducationDto education = educationInfos.get(i);
+
+            validateEducation(
+                    education.getInstitution(),
+                    education.getProgram(),
+                    education.getStartDate(),
+                    education.getEndDate(),
+                    education.getDegree(),
+                    "educationInfos[" + i + "].institution",
+                    "educationInfos[" + i + "].program",
+                    "educationInfos[" + i + "].startDate",
+                    "educationInfos[" + i + "].endDate",
+                    "educationInfos[" + i + "].degree",
+                    bindingResult
+            );
+        }
+    }
+
+    private void validateEducation(String institution,
+                                   String program,
+                                   String startDateValue,
+                                   String endDateValue,
+                                   String degree,
+                                   String institutionField,
+                                   String programField,
+                                   String startDateField,
+                                   String endDateField,
+                                   String degreeField,
+                                   BindingResult bindingResult) {
+        if (isEmptyEducation(institution, program, startDateValue, endDateValue, degree)) {
+            return;
+        }
+
+        if (isBlank(institution)) {
+            bindingResult.rejectValue(institutionField, "validation.education.institution.required");
+        }
+
+        if (isBlank(program)) {
+            bindingResult.rejectValue(programField, "validation.education.program.required");
+        }
+
+        if (isBlank(startDateValue)) {
+            bindingResult.rejectValue(startDateField, "validation.education.startDate.required");
+        }
+
+        if (isBlank(endDateValue)) {
+            bindingResult.rejectValue(endDateField, "validation.education.endDate.required");
+        }
+
+        if (isBlank(degree)) {
+            bindingResult.rejectValue(degreeField, "validation.education.degree.required");
+        }
+
+        LocalDate startDate = parseDateForValidation(startDateValue, startDateField, bindingResult);
+        LocalDate endDate = parseDateForValidation(endDateValue, endDateField, bindingResult);
+
+        if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
+            bindingResult.rejectValue(endDateField, "validation.resume.educationPeriod");
+        }
+    }
+
+    private void validateCreateWorkExperienceInfos(List<CreateResumeDto.WorkExperienceDto> workExperienceInfos,
+                                                   BindingResult bindingResult) {
+        if (workExperienceInfos == null) {
+            return;
+        }
+
+        for (int i = 0; i < workExperienceInfos.size(); i++) {
+            CreateResumeDto.WorkExperienceDto work = workExperienceInfos.get(i);
+
+            validateWorkExperience(
+                    work.getYears(),
+                    work.getCompanyName(),
+                    work.getPosition(),
+                    work.getResponsibilities(),
+                    "workExperienceInfos[" + i + "].years",
+                    "workExperienceInfos[" + i + "].companyName",
+                    "workExperienceInfos[" + i + "].position",
+                    "workExperienceInfos[" + i + "].responsibilities",
+                    bindingResult
+            );
+        }
+    }
+
+    private void validateUpdateWorkExperienceInfos(List<UpdateResumeDto.WorkExperienceDto> workExperienceInfos,
+                                                   BindingResult bindingResult) {
+        if (workExperienceInfos == null) {
+            return;
+        }
+
+        for (int i = 0; i < workExperienceInfos.size(); i++) {
+            UpdateResumeDto.WorkExperienceDto work = workExperienceInfos.get(i);
+
+            validateWorkExperience(
+                    work.getYears(),
+                    work.getCompanyName(),
+                    work.getPosition(),
+                    work.getResponsibilities(),
+                    "workExperienceInfos[" + i + "].years",
+                    "workExperienceInfos[" + i + "].companyName",
+                    "workExperienceInfos[" + i + "].position",
+                    "workExperienceInfos[" + i + "].responsibilities",
+                    bindingResult
+            );
+        }
+    }
+
+    private void validateWorkExperience(Integer years,
+                                        String companyName,
+                                        String position,
+                                        String responsibilities,
+                                        String yearsField,
+                                        String companyField,
+                                        String positionField,
+                                        String responsibilitiesField,
+                                        BindingResult bindingResult) {
+        if (isEmptyWorkExperience(years, companyName, position, responsibilities)) {
+            return;
+        }
+
+        if (years == null) {
+            bindingResult.rejectValue(yearsField, "validation.work.years.required");
+        }
+
+        if (isBlank(companyName)) {
+            bindingResult.rejectValue(companyField, "validation.work.company.required");
+        }
+
+        if (isBlank(position)) {
+            bindingResult.rejectValue(positionField, "validation.work.position.required");
+        }
+
+        if (isBlank(responsibilities)) {
+            bindingResult.rejectValue(responsibilitiesField, "validation.work.responsibilities.required");
+        }
+    }
+
+    private boolean isEmptyEducation(String institution,
+                                     String program,
+                                     String startDate,
+                                     String endDate,
+                                     String degree) {
+        return isBlank(institution)
+                && isBlank(program)
+                && isBlank(startDate)
+                && isBlank(endDate)
+                && isBlank(degree);
+    }
+
+    private boolean isEmptyWorkExperience(Integer years,
+                                          String companyName,
+                                          String position,
+                                          String responsibilities) {
+        return years == null
+                && isBlank(companyName)
+                && isBlank(position)
+                && isBlank(responsibilities);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    private LocalDate parseDateForValidation(String value,
+                                             String fieldName,
+                                             BindingResult bindingResult) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException e) {
+            bindingResult.rejectValue(fieldName, "validation.resume.date.invalid");
+            return null;
+        }
     }
 
     @GetMapping("/resumes")
@@ -168,9 +461,7 @@ public class ResumePageController {
         }
 
         model.addAttribute("resume", new CreateResumeDto());
-        model.addAttribute("categories", categoryService.getAll());
-        model.addAttribute("contactTypes", contactTypeRepository.findAll());
-        model.addAttribute("currentUser", currentUser);
+        fillResumeFormModel(currentUser, model, null);
 
         return "resume-form";
     }
@@ -188,15 +479,16 @@ public class ResumePageController {
             throw new ForbiddenException("Only applicants can create resumes");
         }
 
+        validateCreateResume(dto, bindingResult);
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("categories", categoryService.getAll());
-            model.addAttribute("contactTypes", contactTypeRepository.findAll());
-            model.addAttribute("currentUser", currentUser);
+            fillResumeFormModel(currentUser, model, null);
             return "resume-form";
         }
 
         dto.setIsActive(true);
         resumeService.create(dto, currentUser.getId());
+
         return "redirect:/resumes";
     }
 
@@ -229,7 +521,7 @@ public class ResumePageController {
                                 contactInfo.getType() != null ? contactInfo.getType().getId() : null,
                                 contactInfo.getContactValue()
                         ))
-                        .toList())
+                        .collect(Collectors.toCollection(ArrayList::new)))
                 .educationInfos(educationInfos.stream()
                         .map(educationInfo -> new UpdateResumeDto.EducationDto(
                                 educationInfo.getInstitution(),
@@ -238,7 +530,7 @@ public class ResumePageController {
                                 educationInfo.getEndDate() != null ? educationInfo.getEndDate().toString() : null,
                                 educationInfo.getDegree()
                         ))
-                        .toList())
+                        .collect(Collectors.toCollection(ArrayList::new)))
                 .workExperienceInfos(workExperienceInfos.stream()
                         .map(workExperienceInfo -> new UpdateResumeDto.WorkExperienceDto(
                                 workExperienceInfo.getYears(),
@@ -246,14 +538,11 @@ public class ResumePageController {
                                 workExperienceInfo.getPosition(),
                                 workExperienceInfo.getResponsibilities()
                         ))
-                        .toList())
+                        .collect(Collectors.toCollection(ArrayList::new)))
                 .build();
 
         model.addAttribute("resume", dto);
-        model.addAttribute("categories", categoryService.getAll());
-        model.addAttribute("contactTypes", contactTypeRepository.findAll());
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("resumeId", id);
+        fillResumeFormModel(currentUser, model, id);
 
         return "resume-form";
     }
@@ -279,15 +568,15 @@ public class ResumePageController {
             throw new ForbiddenException("You can edit only your own resume");
         }
 
+        validateUpdateResume(dto, bindingResult);
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("categories", categoryService.getAll());
-            model.addAttribute("contactTypes", contactTypeRepository.findAll());
-            model.addAttribute("currentUser", currentUser);
-            model.addAttribute("resumeId", id);
+            fillResumeFormModel(currentUser, model, id);
             return "resume-form";
         }
 
         resumeService.update(id, dto);
+
         return "redirect:/resumes";
     }
 

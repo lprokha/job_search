@@ -1,9 +1,6 @@
 package kg.attractor.job_search.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,28 +12,27 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateVacancyDto {
 
-    @NotBlank(message = "Название вакансии не может быть пустым")
+    @NotBlank(message = "{validation.vacancy.name.notBlank}")
     private String name;
 
-    @NotBlank(message = "Описание не может быть пустым")
+    @NotBlank(message = "{validation.vacancy.description.notBlank}")
     private String description;
 
-    @NotNull(message = "Категория должна быть выбрана")
-    @Positive(message = "Категория должна быть выбрана")
+    @NotNull(message = "{validation.category.notNull}")
     private Integer categoryId;
 
-    @NotNull(message = "Зарплата не может быть пустой")
-    @PositiveOrZero(message = "Зарплата не может быть отрицательной")
+    @NotNull(message = "{validation.salary.notNull}")
+    @Positive(message = "{validation.salary.positive}")
     private Double salary;
 
-    @NotNull(message = "Опыт от не может быть пустым")
-    @PositiveOrZero(message = "Опыт от не может быть отрицательным")
+    @NotNull(message = "{validation.vacancy.expFrom.notNull}")
+    @Min(value = 0, message = "{validation.vacancy.expFrom.min}")
     private Integer expFrom;
 
-    @NotNull(message = "Опыт до не может быть пустым")
-    @PositiveOrZero(message = "Опыт до не может быть отрицательным")
+    @NotNull(message = "{validation.vacancy.expTo.notNull}")
+    @Min(value = 0, message = "{validation.vacancy.expTo.min}")
     private Integer expTo;
 
-    @NotNull(message = "Статус активности должен быть выбран")
+    @NotNull(message = "{validation.status.notNull}")
     private Boolean isActive;
 }

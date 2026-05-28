@@ -1,6 +1,5 @@
 window.addEventListener('load', function () {
     const resumeForm = document.getElementById('resume-form');
-
     const contactList = document.getElementById('contact-list');
     const educationList = document.getElementById('education-list');
     const workList = document.getElementById('work-list');
@@ -9,17 +8,120 @@ window.addEventListener('load', function () {
     const addEducationButton = document.getElementById('add-education');
     const addWorkButton = document.getElementById('add-work');
 
-    let contactIndex = document.querySelectorAll('#contact-list .contact-block').length;
-    let educationIndex = document.querySelectorAll('#education-list .education-block').length;
-    let workIndex = document.querySelectorAll('#work-list .work-block').length;
+    if (!resumeForm) {
+        return;
+    }
 
-    function bindRemoveButtons() {
-        const removeButtons = document.querySelectorAll('.remove-block');
+    function getContactOptionsHtml() {
+        const firstSelect = document.querySelector('.contact-type-input');
 
-        removeButtons.forEach(function (button) {
-            button.onclick = function () {
-                button.closest('.border').remove();
-            };
+        if (!firstSelect) {
+            return `<option value="">${resumeForm.dataset.selectContactType}</option>`;
+        }
+
+        return firstSelect.innerHTML;
+    }
+
+    function reindexContacts() {
+        const blocks = contactList.querySelectorAll('.contact-block');
+
+        blocks.forEach(function (block, index) {
+            const typeInput = block.querySelector('.contact-type-input');
+            const valueInput = block.querySelector('.contact-value-input');
+
+            if (typeInput) {
+                typeInput.name = `contactInfos[${index}].typeId`;
+            }
+
+            if (valueInput) {
+                valueInput.name = `contactInfos[${index}].contactValue`;
+            }
+        });
+    }
+
+    function reindexEducations() {
+        const blocks = educationList.querySelectorAll('.education-block');
+
+        blocks.forEach(function (block, index) {
+            const institutionInput = block.querySelector('.education-institution-input');
+            const programInput = block.querySelector('.education-program-input');
+            const startDateInput = block.querySelector('.education-start-date-input');
+            const endDateInput = block.querySelector('.education-end-date-input');
+            const degreeInput = block.querySelector('.education-degree-input');
+
+            if (institutionInput) {
+                institutionInput.name = `educationInfos[${index}].institution`;
+            }
+
+            if (programInput) {
+                programInput.name = `educationInfos[${index}].program`;
+            }
+
+            if (startDateInput) {
+                startDateInput.name = `educationInfos[${index}].startDate`;
+            }
+
+            if (endDateInput) {
+                endDateInput.name = `educationInfos[${index}].endDate`;
+            }
+
+            if (degreeInput) {
+                degreeInput.name = `educationInfos[${index}].degree`;
+            }
+        });
+    }
+
+    function reindexWorks() {
+        const blocks = workList.querySelectorAll('.work-block');
+
+        blocks.forEach(function (block, index) {
+            const yearsInput = block.querySelector('.work-years-input');
+            const companyInput = block.querySelector('.work-company-input');
+            const positionInput = block.querySelector('.work-position-input');
+            const responsibilitiesInput = block.querySelector('.work-responsibilities-input');
+
+            if (yearsInput) {
+                yearsInput.name = `workExperienceInfos[${index}].years`;
+            }
+
+            if (companyInput) {
+                companyInput.name = `workExperienceInfos[${index}].companyName`;
+            }
+
+            if (positionInput) {
+                positionInput.name = `workExperienceInfos[${index}].position`;
+            }
+
+            if (responsibilitiesInput) {
+                responsibilitiesInput.name = `workExperienceInfos[${index}].responsibilities`;
+            }
+        });
+    }
+
+    function reindexAll() {
+        reindexContacts();
+        reindexEducations();
+        reindexWorks();
+    }
+
+    function addRemoveHandler(block) {
+        const removeButton = block.querySelector('.remove-block');
+
+        if (!removeButton) {
+            return;
+        }
+
+        removeButton.addEventListener('click', function () {
+            block.remove();
+            reindexAll();
+        });
+    }
+
+    function addRemoveHandlersToExistingBlocks() {
+        const blocks = document.querySelectorAll('.contact-block, .education-block, .work-block');
+
+        blocks.forEach(function (block) {
+            addRemoveHandler(block);
         });
     }
 
@@ -37,20 +139,20 @@ window.addEventListener('load', function () {
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.contactType}</label>
-                <select name="contactInfos[${contactIndex}].typeId" class="form-select">
-                    ${buildContactTypeOptions()}
+                <select class="form-select contact-type-input">
+                    ${getContactOptionsHtml()}
                 </select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.contactValue}</label>
-                <input type="text" name="contactInfos[${contactIndex}].contactValue" class="form-control">
+                <input type="text" class="form-control contact-value-input">
             </div>
         `;
 
         contactList.appendChild(block);
-        contactIndex++;
-        bindRemoveButtons();
+        addRemoveHandler(block);
+        reindexContacts();
     });
 
     addEducationButton.addEventListener('click', function () {
@@ -67,33 +169,33 @@ window.addEventListener('load', function () {
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.educationInstitution}</label>
-                <input type="text" name="educationInfos[${educationIndex}].institution" class="form-control">
+                <input type="text" class="form-control education-institution-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.educationProgram}</label>
-                <input type="text" name="educationInfos[${educationIndex}].program" class="form-control">
+                <input type="text" class="form-control education-program-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.educationStartDate}</label>
-                <input type="date" name="educationInfos[${educationIndex}].startDate" class="form-control">
+                <input type="date" class="form-control education-start-date-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.educationEndDate}</label>
-                <input type="date" name="educationInfos[${educationIndex}].endDate" class="form-control">
+                <input type="date" class="form-control education-end-date-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.educationDegree}</label>
-                <input type="text" name="educationInfos[${educationIndex}].degree" class="form-control">
+                <input type="text" class="form-control education-degree-input">
             </div>
         `;
 
         educationList.appendChild(block);
-        educationIndex++;
-        bindRemoveButtons();
+        addRemoveHandler(block);
+        reindexEducations();
     });
 
     addWorkButton.addEventListener('click', function () {
@@ -110,62 +212,30 @@ window.addEventListener('load', function () {
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.workYears}</label>
-                <input type="number" name="workExperienceInfos[${workIndex}].years" class="form-control">
+                <input type="number" class="form-control work-years-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.workCompany}</label>
-                <input type="text" name="workExperienceInfos[${workIndex}].companyName" class="form-control">
+                <input type="text" class="form-control work-company-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.workPosition}</label>
-                <input type="text" name="workExperienceInfos[${workIndex}].position" class="form-control">
+                <input type="text" class="form-control work-position-input">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">${resumeForm.dataset.workResponsibilities}</label>
-                <textarea name="workExperienceInfos[${workIndex}].responsibilities" class="form-control" rows="4"></textarea>
+                <textarea class="form-control work-responsibilities-input" rows="4"></textarea>
             </div>
         `;
 
         workList.appendChild(block);
-        workIndex++;
-        bindRemoveButtons();
+        addRemoveHandler(block);
+        reindexWorks();
     });
 
-    function buildContactTypeOptions() {
-        const firstSelect = document.querySelector('#contact-list select');
-
-        if (!firstSelect) {
-            return '';
-        }
-
-        return firstSelect.innerHTML;
-    }
-
-    resumeForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        const formData = new FormData(resumeForm);
-        const data = new URLSearchParams(formData);
-
-        try {
-            const response = await fetch(resumeForm.action, {
-                method: 'POST',
-                body: data
-            });
-
-            if (response.ok) {
-                window.location.href = '/resumes';
-            } else {
-                alert(resumeForm.dataset.saveError);
-            }
-        } catch (error) {
-            console.log(error);
-            alert(resumeForm.dataset.requestError);
-        }
-    });
-
-    bindRemoveButtons();
+    addRemoveHandlersToExistingBlocks();
+    reindexAll();
 });
