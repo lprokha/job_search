@@ -50,7 +50,7 @@
 
                                     <#if message.timestamp??>
                                         <div class="small text-muted">
-                                            ${message.timestamp?string("dd.MM.yyyy HH:mm")}
+                                            ${message.timestamp}
                                         </div>
                                     </#if>
                                 </div>
