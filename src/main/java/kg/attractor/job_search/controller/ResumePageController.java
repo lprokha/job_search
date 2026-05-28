@@ -74,6 +74,22 @@ public class ResumePageController {
         return formattedDates;
     }
 
+    private void addResumeDetailsToModel(Integer id, User currentUser, Model model) {
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        List<ContactInfo> contactInfos = contactInfoRepository.findByResumeId(id);
+        List<EducationInfo> educationInfos = educationInfoRepository.findByResumeId(id);
+        List<WorkExperienceInfo> workExperienceInfos = workExperienceInfoRepository.findByResumeId(id);
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("resume", resume);
+        model.addAttribute("contactInfos", contactInfos);
+        model.addAttribute("educationInfos", educationInfos);
+        model.addAttribute("workExperienceInfos", workExperienceInfos);
+        model.addAttribute("updatedAt", formatDateTime(resume.getUpdateTime()));
+    }
+
     @GetMapping("/resumes")
     public String resumesPage(
             @RequestParam(defaultValue = "0") int page,
@@ -97,6 +113,43 @@ public class ResumePageController {
         model.addAttribute("totalPages", resumePage.getTotalPages());
 
         return "resume-list";
+    }
+
+    @GetMapping("/resumes/{id}")
+    public String applicantResumeDetailPage(@PathVariable Integer id,
+                                            Authentication authentication,
+                                            Model model) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.APPLICANT) {
+            throw new ForbiddenException("Only applicants can view this resume page");
+        }
+
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        if (!resume.getApplicantId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can view only your own resume");
+        }
+
+        addResumeDetailsToModel(id, currentUser, model);
+
+        return "resume-detail";
+    }
+
+    @GetMapping("/employer/resumes/{id}")
+    public String employerResumeDetailPage(@PathVariable Integer id,
+                                           Authentication authentication,
+                                           Model model) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.EMPLOYER) {
+            throw new ForbiddenException("Only employers can view applicant resumes");
+        }
+
+        addResumeDetailsToModel(id, currentUser, model);
+
+        return "resume-detail";
     }
 
     @GetMapping("/resumes/create")

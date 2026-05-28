@@ -21,14 +21,11 @@
     <#if responses?? && (responses?size > 0)>
         <div class="list-group shadow-sm">
             <#list responses as response>
-                <div class="list-group-item list-group-item-action position-relative">
+                <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start gap-3">
                         <div>
                             <h5 class="mb-2">
-                                <a href="/chat/${response.id}"
-                                   class="stretched-link text-decoration-none text-dark">
-                                    ${response.resume.name!""}
-                                </a>
+                                ${response.resume.name!""}
                             </h5>
 
                             <#if response.resume.applicant??>
@@ -46,7 +43,11 @@
                             </p>
                         </div>
 
-                        <div class="text-nowrap position-relative z-2">
+                        <div class="text-nowrap d-flex gap-2">
+                            <a href="/employer/resumes/${response.resume.id}" class="btn btn-outline-dark btn-sm">
+                                <@spring.message "button.viewResume"/>
+                            </a>
+
                             <a href="/chat/${response.id}" class="btn btn-outline-dark btn-sm">
                                 <@spring.message "button.openChat"/>
                             </a>
