@@ -40,7 +40,11 @@
         <#list vacancies as vacancy>
             <div class="card shadow-sm border-0 mb-3">
                 <div class="card-body">
-                    <h4 class="mb-1">${vacancy.name}</h4>
+                    <h5 class="mb-2">
+                        <a href="/vacancies/${vacancy.id}" class="text-decoration-none text-dark">
+                            ${vacancy.name}
+                        </a>
+                    </h5>
 
                     <p class="mb-1 fw-semibold">
                         <@spring.message "vacancy.salary"/>:

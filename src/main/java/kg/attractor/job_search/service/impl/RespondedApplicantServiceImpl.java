@@ -27,8 +27,12 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
 
     @Override
     public boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId) {
-        return respondedApplicantRepository.existsByResumeIdAndVacancyId(resumeId, vacancyId);
+        return respondedApplicantRepository.existsByResume_IdAndVacancy_Id(resumeId, vacancyId);
     }
+
+    @Override
+    public Optional<RespondedApplicant> getByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId) {
+        return respondedApplicantRepository.findByResume_IdAndVacancy_Id(resumeId, vacancyId);    }
 
     @Override
     public RespondedApplicant create(RespondToVacancyDto dto) {
@@ -59,13 +63,11 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
 
     @Override
     public List<RespondedApplicant> getByVacancyId(Integer vacancyId) {
-        return respondedApplicantRepository.findByVacancyId(vacancyId);
-    }
+        return respondedApplicantRepository.findByVacancy_Id(vacancyId);    }
 
     @Override
     public List<RespondedApplicant> getByResumeId(Integer resumeId) {
-        return respondedApplicantRepository.findByResumeId(resumeId);
-    }
+        return respondedApplicantRepository.findByResume_Id(resumeId);    }
 
     @Override
     public List<RespondedApplicant> getAll() {

@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface RespondedApplicantService {
     boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId);
 
+    Optional<RespondedApplicant> getByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId);
+
     RespondedApplicant create(RespondToVacancyDto dto);
 
     List<RespondedApplicant> getByVacancyId(Integer vacancyId);

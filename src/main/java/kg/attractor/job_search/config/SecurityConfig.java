@@ -90,11 +90,14 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/change-language").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/vacancies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/vacancies", "/api/vacancies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/companies/**").permitAll()
 
                         .requestMatchers("/profile/**").authenticated()
 
                         .requestMatchers("/resumes/**").hasRole("APPLICANT")
+                        .requestMatchers(HttpMethod.POST, "/vacancies/*/respond").hasRole("APPLICANT")
                         .requestMatchers("/my-vacancies/**").hasRole("EMPLOYER")
                         .requestMatchers("/employer/resumes/**").hasRole("EMPLOYER")
 

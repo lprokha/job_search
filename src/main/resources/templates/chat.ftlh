@@ -21,9 +21,6 @@
                         ${response.resume.name!""}
                     </p>
 
-                    <p class="mb-0 text-muted">
-                        <@spring.message "chat.responseId"/>: ${response.id}
-                    </p>
                 </div>
             </div>
 

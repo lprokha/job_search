@@ -144,7 +144,11 @@
                      data-exp-to="<#if vacancy.expTo??>${vacancy.expTo?c}<#else>0</#if>">
 
                     <div class="card-body">
-                        <h4 class="mb-1">${vacancy.name}</h4>
+                        <h4 class="mb-1">
+                            <a href="/vacancies/${vacancy.id}" class="text-decoration-none text-dark">
+                                ${vacancy.name}
+                            </a>
+                        </h4>
 
                         <p class="mb-1 fw-semibold">
                             <@spring.message "vacancy.salary"/>: ${vacancy.salary!0}
