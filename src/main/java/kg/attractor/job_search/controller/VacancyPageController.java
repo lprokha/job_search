@@ -54,6 +54,29 @@ public class VacancyPageController {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    private boolean isAuthenticated(Authentication authentication) {
+        return authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName());
+    }
+
+    private User addCurrentUserIfAuthenticated(Authentication authentication, Model model) {
+        if (!isAuthenticated(authentication)) {
+            return null;
+        }
+
+        User currentUser = getCurrentUser(authentication);
+        model.addAttribute("currentUser", currentUser);
+
+        return currentUser;
+    }
+
+    private void forbidEmployer(User currentUser, String message) {
+        if (currentUser != null && currentUser.getAccountType() == AccountType.EMPLOYER) {
+            throw new ForbiddenException(message);
+        }
+    }
+
     private String formatDateTime(LocalDateTime dateTime) {
         if (dateTime == null) {
             return "";
@@ -77,6 +100,9 @@ public class VacancyPageController {
             Authentication authentication,
             Model model
     ) {
+        User currentUser = addCurrentUserIfAuthenticated(authentication, model);
+        forbidEmployer(currentUser, "Employers cannot view all vacancies");
+
         Page<Vacancy> vacancyPage = vacancyService.getAllActive(0, 100, sort);
         List<Vacancy> vacancies = vacancyPage.getContent();
 
@@ -85,13 +111,6 @@ public class VacancyPageController {
         model.addAttribute("sort", sort);
         model.addAttribute("categories", categoryService.getAll());
 
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
-            User currentUser = getCurrentUser(authentication);
-            model.addAttribute("currentUser", currentUser);
-        }
-
         return "vacancy-list";
     }
 
@@ -99,6 +118,9 @@ public class VacancyPageController {
     public String vacancyDetailPage(@PathVariable Integer id,
                                     Authentication authentication,
                                     Model model) {
+        User currentUser = addCurrentUserIfAuthenticated(authentication, model);
+        forbidEmployer(currentUser, "Employers cannot view vacancy details");
+
         Vacancy vacancy = vacancyService.getById(id)
                 .orElseThrow(VacancyNotFoundException::new);
 
@@ -106,19 +128,12 @@ public class VacancyPageController {
         model.addAttribute("updatedAt", formatDateTime(vacancy.getUpdateTime()));
         model.addAttribute("respondDto", new RespondToVacancyDto());
 
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
-            User currentUser = getCurrentUser(authentication);
-            model.addAttribute("currentUser", currentUser);
+        if (currentUser != null && currentUser.getAccountType() == AccountType.APPLICANT) {
+            List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId()).stream()
+                    .filter(resume -> Boolean.TRUE.equals(resume.getIsActive()))
+                    .toList();
 
-            if (currentUser.getAccountType() == AccountType.APPLICANT) {
-                List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId()).stream()
-                        .filter(resume -> Boolean.TRUE.equals(resume.getIsActive()))
-                        .toList();
-
-                model.addAttribute("resumes", resumes);
-            }
+            model.addAttribute("resumes", resumes);
         }
 
         return "vacancy-detail";
@@ -162,17 +177,8 @@ public class VacancyPageController {
             Authentication authentication,
             Model model
     ) {
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
-            User currentUser = getCurrentUser(authentication);
-
-            if (currentUser.getAccountType() == AccountType.EMPLOYER) {
-                throw new ForbiddenException("Employers cannot view companies");
-            }
-
-            model.addAttribute("currentUser", currentUser);
-        }
+        User currentUser = addCurrentUserIfAuthenticated(authentication, model);
+        forbidEmployer(currentUser, "Employers cannot view companies");
 
         List<User> allEmployers = userService.getAllEmployers();
 
@@ -207,17 +213,8 @@ public class VacancyPageController {
             Authentication authentication,
             Model model
     ) {
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getName())) {
-            User currentUser = getCurrentUser(authentication);
-
-            if (currentUser.getAccountType() == AccountType.EMPLOYER) {
-                throw new ForbiddenException("Employers cannot view companies");
-            }
-
-            model.addAttribute("currentUser", currentUser);
-        }
+        User currentUser = addCurrentUserIfAuthenticated(authentication, model);
+        forbidEmployer(currentUser, "Employers cannot view companies");
 
         User company = userService.findEmployer(id)
                 .orElseThrow(() -> new NotFoundException("Company not found"));
