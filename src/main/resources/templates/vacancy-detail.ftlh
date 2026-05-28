@@ -33,7 +33,8 @@
                     <#if vacancy.author??>
                         <p class="mb-2">
                             <span class="fw-semibold"><@spring.message "company.title"/>:</span>
-                            <a href="/companies/${vacancy.author.id}" class="text-decoration-none text-dark fw-semibold">
+                            <a href="/companies/${vacancy.author.id}"
+                               class="link-dark fw-semibold text-decoration-underline">
                                 ${vacancy.author.name} ${vacancy.author.surname}
                             </a>
                         </p>
