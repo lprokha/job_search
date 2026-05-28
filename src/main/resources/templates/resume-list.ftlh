@@ -2,21 +2,21 @@
 <#import "/spring.ftl" as spring>
 
 <@main.layout>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+        <h2 class="mb-0">
             <@spring.message "resumes.myTitle"/>
         </h2>
 
-        <div class="d-flex gap-2">
-            <a href="/responses/my" class="btn btn-outline-dark">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="/responses/my" class="btn btn-outline-dark btn-sm text-nowrap">
                 <@spring.message "responses.myTitle"/>
             </a>
 
-            <a href="/resumes/create" class="btn btn-dark">
+            <a href="/resumes/create" class="btn btn-dark btn-sm text-nowrap">
                 <@spring.message "button.addResume"/>
             </a>
 
-            <a href="/profile" class="btn btn-outline-dark">
+            <a href="/profile" class="btn btn-outline-dark btn-sm text-nowrap">
                 <@spring.message "button.backToProfile"/>
             </a>
         </div>
@@ -44,11 +44,8 @@
                         </div>
 
                         <div class="text-nowrap d-flex gap-2">
-                            <a href="/responses/my" class="btn btn-outline-dark btn-sm">
-                                <@spring.message "button.responses"/>
-                            </a>
-
-                            <a href="/resumes/edit/${resume.id}" class="btn btn-outline-dark btn-sm">
+                            <a href="/resumes/edit/${resume.id}"
+                               class="btn btn-outline-dark btn-sm text-nowrap">
                                 <@spring.message "button.edit"/>
                             </a>
                         </div>
