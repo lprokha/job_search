@@ -31,6 +31,10 @@ public class Message {
     @JoinColumn(name = "responded_applicant_id")
     private RespondedApplicant respondedApplicant;
 
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
     private String content;
 
     @Column(name = "timestamp")

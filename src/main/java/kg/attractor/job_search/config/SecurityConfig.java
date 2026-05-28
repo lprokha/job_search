@@ -81,7 +81,8 @@ public class SecurityConfig {
                                 "/change-language",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/static/**"
+                                "/static/**",
+                                "/ws/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/change-language").permitAll()
