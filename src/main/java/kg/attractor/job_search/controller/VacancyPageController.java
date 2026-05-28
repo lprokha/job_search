@@ -242,6 +242,10 @@ public class VacancyPageController {
     ) {
         User currentUser = getCurrentUser(authentication);
 
+        if (currentUser.getAccountType() == AccountType.APPLICANT) {
+            return "redirect:/resumes";
+        }
+
         if (currentUser.getAccountType() != AccountType.EMPLOYER) {
             throw new ForbiddenException("Only employers can view their vacancies");
         }
