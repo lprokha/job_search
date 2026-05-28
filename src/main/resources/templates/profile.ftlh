@@ -20,18 +20,20 @@
             <div class="mt-3">
                 <p class="mb-2">
                     <strong><@spring.message "profile.currentPhoto"/>:</strong>
-
-                    <#if user.avatar?? && user.avatar?has_content && user.avatar != "default-avatar.png">
-                <div class="mt-2">
-                    <img src="/uploads/avatars/${user.avatar}"
-                         alt="Аватар"
-                         class="rounded"
-                         style="max-width: 150px;">
-                </div>
-                <#else>
-                    <@spring.message "profile.notSet"/>
-                </#if>
                 </p>
+
+                <#if user.avatar?? && user.avatar?has_content && user.avatar != "default-avatar.png">
+                    <div class="mt-2">
+                        <img src="/uploads/avatars/${user.avatar}"
+                             alt="Avatar"
+                             class="rounded"
+                             style="max-width: 150px;">
+                    </div>
+                <#else>
+                    <p class="text-muted mb-2">
+                        <@spring.message "profile.notSet"/>
+                    </p>
+                </#if>
 
                 <form action="/profile/avatar"
                       method="post"
@@ -74,6 +76,12 @@
         <a href="/profile/edit" class="btn btn-dark btn-sm">
             <@spring.message "profile.edit"/>
         </a>
+
+        <#if user.accountType?string == "APPLICANT">
+            <a href="/responses/my" class="btn btn-outline-dark btn-sm">
+                <@spring.message "responses.myTitle"/>
+            </a>
+        </#if>
     </div>
 
     <#if user.accountType?string == "APPLICANT">
@@ -95,29 +103,34 @@
         </div>
 
         <#if resumes?? && (resumes?size > 0)>
-            <div class="row">
+            <div class="list-group shadow-sm">
                 <#list resumes as resume>
-                    <div class="col-md-6 mb-3">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body">
-                                <h5>${resume.name}</h5>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h5 class="mb-2">${resume.name}</h5>
 
-                                <p class="mb-2">
+                                <p class="mb-1">
                                     <@spring.message "vacancy.salary"/>:
                                     ${resume.salary!0}
                                 </p>
 
-                                <p class="text-muted mb-2">
+                                <p class="text-muted mb-0">
                                     <@spring.message "vacancy.updated"/>:
                                     ${resumeUpdateTimes[resume.id?string]!""}
                                 </p>
+                            </div>
 
-                                <div class="d-flex gap-2">
-                                    <a href="/resumes/edit/${resume.id}"
-                                       class="btn btn-outline-dark btn-sm">
-                                        <@spring.message "button.edit"/>
-                                    </a>
-                                </div>
+                            <div class="d-flex gap-2 text-nowrap">
+                                <a href="/responses/my"
+                                   class="btn btn-outline-dark btn-sm">
+                                    <@spring.message "button.responses"/>
+                                </a>
+
+                                <a href="/resumes/edit/${resume.id}"
+                                   class="btn btn-outline-dark btn-sm">
+                                    <@spring.message "button.edit"/>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -148,29 +161,39 @@
         </div>
 
         <#if vacancies?? && (vacancies?size > 0)>
-            <div class="row">
+            <div class="list-group shadow-sm">
                 <#list vacancies as vacancy>
-                    <div class="col-md-6 mb-3">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body">
-                                <h5>${vacancy.name}</h5>
+                    <div class="list-group-item list-group-item-action position-relative">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h5 class="mb-2">
+                                    <a href="/vacancies/${vacancy.id}"
+                                       class="stretched-link text-decoration-none text-dark">
+                                        ${vacancy.name}
+                                    </a>
+                                </h5>
 
-                                <p class="mb-2">
+                                <p class="mb-1">
                                     <@spring.message "vacancy.salary"/>:
                                     ${vacancy.salary!0}
                                 </p>
 
-                                <p class="text-muted mb-2">
+                                <p class="text-muted mb-0">
                                     <@spring.message "vacancy.updated"/>:
                                     ${vacancyUpdateTimes[vacancy.id?string]!""}
                                 </p>
+                            </div>
 
-                                <div class="d-flex gap-2">
-                                    <a href="/my-vacancies/edit/${vacancy.id}"
-                                       class="btn btn-outline-dark btn-sm">
-                                        <@spring.message "button.edit"/>
-                                    </a>
-                                </div>
+                            <div class="d-flex gap-2 text-nowrap position-relative z-2">
+                                <a href="/my-vacancies/${vacancy.id}/responses"
+                                   class="btn btn-outline-dark btn-sm">
+                                    <@spring.message "button.responses"/>
+                                </a>
+
+                                <a href="/my-vacancies/edit/${vacancy.id}"
+                                   class="btn btn-outline-dark btn-sm">
+                                    <@spring.message "button.edit"/>
+                                </a>
                             </div>
                         </div>
                     </div>

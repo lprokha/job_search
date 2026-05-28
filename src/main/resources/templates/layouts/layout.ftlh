@@ -37,15 +37,13 @@
                                 <@spring.message "nav.vacancies"/>
                             </a>
                         </li>
-
-                        <#if currentUser?? && currentUser.accountType?string == "APPLICANT">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/companies">
-                                    <@spring.message "nav.companies"/>
-                                </a>
-                            </li>
-                        </#if>
                     </#if>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/companies">
+                            <@spring.message "nav.companies"/>
+                        </a>
+                    </li>
 
                     <#if currentUser??>
                         <li class="nav-item">
@@ -72,7 +70,7 @@
                     </#if>
                 </ul>
 
-                <div class="d-flex gap-2 align-items-center">
+                <div class="d-flex flex-column flex-lg-row gap-2 align-items-start align-items-lg-center">
                     <form action="/change-language" method="post" class="d-flex gap-2 align-items-center">
                         <#if _csrf??>
                             <input
@@ -81,7 +79,7 @@
                                     value="${(_csrf.token)!''}">
                         </#if>
 
-                        <select name="lang" class="form-select form-select-sm">
+                        <select name="lang" class="form-select form-select-sm w-auto">
                             <option value="ru" <#if .locale?string?starts_with("ru")>selected</#if>>
                                 RU
                             </option>
@@ -96,12 +94,14 @@
                     </form>
 
                     <#if !currentUser??>
-                        <a href="/login" class="btn btn-outline-dark btn-sm">
-                            <@spring.message "button.login"/>
-                        </a>
-                        <a href="/register" class="btn btn-dark btn-sm">
-                            <@spring.message "button.register"/>
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="/login" class="btn btn-outline-dark btn-sm text-nowrap">
+                                <@spring.message "button.login"/>
+                            </a>
+                            <a href="/register" class="btn btn-dark btn-sm text-nowrap">
+                                <@spring.message "button.register"/>
+                            </a>
+                        </div>
                     </#if>
 
                     <#if currentUser??>
@@ -112,7 +112,7 @@
                                         name="${(_csrf.parameterName)!'csrf'}"
                                         value="${(_csrf.token)!''}">
                             </#if>
-                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm text-nowrap">
                                 <@spring.message "button.logout"/>
                             </button>
                         </form>

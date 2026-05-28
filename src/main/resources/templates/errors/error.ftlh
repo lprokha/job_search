@@ -2,74 +2,41 @@
 <#import "/spring.ftl" as spring>
 
 <@main.layout>
-    <link rel="stylesheet" href="/css/error_styles.css">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 text-center">
 
-    <div class="error_block">
-        <div class="main_block">
-            <div class="content">
-
-                <h1>${status!}</h1>
-                <h2>${reason!}</h2>
-
-                <#if details??>
-                    <ul class="details">
-
-                        <#if details.serverName??>
-                            <li>
-                                <span>
-                                    <@spring.message "error.host"/>:
-                                </span>
-
-                                <code>${details.serverName}</code>
-                            </li>
+                    <h2 class="mb-3">
+                        <#if status?? && status == 403>
+                            <@spring.message "error.forbiddenTitle"/>
+                        <#else>
+                            <@spring.message "error.title"/>
                         </#if>
+                    </h2>
 
-                        <#if details.requestURL??>
-                            <li>
-                                <span>
-                                    <@spring.message "error.originalUri"/>:
-                                </span>
-
-                                <code>${details.requestURL}</code>
-                            </li>
+                    <p class="text-muted mb-4">
+                        <#if status?? && status == 403>
+                            <@spring.message "error.forbiddenMessage"/>
+                        <#elseif message??>
+                            ${message}
+                        <#else>
+                            <@spring.message "error.message"/>
                         </#if>
+                    </p>
 
-                        <#if details.serverPort??>
-                            <li>
-                                <span>
-                                    <@spring.message "error.servicePort"/>:
-                                </span>
+                    <a href="/vacancies" class="btn btn-dark">
+                        <@spring.message "nav.vacancies"/>
+                    </a>
 
-                                <code>${details.serverPort}</code>
-                            </li>
-                        </#if>
+                    <#if currentUser??>
+                        <a href="/profile" class="btn btn-outline-dark ms-2">
+                            <@spring.message "nav.profile"/>
+                        </a>
+                    </#if>
 
-                        <#if details.requestId??>
-                            <li>
-                                <span>
-                                    <@spring.message "error.requestId"/>:
-                                </span>
-
-                                <code>${details.requestId}</code>
-                            </li>
-                        </#if>
-
-                        <li>
-                            <span>
-                                <@spring.message "error.timestamp"/>:
-                            </span>
-
-                            <code>${.now}</code>
-                        </li>
-                    </ul>
-                </#if>
-
-                <a href="/vacancies" class="btn btn-dark mt-3">
-                    <@spring.message "button.home"/>
-                </a>
+                </div>
             </div>
         </div>
     </div>
-
-    <script src="/js/error_js.js"></script>
 </@main.layout>

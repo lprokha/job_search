@@ -135,7 +135,7 @@
     <#if vacancies?? && (vacancies?size > 0)>
         <div id="vacancy-list">
             <#list vacancies as vacancy>
-                <div class="card shadow-sm border-0 mb-3 vacancy-item"
+                <div class="card shadow-sm border-0 mb-3 vacancy-item position-relative"
                      data-name="${(vacancy.name!'')?lower_case}"
                      data-description="${(vacancy.description!'')?lower_case}"
                      data-category-id="${(vacancy.category.id)!''}"
@@ -144,7 +144,12 @@
                      data-exp-to="<#if vacancy.expTo??>${vacancy.expTo?c}<#else>0</#if>">
 
                     <div class="card-body">
-                        <h4 class="mb-1">${vacancy.name}</h4>
+                        <h4 class="mb-1">
+                            <a href="/vacancies/${vacancy.id}"
+                               class="stretched-link text-decoration-none text-dark">
+                                ${vacancy.name}
+                            </a>
+                        </h4>
 
                         <p class="mb-1 fw-semibold">
                             <@spring.message "vacancy.salary"/>: ${vacancy.salary!0}
@@ -162,6 +167,10 @@
                         </p>
 
                         <p class="mb-0">${vacancy.description!""}</p>
+
+                        <p class="small text-muted mt-2 mb-0">
+                            <@spring.message "button.viewDetails"/>
+                        </p>
                     </div>
                 </div>
             </#list>

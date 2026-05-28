@@ -15,12 +15,28 @@
                         <@spring.message "forgotPassword.description"/>
                     </p>
 
-                    <#if error??>
-                        <div class="alert alert-danger">${error}</div>
+                    <#if errorCode??>
+                        <div class="alert alert-danger">
+                            <@spring.message errorCode/>
+                        </div>
                     </#if>
 
-                    <#if message??>
-                        <div class="alert alert-success">${message}</div>
+                    <#if messageCode??>
+                        <div class="alert alert-success">
+                            <@spring.message messageCode/>
+                        </div>
+                    </#if>
+
+                    <#if resetLink??>
+                        <div class="alert alert-light border">
+                            <p class="mb-2">
+                                <@spring.message "forgotPassword.generatedLink"/>
+                            </p>
+
+                            <a href="${resetLink}" class="link-dark fw-semibold text-decoration-underline">
+                                ${resetLink}
+                            </a>
+                        </div>
                     </#if>
 
                     <form action="/forgot-password" method="post">
@@ -32,7 +48,6 @@
                         </#if>
 
                         <div class="mb-3">
-
                             <label for="email" class="form-label">
                                 <@spring.message "label.email"/>
                             </label>

@@ -32,6 +32,9 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/ws/**")
+                )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -81,16 +84,20 @@ public class SecurityConfig {
                                 "/change-language",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/static/**"
+                                "/static/**",
+                                "/ws/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/change-language").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/vacancies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/vacancies", "/api/vacancies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/companies/**").permitAll()
 
                         .requestMatchers("/profile/**").authenticated()
 
                         .requestMatchers("/resumes/**").hasRole("APPLICANT")
+                        .requestMatchers(HttpMethod.POST, "/vacancies/*/respond").hasRole("APPLICANT")
                         .requestMatchers("/my-vacancies/**").hasRole("EMPLOYER")
                         .requestMatchers("/employer/resumes/**").hasRole("EMPLOYER")
 

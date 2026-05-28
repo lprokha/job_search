@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 022-add-sender-to-messages
+      author: Leyla P.
+      changes:
+        - addColumn:
+            tableName: messages
+            columns:
+              - column:
+                  name: sender_id
+                  type: int
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: sender_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_messages_sender

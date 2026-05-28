@@ -2,20 +2,23 @@
 <#import "/spring.ftl" as spring>
 
 <@main.layout>
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3 mb-4">
         <h2 class="mb-0">
             <@spring.message "nav.myVacancies"/>
         </h2>
 
-        <div class="d-flex gap-2">
-            <form method="get" action="/my-vacancies" class="d-flex gap-2 align-items-center">
+        <div class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center">
+            <form method="get"
+                  action="/my-vacancies"
+                  class="d-flex flex-wrap gap-2 align-items-center">
+
                 <input type="hidden" name="page" value="0">
 
-                <label for="sort" class="mb-0">
+                <label for="sort" class="mb-0 text-nowrap">
                     <@spring.message "label.sort"/>
                 </label>
 
-                <select name="sort" id="sort" class="form-select">
+                <select name="sort" id="sort" class="form-select form-select-sm w-auto">
                     <option value="dateDesc" <#if sort?? && sort == "dateDesc">selected</#if>>
                         <@spring.message "sort.dateDesc"/>
                     </option>
@@ -30,28 +33,37 @@
                     </option>
                 </select>
 
-                <button type="submit" class="btn btn-outline-dark">
+                <button type="submit" class="btn btn-outline-dark btn-sm text-nowrap">
                     <@spring.message "button.apply"/>
                 </button>
             </form>
 
-            <a href="/my-vacancies/create" class="btn btn-dark">
-                <@spring.message "button.addVacancy"/>
-            </a>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/my-vacancies/create"
+                   class="btn btn-dark btn-sm text-nowrap d-inline-flex align-items-center justify-content-center">
+                    <@spring.message "button.addVacancy"/>
+                </a>
 
-            <a href="/profile" class="btn btn-outline-dark">
-                <@spring.message "button.backToProfile"/>
-            </a>
+                <a href="/profile"
+                   class="btn btn-outline-dark btn-sm text-nowrap d-inline-flex align-items-center justify-content-center">
+                    <@spring.message "button.backToProfile"/>
+                </a>
+            </div>
         </div>
     </div>
 
     <#if vacancies?? && (vacancies?size > 0)>
         <div class="list-group shadow-sm">
             <#list vacancies as vacancy>
-                <div class="list-group-item list-group-item-action">
+                <div class="list-group-item list-group-item-action position-relative">
                     <div class="d-flex justify-content-between align-items-start gap-3">
                         <div>
-                            <h5 class="mb-2">${vacancy.name}</h5>
+                            <h5 class="mb-2">
+                                <a href="/vacancies/${vacancy.id}"
+                                   class="stretched-link text-decoration-none text-dark">
+                                    ${vacancy.name}
+                                </a>
+                            </h5>
 
                             <p class="mb-1">
                                 <span class="fw-semibold">
@@ -74,9 +86,14 @@
                             </p>
                         </div>
 
-                        <div class="text-nowrap">
+                        <div class="text-nowrap position-relative z-2 d-flex flex-wrap gap-2 justify-content-end">
+                            <a href="/my-vacancies/${vacancy.id}/responses"
+                               class="btn btn-outline-dark btn-sm text-nowrap">
+                                <@spring.message "button.responses"/>
+                            </a>
+
                             <a href="/my-vacancies/edit/${vacancy.id}"
-                               class="btn btn-outline-dark btn-sm">
+                               class="btn btn-outline-dark btn-sm text-nowrap">
                                 <@spring.message "button.edit"/>
                             </a>
                         </div>

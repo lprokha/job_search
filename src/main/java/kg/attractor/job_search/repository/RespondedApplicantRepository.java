@@ -5,12 +5,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface RespondedApplicantRepository extends JpaRepository<RespondedApplicant, Integer> {
 
-    boolean existsByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId);
+    boolean existsByResume_IdAndVacancy_Id(Integer resumeId, Integer vacancyId);
 
-    List<RespondedApplicant> findByVacancyId(Integer vacancyId);
+    Optional<RespondedApplicant> findByResume_IdAndVacancy_Id(Integer resumeId, Integer vacancyId);
 
-    List<RespondedApplicant> findByResumeId(Integer resumeId);
+    List<RespondedApplicant> findByVacancy_Id(Integer vacancyId);
+
+    List<RespondedApplicant> findByResume_Id(Integer resumeId);
 }

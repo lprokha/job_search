@@ -2,15 +2,20 @@ package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateVacancyDto;
+import kg.attractor.job_search.dto.RespondToVacancyDto;
 import kg.attractor.job_search.dto.UpdateVacancyDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.AccountType;
+import kg.attractor.job_search.model.RespondedApplicant;
+import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.service.CategoryService;
+import kg.attractor.job_search.service.RespondedApplicantService;
+import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +43,8 @@ public class VacancyPageController {
     private final VacancyService vacancyService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final ResumeService resumeService;
+    private final RespondedApplicantService respondedApplicantService;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -86,6 +93,66 @@ public class VacancyPageController {
         }
 
         return "vacancy-list";
+    }
+
+    @GetMapping("/vacancies/{id}")
+    public String vacancyDetailPage(@PathVariable Integer id,
+                                    Authentication authentication,
+                                    Model model) {
+        Vacancy vacancy = vacancyService.getById(id)
+                .orElseThrow(VacancyNotFoundException::new);
+
+        model.addAttribute("vacancy", vacancy);
+        model.addAttribute("updatedAt", formatDateTime(vacancy.getUpdateTime()));
+        model.addAttribute("respondDto", new RespondToVacancyDto());
+
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+            User currentUser = getCurrentUser(authentication);
+            model.addAttribute("currentUser", currentUser);
+
+            if (currentUser.getAccountType() == AccountType.APPLICANT) {
+                List<Resume> resumes = resumeService.getByApplicantId(currentUser.getId()).stream()
+                        .filter(resume -> Boolean.TRUE.equals(resume.getIsActive()))
+                        .toList();
+
+                model.addAttribute("resumes", resumes);
+            }
+        }
+
+        return "vacancy-detail";
+    }
+
+    @PostMapping("/vacancies/{id}/respond")
+    public String respondToVacancy(@PathVariable Integer id,
+                                   @Valid @ModelAttribute("respondDto") RespondToVacancyDto dto,
+                                   BindingResult bindingResult,
+                                   Authentication authentication,
+                                   Model model) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.APPLICANT) {
+            throw new ForbiddenException("Only applicants can respond to vacancies");
+        }
+
+        Vacancy vacancy = vacancyService.getById(id)
+                .orElseThrow(VacancyNotFoundException::new);
+
+        Resume resume = resumeService.getById(dto.getResumeId())
+                .orElseThrow(() -> new NotFoundException("Resume not found"));
+
+        if (!resume.getApplicantId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can respond only with your own resume");
+        }
+
+        dto.setVacancyId(vacancy.getId());
+
+        RespondedApplicant response = respondedApplicantService
+                .getByResumeIdAndVacancyId(dto.getResumeId(), vacancy.getId())
+                .orElseGet(() -> respondedApplicantService.create(dto));
+
+        return "redirect:/chat/" + response.getId();
     }
 
     @GetMapping("/companies")
