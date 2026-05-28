@@ -1,5 +1,6 @@
 package kg.attractor.job_search.controller;
 
+import kg.attractor.job_search.dto.ChatMessageDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.NotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
@@ -42,9 +43,13 @@ public class ChatPageController {
 
         List<Message> messages = messageService.getByRespondedApplicantId(responseId);
 
+        List<ChatMessageDto> messageDtos = messages.stream()
+                .map(ChatMessageDto::fromMessage)
+                .toList();
+
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("response", response);
-        model.addAttribute("messages", messages);
+        model.addAttribute("messages", messageDtos);
 
         return "chat";
     }

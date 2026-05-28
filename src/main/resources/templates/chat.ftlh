@@ -39,20 +39,14 @@
                             <#list messages as message>
                                 <div class="mb-3">
                                     <div class="fw-semibold">
-                                        <#if message.sender??>
-                                            ${message.sender.name} ${message.sender.surname}
-                                        <#else>
-                                            <@spring.message "chat.unknownSender"/>
-                                        </#if>
+                                        ${message.senderName!""}
                                     </div>
 
-                                    <div>${message.content}</div>
+                                    <div>${message.content!""}</div>
 
-                                    <#if message.timestamp??>
-                                        <div class="small text-muted">
-                                            ${message.timestamp}
-                                        </div>
-                                    </#if>
+                                    <div class="small text-muted">
+                                        ${message.timestamp!""}
+                                    </div>
                                 </div>
                             </#list>
                         <#else>
