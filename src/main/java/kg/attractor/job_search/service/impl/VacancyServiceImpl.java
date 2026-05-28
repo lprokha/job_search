@@ -96,9 +96,8 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<Vacancy> getAllActive(int page, int size, String sortBy) {
-
         if ("dateAsc".equals(sortBy)) {
-            Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").ascending());
+            Pageable pageable = PageRequest.of(page, size, Sort.by("updateTime").ascending());
             return vacancyRepository.findByIsActiveTrue(pageable);
         }
 
@@ -112,21 +111,27 @@ public class VacancyServiceImpl implements VacancyService {
             return vacancyRepository.findAllActiveOrderByResponsesAsc(pageable);
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("updateTime").descending());
         return vacancyRepository.findByIsActiveTrue(pageable);
     }
 
     @Override
     public Page<Vacancy> getActiveByCategory(Integer categoryId, int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, buildDefaultSort());
+        Pageable pageable;
+
+        if ("dateAsc".equals(sortBy)) {
+            pageable = PageRequest.of(page, size, Sort.by("updateTime").ascending());
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by("updateTime").descending());
+        }
+
         return vacancyRepository.findByIsActiveTrueAndCategory_Id(categoryId, pageable);
     }
 
     @Override
     public Page<Vacancy> getByAuthorId(Integer authorId, int page, int size, String sortBy) {
-
         if ("dateAsc".equals(sortBy)) {
-            Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").ascending());
+            Pageable pageable = PageRequest.of(page, size, Sort.by("updateTime").ascending());
             return vacancyRepository.findByAuthor_Id(authorId, pageable);
         }
 
@@ -140,7 +145,7 @@ public class VacancyServiceImpl implements VacancyService {
             return vacancyRepository.findByAuthorIdOrderByResponsesAsc(authorId, pageable);
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("updateTime").descending());
         return vacancyRepository.findByAuthor_Id(authorId, pageable);
     }
 
@@ -223,9 +228,5 @@ public class VacancyServiceImpl implements VacancyService {
 
         vacancyRepository.deleteById(id);
         return true;
-    }
-
-    private Sort buildDefaultSort() {
-        return Sort.by(Sort.Direction.DESC, "createdDate");
     }
 }
