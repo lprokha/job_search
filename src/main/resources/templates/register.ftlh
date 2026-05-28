@@ -1,8 +1,6 @@
 <#import "layouts/layout.ftlh" as main>
 <#import "/spring.ftl" as spring>
 
-<#assign errors = .data_model["org.springframework.validation.BindingResult.user"]!>
-
 <@main.layout>
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -24,7 +22,6 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "label.name"/>
                                 </label>
@@ -34,15 +31,17 @@
                                        class="form-control"
                                        value="${user.name!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("name")>
+                                <@spring.bind "user.name"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("name").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
 
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "label.surname"/>
                                 </label>
@@ -52,16 +51,18 @@
                                        class="form-control"
                                        value="${user.surname!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("surname")>
+                                <@spring.bind "user.surname"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("surname").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
                         </div>
 
                         <div class="mb-3">
-
                             <label class="form-label">
                                 <@spring.message "register.accountType"/>
                             </label>
@@ -90,16 +91,18 @@
                                 </label>
                             </div>
 
-                            <#if errors?has_content && errors.hasFieldErrors("accountType")>
+                            <@spring.bind "user.accountType"/>
+                            <#if spring.status.error>
                                 <div class="text-danger small mt-1">
-                                    ${errors.getFieldError("accountType").defaultMessage}
+                                    <#list spring.status.errorMessages as error>
+                                        <div>${error}</div>
+                                    </#list>
                                 </div>
                             </#if>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "label.email"/>
                                 </label>
@@ -109,15 +112,17 @@
                                        class="form-control"
                                        value="${user.email!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("email")>
+                                <@spring.bind "user.email"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("email").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
 
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "label.phoneNumber"/>
                                 </label>
@@ -127,9 +132,12 @@
                                        class="form-control"
                                        value="${user.phoneNumber!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("phoneNumber")>
+                                <@spring.bind "user.phoneNumber"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("phoneNumber").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
@@ -137,7 +145,6 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "label.age"/>
                                 </label>
@@ -147,15 +154,17 @@
                                        class="form-control"
                                        value="${user.age!''}">
 
-                                <#if errors?has_content && errors.hasFieldErrors("age")>
+                                <@spring.bind "user.age"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("age").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>
 
                             <div class="col-md-6 mb-3">
-
                                 <label class="form-label">
                                     <@spring.message "label.password"/>
                                 </label>
@@ -164,9 +173,12 @@
                                        name="password"
                                        class="form-control">
 
-                                <#if errors?has_content && errors.hasFieldErrors("password")>
+                                <@spring.bind "user.password"/>
+                                <#if spring.status.error>
                                     <div class="text-danger small mt-1">
-                                        ${errors.getFieldError("password").defaultMessage}
+                                        <#list spring.status.errorMessages as error>
+                                            <div>${error}</div>
+                                        </#list>
                                     </div>
                                 </#if>
                             </div>

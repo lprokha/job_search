@@ -46,10 +46,7 @@ public class CreateResumeDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ContactDto {
-        @NotNull(message = "{validation.contact.type.notNull}")
         private Integer typeId;
-
-        @NotBlank(message = "{validation.contact.value.notBlank}")
         private String contactValue;
     }
 
