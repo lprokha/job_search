@@ -13,6 +13,45 @@
         </a>
     </div>
 
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="get" action="/employer/resumes" class="row g-3 align-items-end">
+                <input type="hidden" name="page" value="0">
+
+                <div class="col-md-6">
+                    <label for="categoryId" class="form-label">
+                        <@spring.message "label.category"/>
+                    </label>
+
+                    <select name="categoryId" id="categoryId" class="form-select">
+                        <option value="">
+                            <@spring.message "resume.allCategories"/>
+                        </option>
+
+                        <#if categories??>
+                            <#list categories as category>
+                                <option value="${category.id}"
+                                        <#if categoryId?? && categoryId == category.id>selected</#if>>
+                                    ${category.name}
+                                </option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
+
+                <div class="col-md-6 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-dark btn-sm text-nowrap">
+                        <@spring.message "button.apply"/>
+                    </button>
+
+                    <a href="/employer/resumes" class="btn btn-outline-dark btn-sm text-nowrap">
+                        <@spring.message "button.clear"/>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <#if resumes?? && (resumes?size > 0)>
         <#list resumes as resume>
             <div class="card shadow-sm border-0 mb-3 position-relative">
@@ -61,7 +100,7 @@
                     <#list 0..(totalPages - 1) as pageIndex>
                         <li class="page-item <#if pageIndex == currentPage>active</#if>">
                             <a class="page-link"
-                               href="/employer/resumes?page=${pageIndex}&size=5">
+                               href="/employer/resumes?page=${pageIndex}&size=5<#if categoryId??>&categoryId=${categoryId}</#if>">
                                 ${pageIndex + 1}
                             </a>
                         </li>

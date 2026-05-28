@@ -288,6 +288,7 @@ public class ResumePageController {
     public String employerResumesPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) Integer categoryId,
             Authentication authentication,
             Model model
     ) {
@@ -297,7 +298,14 @@ public class ResumePageController {
             throw new ForbiddenException("Only employers can view all resumes");
         }
 
-        Page<Resume> resumePage = resumeService.getAll(page, size);
+        Page<Resume> resumePage;
+
+        if (categoryId != null) {
+            resumePage = resumeService.getByCategory(categoryId, page, size);
+        } else {
+            resumePage = resumeService.getAll(page, size);
+        }
+
         List<Resume> resumes = resumePage.getContent();
 
         model.addAttribute("currentUser", currentUser);
@@ -305,6 +313,8 @@ public class ResumePageController {
         model.addAttribute("resumeUpdateTimes", buildResumeUpdateTimeMap(resumes));
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", resumePage.getTotalPages());
+        model.addAttribute("categories", categoryService.getAll());
+        model.addAttribute("categoryId", categoryId);
 
         return "employer-resume-list";
     }
