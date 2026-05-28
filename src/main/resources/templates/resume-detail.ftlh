@@ -48,7 +48,17 @@
                         </h4>
 
                         <p class="mb-1">
+                            <span class="fw-semibold">
+                                <@spring.message "label.name"/>:
+                            </span>
                             ${resume.applicant.name!""} ${resume.applicant.surname!""}
+                        </p>
+
+                        <p class="mb-1">
+                            <span class="fw-semibold">
+                                <@spring.message "label.age"/>:
+                            </span>
+                            ${resume.applicant.age!""}
                         </p>
 
                         <p class="text-muted mb-0">
