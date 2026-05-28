@@ -1,6 +1,5 @@
 package kg.attractor.job_search.controller;
 
-import jakarta.mail.MessagingException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,7 +42,6 @@ public class AuthController {
     public String register(
             @Valid @ModelAttribute("user") CreateUserDto dto,
             BindingResult bindingResult,
-            Model model,
             HttpServletRequest request
     ) throws ServletException {
         if (userService.existsByEmail(dto.getEmail())) {
@@ -74,14 +70,15 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public String processForgotPassword(HttpServletRequest request, Model model) {
-        try{
-            userService.makeResetPwdLink(request);
-            model.addAttribute("message", "На ваш email отправлена ссылка для смены пароля");
-        } catch (NotFoundException | UnsupportedEncodingException e) {
+        try {
+            String resetLink = userService.makeResetPwdLink(request);
+
+            model.addAttribute("message", "Ссылка для смены пароля создана");
+            model.addAttribute("resetLink", resetLink);
+        } catch (NotFoundException e) {
             model.addAttribute("error", e.getMessage());
-        } catch (MessagingException e) {
-            model.addAttribute("error", "Ошибка отправки письма");
         }
+
         return "forgot-password-form";
     }
 
@@ -89,11 +86,13 @@ public class AuthController {
     public String showResetPasswordForm(@RequestParam String token, Model model) {
         try {
             userService.getByResetPasswordToken(token);
+
             ResetPasswordDto form = new ResetPasswordDto();
             form.setToken(token);
+
             model.addAttribute("form", form);
         } catch (NotFoundException e) {
-            model.addAttribute("error", "Invalid token!");
+            model.addAttribute("error", "Недействительная ссылка для восстановления пароля");
         }
 
         return "reset-password-form";
@@ -106,18 +105,18 @@ public class AuthController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("token", form.getToken());
             return "reset-password-form";
         }
 
         try {
             User user = userService.getByResetPasswordToken(form.getToken());
             userService.updatePassword(user, form.getPassword());
-            model.addAttribute("message", "Пароль успешно изменен");
+
+            model.addAttribute("message", "Пароль успешно изменён. Теперь можно войти с новым паролем.");
         } catch (NotFoundException e) {
-            model.addAttribute("message", "Invalid token");
+            model.addAttribute("error", "Недействительная ссылка для восстановления пароля");
         }
 
-        return "partial/message";
+        return "reset-password-form";
     }
 }

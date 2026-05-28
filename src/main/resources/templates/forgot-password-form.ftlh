@@ -23,6 +23,18 @@
                         <div class="alert alert-success">${message}</div>
                     </#if>
 
+                    <#if resetLink??>
+                        <div class="alert alert-light border">
+                            <p class="mb-2">
+                                <@spring.message "forgotPassword.generatedLink"/>
+                            </p>
+
+                            <a href="${resetLink}" class="link-dark fw-semibold text-decoration-underline">
+                                ${resetLink}
+                            </a>
+                        </div>
+                    </#if>
+
                     <form action="/forgot-password" method="post">
 
                         <#if _csrf??>
@@ -32,7 +44,6 @@
                         </#if>
 
                         <div class="mb-3">
-
                             <label for="email" class="form-label">
                                 <@spring.message "label.email"/>
                             </label>
