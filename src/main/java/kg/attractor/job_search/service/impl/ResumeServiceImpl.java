@@ -162,6 +162,22 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public Optional<Resume> refresh(Integer id) {
+        Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Resume not found for refresh, id={}", id);
+                    return new ResumeNotFoundException();
+                });
+
+        resume.setUpdateTime(LocalDateTime.now());
+
+        Resume updatedResume = resumeRepository.save(resume);
+        log.debug("Resume refreshed successfully, id={}", id);
+
+        return Optional.of(updatedResume);
+    }
+
+    @Override
     @Transactional
     public boolean delete(Integer id) {
         if (!resumeRepository.existsById(id)) {

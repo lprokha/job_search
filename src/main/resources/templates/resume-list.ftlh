@@ -43,7 +43,20 @@
                             </p>
                         </div>
 
-                        <div class="text-nowrap d-flex gap-2">
+                        <div class="text-nowrap d-flex flex-wrap gap-2">
+                            <form action="/resumes/${resume.id}/refresh" method="post">
+                                <#if _csrf??>
+                                    <input
+                                            type="hidden"
+                                            name="${(_csrf.parameterName)!'csrf'}"
+                                            value="${(_csrf.token)!''}">
+                                </#if>
+
+                                <button type="submit" class="btn btn-outline-dark btn-sm text-nowrap">
+                                    <@spring.message "button.refresh"/>
+                                </button>
+                            </form>
+
                             <a href="/resumes/edit/${resume.id}"
                                class="btn btn-outline-dark btn-sm text-nowrap">
                                 <@spring.message "button.edit"/>

@@ -1,6 +1,8 @@
 <#import "layouts/layout.ftlh" as main>
 <#import "/spring.ftl" as spring>
 
+<#assign profileErrors = .data_model["org.springframework.validation.BindingResult.profileForm"]!>
+
 <@main.layout>
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
@@ -73,9 +75,12 @@
     </div>
 
     <div class="mb-4 d-flex flex-wrap gap-2">
-        <a href="/profile/edit" class="btn btn-dark btn-sm text-nowrap">
+        <button type="button"
+                class="btn btn-dark btn-sm text-nowrap"
+                data-bs-toggle="modal"
+                data-bs-target="#editProfileModal">
             <@spring.message "profile.edit"/>
-        </a>
+        </button>
 
         <#if user.accountType?string == "APPLICANT">
             <a href="/responses/my" class="btn btn-outline-dark btn-sm text-nowrap">
@@ -121,7 +126,21 @@
                                 </p>
                             </div>
 
-                            <div class="d-flex gap-2 text-nowrap">
+                            <div class="d-flex flex-wrap gap-2 text-nowrap">
+                                <form action="/resumes/${resume.id}/refresh" method="post">
+                                    <#if _csrf??>
+                                        <input
+                                                type="hidden"
+                                                name="${(_csrf.parameterName)!'csrf'}"
+                                                value="${(_csrf.token)!''}">
+                                    </#if>
+
+                                    <button type="submit"
+                                            class="btn btn-outline-dark btn-sm text-nowrap">
+                                        <@spring.message "button.refresh"/>
+                                    </button>
+                                </form>
+
                                 <a href="/resumes/edit/${resume.id}"
                                    class="btn btn-outline-dark btn-sm text-nowrap">
                                     <@spring.message "button.edit"/>
@@ -158,14 +177,11 @@
         <#if vacancies?? && (vacancies?size > 0)>
             <div class="list-group shadow-sm">
                 <#list vacancies as vacancy>
-                    <div class="list-group-item list-group-item-action position-relative">
+                    <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-start gap-3">
                             <div>
                                 <h5 class="mb-2">
-                                    <a href="/vacancies/${vacancy.id}"
-                                       class="stretched-link text-decoration-none text-dark">
-                                        ${vacancy.name}
-                                    </a>
+                                    ${vacancy.name}
                                 </h5>
 
                                 <p class="mb-1">
@@ -179,7 +195,21 @@
                                 </p>
                             </div>
 
-                            <div class="d-flex gap-2 text-nowrap position-relative z-2">
+                            <div class="d-flex flex-wrap gap-2 text-nowrap">
+                                <form action="/my-vacancies/${vacancy.id}/refresh" method="post">
+                                    <#if _csrf??>
+                                        <input
+                                                type="hidden"
+                                                name="${(_csrf.parameterName)!'csrf'}"
+                                                value="${(_csrf.token)!''}">
+                                    </#if>
+
+                                    <button type="submit"
+                                            class="btn btn-outline-dark btn-sm text-nowrap">
+                                        <@spring.message "button.refresh"/>
+                                    </button>
+                                </form>
+
                                 <a href="/my-vacancies/${vacancy.id}/responses"
                                    class="btn btn-outline-dark btn-sm text-nowrap">
                                     <@spring.message "button.responses"/>
@@ -199,5 +229,140 @@
                 <@spring.message "profile.noVacancies"/>
             </div>
         </#if>
+    </#if>
+
+    <div class="modal fade <#if showEditProfileModal?? && showEditProfileModal>show</#if>"
+         id="editProfileModal"
+         tabindex="-1"
+         aria-hidden="<#if showEditProfileModal?? && showEditProfileModal>false<#else>true</#if>"
+         <#if showEditProfileModal?? && showEditProfileModal>style="display: block;"</#if>>
+
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form action="/profile/edit" method="post">
+                    <#if _csrf??>
+                        <input
+                                type="hidden"
+                                name="${(_csrf.parameterName)!'csrf'}"
+                                value="${(_csrf.token)!''}">
+                    </#if>
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <@spring.message "profile.editTitle"/>
+                        </h5>
+
+                        <a href="/profile" class="btn-close"></a>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <@spring.message "label.name"/>
+                                </label>
+
+                                <input type="text"
+                                       name="name"
+                                       class="form-control"
+                                       value="${profileForm.name!''}">
+
+                                <#if profileErrors?has_content && profileErrors.hasFieldErrors("name")>
+                                    <div class="text-danger small mt-1">
+                                        ${profileErrors.getFieldError("name").defaultMessage}
+                                    </div>
+                                </#if>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <@spring.message "label.surname"/>
+                                </label>
+
+                                <input type="text"
+                                       name="surname"
+                                       class="form-control"
+                                       value="${profileForm.surname!''}">
+
+                                <#if profileErrors?has_content && profileErrors.hasFieldErrors("surname")>
+                                    <div class="text-danger small mt-1">
+                                        ${profileErrors.getFieldError("surname").defaultMessage}
+                                    </div>
+                                </#if>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <@spring.message "label.email"/>
+                                </label>
+
+                                <input type="email"
+                                       name="email"
+                                       class="form-control"
+                                       value="${profileForm.email!''}">
+
+                                <#if profileErrors?has_content && profileErrors.hasFieldErrors("email")>
+                                    <div class="text-danger small mt-1">
+                                        ${profileErrors.getFieldError("email").defaultMessage}
+                                    </div>
+                                </#if>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <@spring.message "label.phoneNumber"/>
+                                </label>
+
+                                <input type="text"
+                                       name="phoneNumber"
+                                       class="form-control"
+                                       value="${profileForm.phoneNumber!''}">
+
+                                <#if profileErrors?has_content && profileErrors.hasFieldErrors("phoneNumber")>
+                                    <div class="text-danger small mt-1">
+                                        ${profileErrors.getFieldError("phoneNumber").defaultMessage}
+                                    </div>
+                                </#if>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <@spring.message "label.age"/>
+                                </label>
+
+                                <input type="number"
+                                       name="age"
+                                       class="form-control"
+                                       value="${profileForm.age!''}">
+
+                                <#if profileErrors?has_content && profileErrors.hasFieldErrors("age")>
+                                    <div class="text-danger small mt-1">
+                                        ${profileErrors.getFieldError("age").defaultMessage}
+                                    </div>
+                                </#if>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="/profile" class="btn btn-outline-secondary">
+                            <@spring.message "button.cancel"/>
+                        </a>
+
+                        <button type="submit" class="btn btn-dark">
+                            <@spring.message "button.save"/>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <#if showEditProfileModal?? && showEditProfileModal>
+        <div class="modal-backdrop fade show"></div>
     </#if>
 </@main.layout>

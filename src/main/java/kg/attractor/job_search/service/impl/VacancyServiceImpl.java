@@ -181,6 +181,22 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
+    public Optional<Vacancy> refresh(Integer id) {
+        Vacancy vacancy = vacancyRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Vacancy not found for refresh, id={}", id);
+                    return new VacancyNotFoundException();
+                });
+
+        vacancy.setUpdateTime(LocalDateTime.now());
+
+        Vacancy updatedVacancy = vacancyRepository.save(vacancy);
+        log.debug("Vacancy refreshed successfully, id={}", id);
+
+        return Optional.of(updatedVacancy);
+    }
+
+    @Override
     public boolean delete(Integer id) {
         log.warn("Deleting vacancy id={}", id);
 

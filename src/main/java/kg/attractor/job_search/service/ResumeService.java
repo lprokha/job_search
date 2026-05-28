@@ -29,5 +29,7 @@ public interface ResumeService {
 
     Optional<Resume> update(Integer id, UpdateResumeDto dto);
 
+    Optional<Resume> refresh(Integer id);
+
     boolean delete(Integer id);
 }

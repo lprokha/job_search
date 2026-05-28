@@ -55,15 +55,10 @@
     <#if vacancies?? && (vacancies?size > 0)>
         <div class="list-group shadow-sm">
             <#list vacancies as vacancy>
-                <div class="list-group-item list-group-item-action position-relative">
+                <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start gap-3">
                         <div>
-                            <h5 class="mb-2">
-                                <a href="/vacancies/${vacancy.id}"
-                                   class="stretched-link text-decoration-none text-dark">
-                                    ${vacancy.name}
-                                </a>
-                            </h5>
+                            <h5 class="mb-2">${vacancy.name}</h5>
 
                             <p class="mb-1">
                                 <span class="fw-semibold">
@@ -86,7 +81,20 @@
                             </p>
                         </div>
 
-                        <div class="text-nowrap position-relative z-2 d-flex flex-wrap gap-2 justify-content-end">
+                        <div class="text-nowrap d-flex flex-wrap gap-2 justify-content-end">
+                            <form action="/my-vacancies/${vacancy.id}/refresh" method="post">
+                                <#if _csrf??>
+                                    <input
+                                            type="hidden"
+                                            name="${(_csrf.parameterName)!'csrf'}"
+                                            value="${(_csrf.token)!''}">
+                                </#if>
+
+                                <button type="submit" class="btn btn-outline-dark btn-sm text-nowrap">
+                                    <@spring.message "button.refresh"/>
+                                </button>
+                            </form>
+
                             <a href="/my-vacancies/${vacancy.id}/responses"
                                class="btn btn-outline-dark btn-sm text-nowrap">
                                 <@spring.message "button.responses"/>
