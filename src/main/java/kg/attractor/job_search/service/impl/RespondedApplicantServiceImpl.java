@@ -32,7 +32,8 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
 
     @Override
     public Optional<RespondedApplicant> getByResumeIdAndVacancyId(Integer resumeId, Integer vacancyId) {
-        return respondedApplicantRepository.findByResume_IdAndVacancy_Id(resumeId, vacancyId);    }
+        return respondedApplicantRepository.findByResume_IdAndVacancy_Id(resumeId, vacancyId);
+    }
 
     @Override
     public RespondedApplicant create(RespondToVacancyDto dto) {
@@ -63,11 +64,13 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
 
     @Override
     public List<RespondedApplicant> getByVacancyId(Integer vacancyId) {
-        return respondedApplicantRepository.findByVacancy_Id(vacancyId);    }
+        return respondedApplicantRepository.findByVacancy_Id(vacancyId);
+    }
 
     @Override
     public List<RespondedApplicant> getByResumeId(Integer resumeId) {
-        return respondedApplicantRepository.findByResume_Id(resumeId);    }
+        return respondedApplicantRepository.findByResume_Id(resumeId);
+    }
 
     @Override
     public List<RespondedApplicant> getAll() {
@@ -77,5 +80,15 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
     @Override
     public Optional<RespondedApplicant> getById(Integer id) {
         return respondedApplicantRepository.findById(id);
+    }
+
+    @Override
+    public long countByApplicantId(Integer applicantId) {
+        return respondedApplicantRepository.countByResume_Applicant_Id(applicantId);
+    }
+
+    @Override
+    public long countByEmployerId(Integer employerId) {
+        return respondedApplicantRepository.countByVacancy_Author_Id(employerId);
     }
 }

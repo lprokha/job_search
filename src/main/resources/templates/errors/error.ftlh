@@ -18,22 +18,16 @@
                     <p class="text-muted mb-4">
                         <#if status?? && status == 403>
                             <@spring.message "error.forbiddenMessage"/>
-                        <#elseif message??>
-                            ${message}
                         <#else>
                             <@spring.message "error.message"/>
                         </#if>
                     </p>
 
-                    <a href="/vacancies" class="btn btn-dark">
-                        <@spring.message "nav.vacancies"/>
-                    </a>
-
-                    <#if currentUser??>
-                        <a href="/profile" class="btn btn-outline-dark ms-2">
-                            <@spring.message "nav.profile"/>
+                    <div class="d-flex justify-content-center">
+                        <a href="/profile" class="btn btn-dark btn-sm text-nowrap">
+                            <@spring.message "button.backToProfile"/>
                         </a>
-                    </#if>
+                    </div>
 
                 </div>
             </div>

@@ -20,4 +20,8 @@ public interface RespondedApplicantService {
     List<RespondedApplicant> getAll();
 
     Optional<RespondedApplicant> getById(Integer id);
+
+    long countByApplicantId(Integer applicantId);
+
+    long countByEmployerId(Integer employerId);
 }

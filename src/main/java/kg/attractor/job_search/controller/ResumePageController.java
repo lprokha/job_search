@@ -2,23 +2,29 @@ package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.CreateResumeDto;
+import kg.attractor.job_search.dto.RespondToVacancyDto;
 import kg.attractor.job_search.dto.UpdateResumeDto;
 import kg.attractor.job_search.exception.ForbiddenException;
 import kg.attractor.job_search.exception.ResumeNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
+import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.ContactInfo;
 import kg.attractor.job_search.model.EducationInfo;
+import kg.attractor.job_search.model.RespondedApplicant;
 import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.model.WorkExperienceInfo;
 import kg.attractor.job_search.repository.ContactInfoRepository;
 import kg.attractor.job_search.repository.ContactTypeRepository;
 import kg.attractor.job_search.repository.EducationInfoRepository;
 import kg.attractor.job_search.repository.WorkExperienceInfoRepository;
 import kg.attractor.job_search.service.CategoryService;
+import kg.attractor.job_search.service.RespondedApplicantService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
@@ -48,6 +54,8 @@ public class ResumePageController {
     private final ResumeService resumeService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final VacancyService vacancyService;
+    private final RespondedApplicantService respondedApplicantService;
     private final ContactTypeRepository contactTypeRepository;
     private final ContactInfoRepository contactInfoRepository;
     private final EducationInfoRepository educationInfoRepository;
@@ -92,6 +100,14 @@ public class ResumePageController {
         model.addAttribute("educationInfos", educationInfos);
         model.addAttribute("workExperienceInfos", workExperienceInfos);
         model.addAttribute("updatedAt", formatDateTime(resume.getUpdateTime()));
+
+        if (currentUser.getAccountType() == AccountType.EMPLOYER) {
+            List<Vacancy> employerVacancies = vacancyService.getByAuthorId(currentUser.getId()).stream()
+                    .filter(vacancy -> Boolean.TRUE.equals(vacancy.getIsActive()))
+                    .toList();
+
+            model.addAttribute("employerVacancies", employerVacancies);
+        }
     }
 
     private void fillResumeFormModel(User currentUser, Model model, Integer resumeId) {
@@ -450,6 +466,47 @@ public class ResumePageController {
         addResumeDetailsToModel(id, currentUser, model);
 
         return "resume-detail";
+    }
+
+    @PostMapping("/employer/resumes/{id}/offer-vacancy")
+    public String offerVacancyToApplicant(@PathVariable Integer id,
+                                          @RequestParam Integer vacancyId,
+                                          Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        if (currentUser.getAccountType() != AccountType.EMPLOYER) {
+            throw new ForbiddenException("Only employers can offer vacancies");
+        }
+
+        Resume resume = resumeService.getById(id)
+                .orElseThrow(ResumeNotFoundException::new);
+
+        if (!Boolean.TRUE.equals(resume.getIsActive())) {
+            throw new ResumeNotFoundException();
+        }
+
+        Vacancy vacancy = vacancyService.getById(vacancyId)
+                .orElseThrow(VacancyNotFoundException::new);
+
+        if (!vacancy.getAuthorId().equals(currentUser.getId())) {
+            throw new ForbiddenException("You can offer only your own vacancy");
+        }
+
+        if (!Boolean.TRUE.equals(vacancy.getIsActive())) {
+            throw new VacancyNotFoundException();
+        }
+
+        RespondedApplicant response = respondedApplicantService
+                .getByResumeIdAndVacancyId(resume.getId(), vacancy.getId())
+                .orElseGet(() -> {
+                    RespondToVacancyDto dto = new RespondToVacancyDto();
+                    dto.setResumeId(resume.getId());
+                    dto.setVacancyId(vacancy.getId());
+
+                    return respondedApplicantService.create(dto);
+                });
+
+        return "redirect:/chat/" + response.getId();
     }
 
     @GetMapping("/resumes/create")

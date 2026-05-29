@@ -3,7 +3,6 @@
 
 <@main.layout>
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3 mb-4">
-
         <h2 class="mb-0">
             <@spring.message "resumes.all"/>
         </h2>
@@ -86,10 +85,6 @@
                             ${resume.category.name!""}
                         </p>
                     </#if>
-
-                    <p class="small text-muted mt-2 mb-0">
-                        <@spring.message "button.viewResumeDetails"/>
-                    </p>
                 </div>
             </div>
         </#list>
@@ -108,7 +103,6 @@
                 </ul>
             </nav>
         </#if>
-
     <#else>
         <div class="alert alert-light border">
             <@spring.message "resumes.notFound"/>

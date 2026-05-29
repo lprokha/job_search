@@ -20,9 +20,15 @@ public interface ResumeRepository extends JpaRepository<Resume, Integer> {
 
     Page<Resume> findByApplicant_Id(Integer applicantId, Pageable pageable);
 
+    Page<Resume> findByApplicant_IdOrderByUpdateTimeDesc(Integer applicantId, Pageable pageable);
+
     Page<Resume> findByIsActiveTrue(Pageable pageable);
 
+    Page<Resume> findByIsActiveTrueOrderByUpdateTimeDesc(Pageable pageable);
+
     Page<Resume> findByIsActiveTrueAndCategory_Id(Integer categoryId, Pageable pageable);
+
+    Page<Resume> findByIsActiveTrueAndCategory_IdOrderByUpdateTimeDesc(Integer categoryId, Pageable pageable);
 
     Page<Resume> findAll(Pageable pageable);
 

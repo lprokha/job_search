@@ -113,13 +113,13 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Page<Resume> getAllActive(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return resumeRepository.findByIsActiveTrue(pageable);
+        return resumeRepository.findByIsActiveTrueOrderByUpdateTimeDesc(pageable);
     }
 
     @Override
     public Page<Resume> getByApplicantId(Integer applicantId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return resumeRepository.findByApplicant_Id(applicantId, pageable);
+        return resumeRepository.findByApplicant_IdOrderByUpdateTimeDesc(applicantId, pageable);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Page<Resume> getActiveByCategory(Integer categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return resumeRepository.findByIsActiveTrueAndCategory_Id(categoryId, pageable);
+        return resumeRepository.findByIsActiveTrueAndCategory_IdOrderByUpdateTimeDesc(categoryId, pageable);
     }
 
     @Override
