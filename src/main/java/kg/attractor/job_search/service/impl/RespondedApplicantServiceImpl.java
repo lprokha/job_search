@@ -91,4 +91,9 @@ public class RespondedApplicantServiceImpl implements RespondedApplicantService 
     public long countByEmployerId(Integer employerId) {
         return respondedApplicantRepository.countByVacancy_Author_Id(employerId);
     }
+
+    @Override
+    public long countByVacancyId(Integer vacancyId) {
+        return respondedApplicantRepository.countByVacancy_Id(vacancyId);
+    }
 }

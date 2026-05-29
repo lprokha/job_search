@@ -10,6 +10,7 @@ import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.model.AccountType;
 import kg.attractor.job_search.model.ContactInfo;
+import kg.attractor.job_search.model.ContactType;
 import kg.attractor.job_search.model.EducationInfo;
 import kg.attractor.job_search.model.RespondedApplicant;
 import kg.attractor.job_search.model.Resume;
@@ -63,6 +64,10 @@ public class ResumePageController {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    private static final LocalDate MIN_EDUCATION_DATE = LocalDate.of(1950, 1, 1);
+    private static final int MAX_FUTURE_EDUCATION_YEARS = 10;
+    private static final int MAX_WORK_EXPERIENCE_YEARS = 80;
 
     private User getCurrentUser(Authentication authentication) {
         return userService.findByEmail(authentication.getName())
@@ -182,11 +187,72 @@ public class ResumePageController {
 
         if (typeEmpty) {
             bindingResult.rejectValue(typeField, "validation.contact.type.required");
+            return;
         }
 
         if (valueEmpty) {
             bindingResult.rejectValue(valueField, "validation.contact.value.required");
+            return;
         }
+
+        ContactType contactType = contactTypeRepository.findById(typeId).orElse(null);
+
+        if (contactType == null || contactType.getType() == null) {
+            bindingResult.rejectValue(typeField, "validation.contact.type.required");
+            return;
+        }
+
+        validateContactValueByType(contactType.getType(), contactValue, valueField, bindingResult);
+    }
+
+    private void validateContactValueByType(String type,
+                                            String value,
+                                            String valueField,
+                                            BindingResult bindingResult) {
+        String normalizedType = type.toLowerCase();
+        String trimmedValue = value.trim();
+
+        if (normalizedType.contains("email") || normalizedType.contains("mail")) {
+            if (!trimmedValue.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                bindingResult.rejectValue(valueField, "validation.contact.email.invalid");
+            }
+            return;
+        }
+
+        if (normalizedType.contains("phone")
+                || normalizedType.contains("тел")
+                || normalizedType.contains("номер")) {
+            if (!trimmedValue.matches("^\\+?\\d{10,15}$")) {
+                bindingResult.rejectValue(valueField, "validation.contact.phone.invalid");
+            }
+            return;
+        }
+
+        if (normalizedType.contains("facebook")) {
+            if (!isValidUrlOrUsername(trimmedValue)) {
+                bindingResult.rejectValue(valueField, "validation.contact.link.invalid");
+            }
+            return;
+        }
+
+        if (normalizedType.contains("linkedin")) {
+            if (!isValidUrlOrUsername(trimmedValue)) {
+                bindingResult.rejectValue(valueField, "validation.contact.link.invalid");
+            }
+            return;
+        }
+
+        if (normalizedType.contains("telegram")) {
+            if (!trimmedValue.matches("^@?[A-Za-z0-9_]{5,32}$")
+                    && !trimmedValue.matches("^https?://.+$")) {
+                bindingResult.rejectValue(valueField, "validation.contact.telegram.invalid");
+            }
+        }
+    }
+
+    private boolean isValidUrlOrUsername(String value) {
+        return value.matches("^https?://.+$")
+                || value.matches("^[A-Za-z0-9_.-]{3,}$");
     }
 
     private void validateCreateEducationInfos(List<CreateResumeDto.EducationDto> educationInfos,
@@ -277,8 +343,29 @@ public class ResumePageController {
         LocalDate startDate = parseDateForValidation(startDateValue, startDateField, bindingResult);
         LocalDate endDate = parseDateForValidation(endDateValue, endDateField, bindingResult);
 
+        validateEducationDateRange(startDate, startDateField, bindingResult);
+        validateEducationDateRange(endDate, endDateField, bindingResult);
+
         if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
             bindingResult.rejectValue(endDateField, "validation.resume.educationPeriod");
+        }
+    }
+
+    private void validateEducationDateRange(LocalDate date,
+                                            String fieldName,
+                                            BindingResult bindingResult) {
+        if (date == null) {
+            return;
+        }
+
+        LocalDate maxDate = LocalDate.now().plusYears(MAX_FUTURE_EDUCATION_YEARS);
+
+        if (date.isBefore(MIN_EDUCATION_DATE)) {
+            bindingResult.rejectValue(fieldName, "validation.resume.date.tooOld");
+        }
+
+        if (date.isAfter(maxDate)) {
+            bindingResult.rejectValue(fieldName, "validation.resume.date.tooFuture");
         }
     }
 
@@ -343,6 +430,8 @@ public class ResumePageController {
 
         if (years == null) {
             bindingResult.rejectValue(yearsField, "validation.work.years.required");
+        } else if (years > MAX_WORK_EXPERIENCE_YEARS) {
+            bindingResult.rejectValue(yearsField, "validation.work.years.tooLarge");
         }
 
         if (isBlank(companyName)) {

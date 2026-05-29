@@ -84,7 +84,12 @@
 
         <#if user.accountType?string == "APPLICANT">
             <a href="/responses/my" class="btn btn-outline-dark btn-sm text-nowrap">
-                <@spring.message "responses.myTitle"/>
+                <@spring.message "button.responses"/>
+                <#if responsesCount?? && (responsesCount > 0)>
+                    <span class="badge rounded-pill text-bg-danger ms-1">
+            ${responsesCount}
+        </span>
+                </#if>
             </a>
         </#if>
     </div>
@@ -281,6 +286,14 @@
                                 <a href="/my-vacancies/${vacancy.id}/responses"
                                    class="btn btn-outline-dark btn-sm text-nowrap">
                                     <@spring.message "button.responses"/>
+
+                                    <#assign vacancyResponsesCount = vacancyResponseCounts[vacancy.id?string]!0>
+
+                                    <#if vacancyResponsesCount gt 0>
+                                        <span class="badge rounded-pill text-bg-danger ms-1">
+                                        ${vacancyResponsesCount}
+                                        </span>
+                                    </#if>
                                 </a>
 
                                 <a href="/my-vacancies/edit/${vacancy.id}"

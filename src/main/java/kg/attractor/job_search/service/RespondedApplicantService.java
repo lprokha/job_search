@@ -24,4 +24,6 @@ public interface RespondedApplicantService {
     long countByApplicantId(Integer applicantId);
 
     long countByEmployerId(Integer employerId);
+
+    long countByVacancyId(Integer vacancyId);
 }
